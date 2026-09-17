@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://renovah2o.com/sitemap.xml
