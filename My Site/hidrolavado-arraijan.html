@@ -23,12 +23,45 @@
 <style>
 :root{--blue:#0071e3;--dark:#06111f;--light:#f6f8fb;--text:#17202a;--muted:#5d6875}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:#fff;line-height:1.7}
-a{color:var(--blue)}.wrap{width:min(1080px,92%);margin:auto}.nav{background:var(--dark);padding:15px 0}.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{color:#fff;text-decoration:none;font-weight:800;font-size:1.2rem}.navlinks{display:flex;gap:22px;flex-wrap:wrap}.navlinks a{color:#fff;text-decoration:none;font-size:.95rem}
-.hero{background:var(--light);padding:55px 0 35px}.eyebrow{color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.82rem}.hero h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;margin:10px 0 18px}.hero p{max-width:760px;font-size:1.08rem;color:var(--muted)}
-.hero img{width:100%;max-height:430px;object-fit:cover;border-radius:18px;margin-top:28px}
-main{padding:38px 0 70px}.content{max-width:820px}.content h2{font-size:1.65rem;margin-top:40px}.content p{font-size:1.04rem}.cta{margin-top:45px;padding:28px;border-radius:16px;background:var(--dark);color:#fff}.cta h2{margin-top:0}.cta p{color:#d9e1ea}.button{display:inline-block;background:var(--blue);color:#fff;padding:12px 19px;border-radius:8px;text-decoration:none;font-weight:700}
-footer{background:var(--dark);color:#d9e1ea;padding:25px 0;text-align:center;font-size:.9rem}.related{margin-top:45px;padding-top:25px;border-top:1px solid #ddd}.related a{display:block;margin:8px 0}
-@media(max-width:700px){.nav .wrap{align-items:flex-start;flex-direction:column}.navlinks{gap:12px}.hero{padding-top:38px}.hero img{max-height:300px}}
+a{color:var(--blue)}.wrap{width:min(1080px,92%);margin:auto}
+
+/* Estilos de Navegación */
+.nav{background:var(--dark);padding:15px 0;position:sticky;top:0;z-index:100}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;text-decoration:none}
+.brand img{display:block;height:48px;width:auto;max-width:180px;object-fit:contain}
+.navlinks{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+.navlinks a{color:#fff;text-decoration:none;font-size:.95rem;font-weight:600}
+.navlinks a:hover{color:var(--blue)}
+
+/* Estilos de Hero */
+.hero{background:var(--light);padding:55px 0 35px}
+.eyebrow{color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.82rem}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;margin:10px 0 18px}
+.hero p{max-width:760px;font-size:1.08rem;color:var(--muted)}
+.hero-media{width:100%;max-height:450px;object-fit:cover;border-radius:18px;margin-top:28px;display:block}
+
+/* Estilos de Contenido y CTA */
+main{padding:38px 0 70px}
+.content{max-width:820px}
+.content h2{font-size:1.65rem;margin-top:40px}
+.content p{font-size:1.04rem}
+.cta{margin-top:45px;padding:28px;border-radius:16px;background:var(--dark);color:#fff}
+.cta h2{margin-top:0}
+.cta p{color:#d9e1ea}
+.button{display:inline-block;background:var(--blue);color:#fff;padding:12px 19px;border-radius:8px;text-decoration:none;font-weight:700}
+footer{background:var(--dark);color:#d9e1ea;padding:25px 0;text-align:center;font-size:.9rem}
+.related{margin-top:45px;padding-top:25px;border-top:1px solid #ddd}
+.related a{display:block;margin:8px 0}
+
+@media(max-width:700px){
+  .nav .wrap{flex-direction:row;justify-content:space-between;align-items:center}
+  .brand img{height:38px;max-width:140px}
+  .navlinks{gap:12px}
+  .navlinks a:not(.home){display:none} /* Oculta enlaces extra en móvil para mantener limpio el menú */
+  .hero{padding-top:38px}
+  .hero-media{max-height:300px}
+}
 </style>
 <script type="application/ld+json">
 {
@@ -44,46 +77,71 @@ footer{background:var(--dark);color:#d9e1ea;padding:25px 0;text-align:center;fon
 </script>
 </head>
 <body>
-<nav class="nav"><div class="wrap">
-<a class="brand" href="https://renovah2o.com/">RenovaH2O</a>
-<div class="navlinks"><a href="https://renovah2o.com/">Inicio</a><a href="https://renovah2o.com/blog">Blog</a><a href="https://renovah2o.com/servicios">Servicios</a><a href="https://renovah2o.com/cotizacion">Cotización</a></div>
-</div></nav>
-<header class="nav">
-  <a class="brand" href="https://renovah2o.com/" aria-label="RenovaH2O - Inicio">
-    <img src="https://renovah2o.com/Images/Logo%20Silver%20LL.png" alt="RenovaH2O">
-  </a>
-  <nav>
-    <a class="home" href="https://renovah2o.com/">Inicio</a>
-    <a href="blog">Blog</a>
-    <a href="https://renovah2o.com/#servicios">Servicios</a>
-    <a href="https://renovah2o.com/#contacto">Cotización</a>
-  </nav>
-</header>
-<div class="eyebrow">Guía de limpieza exterior</div>
-<h1>Servicio de hidrolavado en Arraiján</h1>
-<p>Servicio de hidrolavado en Arraiján para residencias, comercios y propiedades. Lavado de pisos, aceras, estacionamientos, terrazas, fachadas y concreto con agua a presión.</p>
 
-     <video class="hero-media" autoplay muted loop playsinline preload="auto" aria-label="Video de hidrolavado profesional">
-      <source src="Images/casa-peter.mp4" type="video/mp4" alt="Servicio de hidrolavado en Arraiján - RenovaH2O" loading="eager">
+<!-- Navegación Unificada -->
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="https://renovah2o.com/" aria-label="RenovaH2O - Inicio">
+      <img src="https://renovah2o.com/Images/Logo%20Silver%20LL.png" alt="RenovaH2O">
+    </a>
+    <nav class="navlinks">
+      <a class="home" href="https://renovah2o.com/">Inicio</a>
+      <a href="https://renovah2o.com/blog">Blog</a>
+      <a href="https://renovah2o.com/#servicios">Servicios</a>
+      <a href="https://renovah2o.com/#contacto">Cotización</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Sección Hero -->
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Guía de limpieza exterior</div>
+    <h1>Servicio de hidrolavado en Arraiján</h1>
+    <p>Servicio de hidrolavado en Arraiján para residencias, comercios y propiedades. Lavado de pisos, aceras, estacionamientos, terrazas, fachadas y concreto con agua a presión.</p>
+
+    <video class="hero-media" autoplay muted loop playsinline preload="auto" aria-label="Video de hidrolavado profesional">
+      <source src="Images/casa-peter.mp4" type="video/mp4">
       Tu navegador no soporta el reproductor de video.
     </video>
- 
- 
-</div></header>
-<main><div class="wrap"><article class="content">
-<h2>¿Qué podemos lavar en Arraiján?</h2><p>Las superficies exteriores en Arraiján están expuestas al clima, humedad, polvo y uso diario. Con el tiempo, una acera, terraza, estacionamiento o entrada puede perder su apariencia.
+  </div>
+</section>
 
-RenovaH2O ofrece servicio de hidrolavado y limpieza exterior en Arraiján para residencias, comercios y diferentes tipos de instalaciones.
+<!-- Contenido Principal -->
+<main>
+  <div class="wrap">
+    <article class="content">
+      <h2>¿Qué podemos lavar en Arraiján?</h2>
+      <p>Las superficies exteriores en Arraiján están expuestas al clima, humedad, polvo y uso diario. Con el tiempo, una acera, terraza, estacionamiento o entrada puede perder su apariencia.</p>
+      <p>RenovaH2O ofrece servicio de hidrolavado y limpieza exterior en Arraiján para residencias, comercios y diferentes tipos de instalaciones.</p>
+      <p>Atendemos pisos y áreas de concreto, aceras, estacionamientos, terrazas, patios, entradas de garaje, fachadas y paredes, además de proyectos para oficinas, restaurantes, escuelas, iglesias, hospitales, plazas comerciales y condominios.</p>
 
-Atendemos pisos y áreas de concreto, aceras, estacionamientos, terrazas, patios, entradas de garaje, fachadas y paredes, además de proyectos para oficinas, restaurantes, escuelas, iglesias, hospitales, plazas comerciales y condominios.</p><h2>¿Trabajan con comercios?</h2><p>La limpieza profesional depende de la superficie, el nivel de suciedad, la humedad, el uso del área y la técnica disponible. Una evaluación previa ayuda a elegir el método adecuado.</p><h2>¿Qué superficies atendemos?</h2><p>Trabajamos, según las condiciones de cada área, con concreto, cemento, adoquines y piedra. La técnica se adapta al material para evitar tratar una superficie de manera inadecuada.</p><h2>Solicitar servicio de hidrolavado en Arraiján</h2><p>La limpieza profesional depende de la superficie, el nivel de suciedad, la humedad, el uso del área y la técnica disponible. Una evaluación previa ayuda a elegir el método adecuado.</p>
-<div class="related"><h2>También puede interesarte</h2>
-<a href="https://renovah2o.com/hidrolavado-vs-limpieza-tradicional">Hidrolavado vs. limpieza tradicional: ¿cuál es la diferencia?</a>
-<a href="https://renovah2o.com/cuando-hacer-hidrolavado">¿Cuándo hacer un hidrolavado? 7 señales de que tu propiedad lo necesita</a>
-<a href="https://renovah2o.com/blog">Ver todos los artículos del blog de RenovaH2O →</a></div>
-<div class="cta"><h2>¿Necesitas renovar una superficie exterior?</h2>
-<p>Solicita una evaluación para tu residencia, comercio o propiedad. RenovaH2O ofrece servicio de hidrolavado y lavado a presión en Panamá.</p>
-<a class="button" href="https://wa.me/50763892525">Contactar por WhatsApp</a>
-</div>
-</article></div></main>
+      <h2>¿Trabajan con comercios?</h2>
+      <p>La limpieza profesional depende de la superficie, el nivel de suciedad, la humedad, el uso del área y la técnica disponible. Una evaluación previa ayuda a elegir el método adecuado.</p>
+
+      <h2>¿Qué superficies atendemos?</h2>
+      <p>Trabajamos, según las condiciones de cada área, con concreto, cemento, adoquines y piedra. La técnica se adapta al material para evitar tratar una superficie de manera inadecuada.</p>
+
+      <h2>Solicitar servicio de hidrolavado en Arraiján</h2>
+      <p>La limpieza profesional depende de la superficie, el nivel de suciedad, la humedad, el uso del área y la técnica disponible. Una evaluación previa ayuda a elegir el método adecuado.</p>
+
+      <div class="related">
+        <h2>También puede interesarte</h2>
+        <a href="https://renovah2o.com/hidrolavado-vs-limpieza-tradicional">Hidrolavado vs. limpieza tradicional: ¿cuál es la diferencia?</a>
+        <a href="https://renovah2o.com/cuando-hacer-hidrolavado">¿Cuándo hacer un hidrolavado? 7 señales de que tu propiedad lo necesita</a>
+        <a href="https://renovah2o.com/blog">Ver todos los artículos del blog de RenovaH2O →</a>
+      </div>
+
+      <div class="cta">
+        <h2>¿Necesitas renovar una superficie exterior?</h2>
+        <p>Solicita una evaluación para tu residencia, comercio o propiedad. RenovaH2O ofrece servicio de hidrolavado y lavado a presión en Panamá.</p>
+        <a class="button" href="https://wa.me/50763892525">Contactar por WhatsApp</a>
+      </div>
+    </article>
+  </div>
+</main>
+
 <footer>RenovaH2O · Hidrolavado profesional en Panamá · @RenovaH2O</footer>
-</body></html>
+
+</body>
+</html>
