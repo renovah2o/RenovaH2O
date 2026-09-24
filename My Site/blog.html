@@ -21,6 +21,40 @@
   <meta property="og:image" content="https://renovah2o.com/Images/Logo%20Silver%20LL.png">
 
   <style>
+
+        /* Botón Flotante de WhatsApp */
+    .whatsapp-float {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      bottom: 25px;
+      right: 25px;
+      background-color: #25d366;
+      color: #fff;
+      border-radius: 50px;
+      text-align: center;
+      font-size: 30px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      background-color: #128c7e;
+      color: #fff;
+    }
+    
+    .whatsapp-icon {
+      width: 35px;
+      height: 35px;
+      fill: currentColor;
+    }
+    
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #17212b; line-height: 1.7; }
@@ -79,7 +113,17 @@
   </style>
 </head>
 <body>
-
+<!-- Botón Flotante de WhatsApp -->
+<a href="https://wa.me/50763518111?text=Hola,%20me%20gustaría%20solicitar%20información%20sobre%20sus%20servicios%20de%20hidrolavado." 
+   class="whatsapp-float" 
+   target="_blank" 
+   rel="noopener noreferrer" 
+   aria-label="Contactar por WhatsApp">
+  <svg class="whatsapp-icon" viewBox="0 0 24 24">
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.842-1.001zm11.387-5.464c-.285-.143-1.688-.833-1.948-.928-.261-.095-.45-.143-.64.143-.19.285-.736.928-.902 1.118-.166.19-.333.214-.618.071-.285-.143-1.204-.444-2.293-1.415-.847-.756-1.42-1.688-1.586-1.973-.166-.285-.018-.439.125-.581.128-.127.285-.333.428-.5.143-.166.19-.285.285-.476.095-.19.048-.357-.024-.5-.071-.143-.64-1.545-.877-2.117-.231-.557-.466-.482-.64-.491-.166-.008-.357-.01-.548-.01-.19 0-.5.071-.761.357-.261.285-1 1-.1-1 2.428 0 1.428 1.023 2.81 2.452 3.003.238.032.551.095 1.02.095.602 0 1.688-.689 1.925-1.355.238-.666.238-1.237.166-1.355-.071-.118-.261-.19-.546-.333z"/>
+  </svg>
+</a>
+  
 <header class="nav">
   <a class="brand" href="https://renovah2o.com/" aria-label="RenovaH2O - Inicio">
     <img src="https://renovah2o.com/Images/Logo%20Silver%20LL.png" alt="RenovaH2O">
