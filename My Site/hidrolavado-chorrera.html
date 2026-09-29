@@ -63,20 +63,21 @@ nav a { color: #fff; font-weight: 600; text-decoration: none; }
 nav a:hover { color: #70b8ff; }
 
 /* Hero y Video Responsive */
-.hero{background:var(--light);padding:55px 0 35px}
-.eyebrow{color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.82rem}
+.hero{background:var(--light);padding:40px 0 35px}
+.eyebrow{color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.82rem;margin-top:20px}
 .hero h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;margin:10px 0 18px}
 .hero p{max-width:760px;font-size:1.08rem;color:var(--muted)}
 
 .hero-media {
   width: 100%;
   height: auto;
-  max-height: 450px;
+  max-height: 480px;
   object-fit: cover;
   border-radius: 18px;
-  margin-top: 28px;
+  margin-bottom: 24px;
   display: block;
   background-color: #000;
+  box-shadow: 0 8px 25px rgba(6,17,31,.08);
 }
 
 main{padding:38px 0 70px}.content{max-width:820px}.content h2{font-size:1.65rem;margin-top:40px}.content p{font-size:1.04rem}.cta{margin-top:45px;padding:28px;border-radius:16px;background:var(--dark);color:#fff}.cta h2{margin-top:0}.cta p{color:#d9e1ea}.button{display:inline-block;background:var(--blue);color:#fff;padding:12px 19px;border-radius:8px;text-decoration:none;font-weight:700}
@@ -87,8 +88,8 @@ footer{background:var(--dark);color:#d9e1ea;padding:25px 0;text-align:center;fon
   .brand img { height: 42px; max-width: 150px; }
   nav { gap: 14px; width: 100%; justify-content: center; flex-wrap: wrap; }
   nav a { font-size: 0.9rem; }
-  .hero{padding-top:38px}
-  .hero-media{max-height:300px}
+  .hero{padding-top:25px}
+  .hero-media{max-height:320px; margin-bottom: 18px;}
 }
 </style>
 <script type="application/ld+json">
@@ -120,14 +121,14 @@ footer{background:var(--dark);color:#d9e1ea;padding:25px 0;text-align:center;fon
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow">Guía de limpieza exterior</div>
-    <h1>Servicio de hidrolavado en La Chorrera</h1>
-    <p>Servicio de hidrolavado en La Chorrera, Panamá Oeste. Lavado a presión de pisos, aceras, estacionamientos, terrazas, fachadas, patios y otras superficies exteriores.</p>
-
     <video class="hero-media" autoplay muted loop playsinline preload="auto" aria-label="Video de hidrolavado profesional">
       <source src="Images/v1.mp4" type="video/mp4">
       Tu navegador no soporta el reproductor de video.
     </video>
+
+    <div class="eyebrow">Guía de limpieza exterior</div>
+    <h1>Servicio de hidrolavado en La Chorrera</h1>
+    <p>Servicio de hidrolavado en La Chorrera, Panamá Oeste. Lavado a presión de pisos, aceras, estacionamientos, terrazas, fachadas, patios y otras superficies exteriores.</p>
   </div>
 </header>
 
