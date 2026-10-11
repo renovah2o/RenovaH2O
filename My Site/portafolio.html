@@ -154,13 +154,7 @@
       </div>
     </section>
 
-    <!-- Galería de proyectos
-         ┌──────────────────────────────────────────────────────────────┐
-         │ Las 4 tarjetas con sus sliders se generan automáticamente    │
-         │ desde la lista PROYECTOS, al final de este archivo.          │
-         │ Para cambiar imágenes, títulos o descripciones, busca el     │
-         │ bloque "EDITA AQUÍ TUS PROYECTOS" en el <script>.            │
-         └──────────────────────────────────────────────────────────────┘ -->
+    <!-- Galería de proyectos -->
     <section class="gallery" id="proyectos" aria-label="Galería de proyectos">
       <div class="wrap">
         <div class="gallery-grid" id="galeria">
@@ -220,28 +214,6 @@
   </footer>
 
   <script>
-  /* ====================================================================
-     ★ EDITA AQUÍ TUS PROYECTOS ★
-     ====================================================================
-     Hay 4 proyectos. Cada uno genera su propio slider.
-
-     Para cada proyecto puedes cambiar:
-       etiqueta     → texto pequeño sobre el título (ej. "Fachadas")
-       titulo       → título del proyecto
-       descripcion  → descripción breve
-       imagenes     → lista de imágenes del slider (mínimo 1, sin máximo)
-
-     Para cada imagen:
-       src → 👉 AQUÍ VA LA RUTA DE TU IMAGEN REAL, por ejemplo:
-             "Images/mi-foto.jpg"
-             Mientras src esté vacío ("") se muestra una imagen
-             provisional. Si la ruta es incorrecta, también se muestra
-             la provisional (y verás un aviso en la consola del navegador).
-       alt → descripción corta de la foto (accesibilidad y SEO)
-
-     Para añadir una imagen: copia una línea { src: "", alt: "" }, y pégala
-     dentro de "imagenes". Para quitarla, borra la línea.
-     ==================================================================== */
   const PROYECTOS = [
 
     /* ───────────── PROYECTO 1 ───────────── */
@@ -250,37 +222,34 @@
       titulo: "Fachada comercial renovada",
       descripcion: "Eliminamos moho, polvo y manchas acumuladas para devolverle a la fachada su color original.",
       imagenes: [
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/01.HEIC", alt: "Fachada comercial en Costa Verde — imagen 1" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/02.HEIC", alt: "Fachada comercial en Costa Verde — imagen 2" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/03.HEIC", alt: "Fachada comercial en Costa Verde — imagen 3" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/04.HEIC", alt: "Fachada comercial en Costa Verde — imagen 4" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/05.HEIC", alt: "Fachada comercial en Costa Verde — imagen 5" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/06.HEIC", alt: "Fachada comercial en Costa Verde — imagen 6" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/07.HEIC", alt: "Fachada comercial en Costa Verde — imagen 7" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/08.HEIC", alt: "Fachada comercial en Costa Verde — imagen 8" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/09.HEIC", alt: "Fachada comercial en Costa Verde — imagen 9" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/10.HEIC", alt: "Fachada comercial en Costa Verde — imagen 10" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/11.HEIC", alt: "Fachada comercial en Costa Verde — imagen 11" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/12.HEIC", alt: "Fachada comercial en Costa Verde — imagen 12" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/13.HEIC", alt: "Fachada comercial en Costa Verde — imagen 13" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/14.HEIC", alt: "Fachada comercial en Costa Verde — imagen 14" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/15.HEIC", alt: "Fachada comercial en Costa Verde — imagen 15" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/16.HEIC", alt: "Fachada comercial en Costa Verde — imagen 16" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/17.HEIC", alt: "Fachada comercial en Costa Verde — imagen 17" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/18.HEIC", alt: "Fachada comercial en Costa Verde — imagen 18" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/19.HEIC", alt: "Fachada comercial en Costa Verde — imagen 19" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/20.HEIC", alt: "Fachada comercial en Costa Verde — imagen 20" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/21.HEIC", alt: "Fachada comercial en Costa Verde — imagen 21" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/22.HEIC", alt: "Fachada comercial en Costa Verde — imagen 22" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/23.HEIC", alt: "Fachada comercial en Costa Verde — imagen 23" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/24.HEIC", alt: "Fachada comercial en Costa Verde — imagen 24" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/25.HEIC", alt: "Fachada comercial en Costa Verde — imagen 25" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/26.HEIC", alt: "Fachada comercial en Costa Verde — imagen 26" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/27.HEIC", alt: "Fachada comercial en Costa Verde — imagen 27" },
-        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/28.HEIC", alt: "Fachada comercial en Costa Verde — imagen 28" }
-      ]
-    },
-
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/01.jpg", alt: "Fachada comercial en Costa Verde — imagen 1" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/02.jpg", alt: "Fachada comercial en Costa Verde — imagen 2" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/03.jpg", alt: "Fachada comercial en Costa Verde — imagen 3" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/04.jpg", alt: "Fachada comercial en Costa Verde — imagen 4" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/05.jpg", alt: "Fachada comercial en Costa Verde — imagen 5" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/06.jpg", alt: "Fachada comercial en Costa Verde — imagen 6" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/07.jpg", alt: "Fachada comercial en Costa Verde — imagen 7" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/08.jpg", alt: "Fachada comercial en Costa Verde — imagen 8" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/09.jpg", alt: "Fachada comercial en Costa Verde — imagen 9" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/10.jpg", alt: "Fachada comercial en Costa Verde — imagen 10" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/11.jpg", alt: "Fachada comercial en Costa Verde — imagen 11" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/12.jpg", alt: "Fachada comercial en Costa Verde — imagen 12" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/13.jpg", alt: "Fachada comercial en Costa Verde — imagen 13" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/14.jpg", alt: "Fachada comercial en Costa Verde — imagen 14" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/15.jpg", alt: "Fachada comercial en Costa Verde — imagen 15" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/16.jpg", alt: "Fachada comercial en Costa Verde — imagen 16" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/17.jpg", alt: "Fachada comercial en Costa Verde — imagen 17" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/18.jpg", alt: "Fachada comercial en Costa Verde — imagen 18" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/19.jpg", alt: "Fachada comercial en Costa Verde — imagen 19" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/20.jpg", alt: "Fachada comercial en Costa Verde — imagen 20" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/21.jpg", alt: "Fachada comercial en Costa Verde — imagen 21" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/22.jpg", alt: "Fachada comercial en Costa Verde — imagen 22" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/23.jpg", alt: "Fachada comercial en Costa Verde — imagen 23" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/24.jpg", alt: "Fachada comercial en Costa Verde — imagen 24" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/25.jpg", alt: "Fachada comercial en Costa Verde — imagen 25" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/26.jpg", alt: "Fachada comercial en Costa Verde — imagen 26" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/27.jpg", alt: "Fachada comercial en Costa Verde — imagen 27" },
+        { src: "https://cdn.renovah2o.com/Proyects/Costa-Verde/28.jpg", alt: "Fachada comercial en Costa Verde — imagen 28" }
       ]
     },
 
@@ -290,9 +259,9 @@
       titulo: "Estacionamiento como nuevo",
       descripcion: "Limpieza profunda de concreto con manchas de aceite, óxido y años de tráfico diario.",
       imagenes: [
-        { src: "", alt: "Proyecto 2 — imagen 1" },   // 👉 reemplaza "" por la ruta de tu imagen
-        { src: "", alt: "Proyecto 2 — imagen 2" },   // 👉 reemplaza "" por la ruta de tu imagen
-        { src: "", alt: "Proyecto 2 — imagen 3" }    // 👉 reemplaza "" por la ruta de tu imagen
+        { src: "", alt: "Proyecto 2 — imagen 1" },
+        { src: "", alt: "Proyecto 2 — imagen 2" },
+        { src: "", alt: "Proyecto 2 — imagen 3" }
       ]
     },
 
@@ -302,10 +271,10 @@
       titulo: "Casa y terraza impecables",
       descripcion: "Hidrolavado de pisos, paredes y áreas exteriores para que el hogar luzca como el primer día.",
       imagenes: [
-        { src: "", alt: "Proyecto 3 — imagen 1" },   // 👉 reemplaza "" por la ruta de tu imagen
-        { src: "", alt: "Proyecto 3 — imagen 2" },   // 👉 reemplaza "" por la ruta de tu imagen
-        { src: "", alt: "Proyecto 3 — imagen 3" },   // 👉 reemplaza "" por la ruta de tu imagen
-        { src: "", alt: "Proyecto 3 — imagen 4" }    // 👉 reemplaza "" por la ruta de tu imagen
+        { src: "", alt: "Proyecto 3 — imagen 1" },
+        { src: "", alt: "Proyecto 3 — imagen 2" },
+        { src: "", alt: "Proyecto 3 — imagen 3" },
+        { src: "", alt: "Proyecto 3 — imagen 4" }
       ]
     },
 
@@ -315,17 +284,13 @@
       titulo: "Local listo para recibir clientes",
       descripcion: "Aceras, entradas y áreas de acceso limpias para que tu negocio cause la mejor primera impresión.",
       imagenes: [
-        { src: "", alt: "Proyecto 4 — imagen 1" },   // 👉 reemplaza "" por la ruta de tu imagen
-        { src: "", alt: "Proyecto 4 — imagen 2" },   // 👉 reemplaza "" por la ruta de tu imagen
-        { src: "", alt: "Proyecto 4 — imagen 3" }    // 👉 reemplaza "" por la ruta de tu imagen
+        { src: "", alt: "Proyecto 4 — imagen 1" },
+        { src: "", alt: "Proyecto 4 — imagen 2" },
+        { src: "", alt: "Proyecto 4 — imagen 3" }
       ]
     }
 
   ];
-  /* ═══════════════ FIN DE LA ZONA EDITABLE ═══════════════
-     Lo que sigue es el código que construye los sliders.
-     No necesitas modificarlo. */
-
 
   // ---------- Menú móvil (igual que index.html) ----------
   const mobile = document.getElementById('mobile');
@@ -388,7 +353,7 @@
     '</article>';
   }
 
-  // ---------- Slider (un objeto independiente por proyecto) ----------
+  // ---------- Slider ----------
   function iniciarSlider(root) {
     const viewport = root.querySelector('.slider-viewport');
     const track    = root.querySelector('.slider-track');
@@ -408,7 +373,6 @@
       prev.disabled = (i === 0);
       next.disabled = (i === n - 1);
       count.textContent = (i + 1) + ' / ' + n;
-      // Precarga las imágenes vecinas para que el cambio sea fluido
       [i - 1, i + 1].forEach(j => { const im = slides[j] && slides[j].querySelector('img'); if (im) im.loading = 'eager'; });
     }
 
@@ -416,13 +380,11 @@
     next.addEventListener('click', () => ir(i + 1));
     dots.forEach(d => d.addEventListener('click', () => ir(Number(d.dataset.go))));
 
-    // Teclado: flechas izquierda / derecha con el slider enfocado
     root.addEventListener('keydown', e => {
       if (e.key === 'ArrowLeft')  { e.preventDefault(); ir(i - 1); }
       if (e.key === 'ArrowRight') { e.preventDefault(); ir(i + 1); }
     });
 
-    // Deslizar con el dedo (móvil) o arrastrar con el mouse (computadora)
     let activo = false, arrastrando = false, id = null, x0 = 0, y0 = 0, dx = 0, t0 = 0, ancho = 1;
 
     viewport.addEventListener('pointerdown', e => {
@@ -436,7 +398,6 @@
       if (!activo || e.pointerId !== id) return;
       dx = e.clientX - x0;
       if (!arrastrando) {
-        // Solo se activa el arrastre si el gesto es claramente horizontal
         if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(e.clientY - y0)) {
           arrastrando = true;
           track.classList.add('dragging');
@@ -444,7 +405,6 @@
           try { viewport.setPointerCapture(id); } catch (_) {}
         } else return;
       }
-      // Resistencia en el primer y último slide
       const tope = (i === 0 && dx > 0) || (i === n - 1 && dx < 0);
       const desp = tope ? dx * 0.3 : dx;
       track.style.transform = 'translate3d(calc(' + (-i * 100) + '% + ' + desp + 'px),0,0)';
@@ -472,7 +432,6 @@
   const galeria = document.getElementById('galeria');
   galeria.insertAdjacentHTML('beforeend', PROYECTOS.map(tarjeta).join(''));
 
-  // Si una ruta de imagen no existe, se muestra la imagen provisional
   galeria.querySelectorAll('.slide img').forEach(img => {
     const poner = () => {
       if (img.dataset.fallback) return;
