@@ -20,21 +20,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--white:#fff;--soft:#f5f5f7;--soft2:#e8e8ed;--black:#050505;--ink:#1d1d1f;--gray:#6e6e73;--blue:#0071e3;--blue2:#2997ff;--line:#d2d2d7;--radius:28px;--max:1200px}
-*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{border:0;background:none;cursor:pointer}.wrap{width:min(var(--max),calc(100% - 44px));margin:auto}.section{padding:130px 0}.section-sm{padding:90px 0}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:18px}.display{font-size:clamp(52px,8vw,100px);line-height:.92;letter-spacing:-.065em;font-weight:800}.title{font-size:clamp(40px,5.8vw,72px);line-height:.96;letter-spacing:-.055em;font-weight:800}.sub{font-size:clamp(18px,2vw,24px);line-height:1.3;letter-spacing:-.02em;color:var(--gray);max-width:780px}.blue{color:var(--blue)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{border:0;background:none;cursor:pointer}.wrap{width:min(var(--max),calc(100% - 44px));margin:auto}.section{padding:130px 0}.section-sm{padding:90px 0}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:18px}.display{font-size:clamp(48px,7.5vw,96px);line-height:.94;letter-spacing:-.055em;font-weight:800}.title{font-size:clamp(40px,5.8vw,72px);line-height:.96;letter-spacing:-.055em;font-weight:800}.sub{font-size:clamp(18px,2vw,24px);line-height:1.3;letter-spacing:-.02em;color:var(--gray);max-width:720px}.blue{color:var(--blue)}
 
 /* Nav */
 .nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}.logo{height:40px;width:auto;object-fit:contain}.nav-links{display:flex;gap:30px;list-style:none}.nav-links a{font-size:13px;color:#d1d1d6;transition:.2s}.nav-links a:hover,.nav-links a.active{color:#fff}.nav-cta{font-size:13px;color:#fff;background:#0071e3;border-radius:980px;padding:7px 15px}.hamb{display:none;width:38px;height:38px}.hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}.mobile{display:none}
 
-/* Hero Nosotros */
-.about-hero{background:#000;color:#fff;padding:160px 0 100px;text-align:center;position:relative;overflow:hidden}
-.about-hero-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%, rgba(0,113,227,0.25), transparent 70%);pointer-events:none}
-.about-hero .sub{color:#a1a1a6;margin:28px auto 0}
-
-/* Stats Banner */
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:70px}
-.stat-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:40px 24px;border-radius:var(--radius);text-align:center;backdrop-filter:blur(10px)}
-.stat-num{font-size:clamp(40px,5vw,64px);font-weight:800;letter-spacing:-.04em;color:var(--blue2);margin-bottom:8px}
-.stat-label{font-size:14px;color:#a1a1a6;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+/* Hero Nosotros Pantalla Completa */
+.about-hero{background:#000;color:#fff;min-height:calc(100vh - 58px);margin-top:58px;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:40px 0}
+.about-hero-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%, rgba(0,113,227,0.22), transparent 70%);pointer-events:none}
+.about-hero .sub{color:#a1a1a6;margin:24px auto 0}
 
 /* Story Timeline */
 .story{background:var(--soft)}
@@ -44,8 +38,21 @@
 .timeline-tag{display:inline-block;padding:6px 14px;background:var(--soft);border-radius:980px;font-size:13px;font-weight:700;color:var(--blue);margin-bottom:16px}
 .timeline-card h3{font-size:clamp(24px,3vw,36px);letter-spacing:-.03em;margin-bottom:16px;line-height:1.1}
 .timeline-card p{color:var(--gray);font-size:16px;line-height:1.6}
-.timeline-img{border-radius:20px;overflow:hidden;height:100%;min-height:300px;background:#111;position:relative}
-.timeline-img img{width:100%;height:100%;object-fit:cover}
+
+/* Encuadre horizontal uniforme para fotos y videos en la historia */
+.timeline-img{border-radius:20px;overflow:hidden;width:100%;aspect-ratio:16/9;background:#111;position:relative}
+.timeline-img img, .timeline-img video{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Slider Antes/Después integrado */
+.ba{height:100%;min-height:320px;position:relative;overflow:hidden;--pos:50%;border-radius:20px}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ba-before{filter:brightness(1) saturate(1)}
+.ba-after{clip-path:inset(0 0 0 var(--pos))}
+.ba:after{content:'Antes';position:absolute;top:20px;left:20px;background:rgba(0,0,0,.62);color:#fff;padding:7px 11px;border-radius:980px;font-size:11px;z-index:3}
+.ba .after-label{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.9);color:#111;padding:7px 11px;border-radius:980px;font-size:11px;z-index:3}
+.handle{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;background:#fff;z-index:4;transform:translateX(-50%);pointer-events:none}
+.handle i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center;font-style:normal;font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:5;cursor:ew-resize}
 
 /* Manifesto Section */
 .manifesto{background:#000;color:#fff;text-align:center;position:relative}
@@ -72,8 +79,37 @@
 .value-card h4{font-size:20px;letter-spacing:-.02em;margin-bottom:10px}
 .value-card p{color:var(--gray);font-size:14px;line-height:1.55}
 
+/* Google Business Section */
+.gbp-section{background:var(--soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.gbp-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:50px;margin-top:60px;align-items:center}
+.gbp-card{background:#fff;border-radius:var(--radius);padding:48px;box-shadow:0 10px 30px rgba(0,0,0,0.03);border:1px solid var(--line)}
+.gbp-rating{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.gbp-stars{color:#f59e0b;font-size:22px;letter-spacing:2px}
+.gbp-score{font-size:20px;font-weight:800;color:var(--ink)}
+.gbp-card p{font-size:16px;color:var(--gray);line-height:1.6;margin-bottom:24px;font-style:italic}
+.gbp-author{font-size:14px;font-weight:700;color:var(--ink)}
+.gbp-info-box{background:#000;color:#fff;border-radius:var(--radius);padding:48px;display:flex;flex-direction:column;justify-content:space-between;height:100%}
+.gbp-info-box h3{font-size:28px;letter-spacing:-.03em;margin-bottom:16px}
+.gbp-info-box p{color:#a1a1a6;font-size:15px;line-height:1.6;margin-bottom:30px}
+.gbp-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+/* Redes Sociales Section */
+.socials{background:#000;color:#fff;text-align:center}
+.socials .eyebrow{color:#a1a1a6}
+.socials-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:60px}
+.social-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:40px 24px;border-radius:var(--radius);text-align:center;transition:all .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.social-card:hover{background:rgba(255,255,255,0.08);transform:translateY(-6px);border-color:var(--blue2)}
+.social-icon{width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,0.08);display:grid;place-items:center;margin-bottom:20px;transition:.3s ease}
+.social-card:hover .social-icon{background:var(--blue);color:#fff}
+.social-icon svg{width:28px;height:28px;fill:currentColor}
+.social-card h3{font-size:20px;letter-spacing:-.02em;margin-bottom:6px}
+.social-card p{font-size:13px;color:#a1a1a6;margin-bottom:18px}
+.social-link{font-size:13px;font-weight:600;color:var(--blue2);display:inline-flex;align-items:center;gap:4px}
+.social-link:after{content:' ›';font-size:1.2em;transition:.2s ease}
+.social-card:hover .social-link:after{transform:translateX(3px)}
+
 /* CTA Final & Footer */
-.final{background:#000;color:#fff;text-align:center;padding:140px 0}
+.final{background:#000;color:#fff;text-align:center;padding:140px 0;border-top:1px solid rgba(255,255,255,0.1)}
 .final .sub{margin:28px auto;color:#a1a1a6}
 .footer{background:#f5f5f7;padding:65px 0 30px}
 .footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:50px;padding-bottom:50px}
@@ -89,12 +125,17 @@
 
 @media(max-width:900px){
   .nav-links,.nav-cta{display:none}.hamb{display:block}
-  .stats-grid,.values-grid,.team-layout{grid-template-columns:1fr}
+  .about-hero{min-height:auto;padding:120px 0 80px}
+  .values-grid,.team-layout,.gbp-grid{grid-template-columns:1fr}
+  .socials-grid{grid-template-columns:1fr 1fr}
   .timeline-card,.timeline-card.reverse{grid-template-columns:1fr;gap:24px;padding:32px}
   .footer-grid{grid-template-columns:1fr 1fr;gap:35px}
   .footer-grid>div:first-child{grid-column:1/-1}
   .mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding-top:60px}
   .mobile a{display:block;font-size:28px;font-weight:700;letter-spacing:-.04em;margin:15px;text-align:center;color:#fff}
+}
+@media(max-width:620px){
+  .socials-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -136,28 +177,13 @@
   </div>
 
   <main>
-    <!-- Hero Nosotros -->
+    <!-- Hero Nosotros Full Screen -->
     <section class="about-hero">
       <div class="about-hero-bg"></div>
       <div class="wrap reveal">
         <div class="eyebrow">Sobre RenovaH2O</div>
-        <h1 class="display">No buscamos lo "bien hecho".<br><span class="blue">Buscamos lo impecable.</span></h1>
-        <p class="sub">Nacimos con el deseo de transformar espacios comunes en lugares que dé gusto contemplar y habitar.</p>
-        
-        <div class="stats-grid reveal-scale">
-          <div class="stat-card">
-            <div class="stat-num">2024</div>
-            <div class="stat-label">Año de Fundación</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">100%</div>
-            <div class="stat-label">Dedación al Detalle</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">10/10</div>
-            <div class="stat-label">Estándar de Servicio</div>
-          </div>
-        </div>
+        <h1 class="display">Elevamos la imagen<br>de tus <span class="blue">espacios.</span></h1>
+        <p class="sub">Transformamos superficies exteriores con pasión, técnica y un estándar de limpieza impecable.</p>
       </div>
     </section>
 
@@ -171,7 +197,7 @@
 
         <div class="timeline">
           
-          <!-- Hito 1 -->
+          <!-- Hito 1: Imagen horizontal encuadrada -->
           <article class="timeline-card reveal">
             <div>
               <span class="timeline-tag">Septiembre 2024</span>
@@ -179,31 +205,38 @@
               <p>RenovaH2O comenzó como una visión en redes sociales y con muchas ganas de llevar limpieza de calidad a nuestra ciudad. La primera hidrolavadora eléctrica que utilizamos no daba el resultado esperado: dejaba rayones inconsistentes en los pisos sin limpiar a fondo. Sabíamos que para lograr la excelencia necesitábamos dar un salto tecnológico.</p>
             </div>
             <div class="timeline-img">
-              <img src="Images/Cleaning Res.png" alt="Primeros retos en limpieza exterior">
+              <img src="Images/Bad-pressure washing.webp" alt="Primeros retos en limpieza exterior">
             </div>
           </article>
 
-          <!-- Hito 2 -->
+          <!-- Hito 2: Video con autoplay -->
           <article class="timeline-card reverse reveal">
             <div class="timeline-img">
-              <img src="Images/Cleaning wall.png" alt="Equipos de alto rendimiento y boquilla turbo">
+              <video autoplay muted loop playsinline preload="auto">
+                <source src="https://cdn.renovah2o.com/v1.mp4" type="video/mp4">
+                Tu navegador no soporta video en HTML5.
+              </video>
             </div>
             <div>
               <span class="timeline-tag">La revelación</span>
-              <h3>Presión, caudal y la boquilla turbo</h3>
-              <p>El verdadero cambio llegó con la primera máquina a motor de alto caudal y la boquilla turbo. La alegría al ver el resultado fue incomparable: el cambio en la superficie fue inmediato, uniforme y profundamente profesional. A partir de ese día, entendimos que el secreto combina equipos correctos, técnica adecuada y pasión.</p>
+              <h3>Presión, caudal y accesorios</h3>
+              <p>El verdadero cambio llegó con la primera máquina a motor de alto caudal y los accesorios especializados como boquilla turbo o el disco de superficie. La alegría al ver el resultado fue incomparable: el cambio en la superficie fue inmediato, uniforme y profundamente profesional. A partir de ese día, entendimos que el secreto combina equipos correctos, técnica adecuada y pasión.</p>
             </div>
           </article>
 
-          <!-- Hito 3 -->
+          <!-- Hito 3: Slider interactivo Antes/Después -->
           <article class="timeline-card reveal">
             <div>
               <span class="timeline-tag">Evolución Constante</span>
               <h3>Capacitación e inversión continua</h3>
               <p>Hoy contamos con maquinaria de mayor capacidad, accesorios especializados y una constante actualización en productos químicos y técnicas de limpieza para cada tipo de superficie (piedra, concreto, fachadas sensibles, pisos comerciales). Nos mantenemos aprendiendo para ofrecer siempre un estándar superior.</p>
             </div>
-            <div class="timeline-img">
-              <img src="Images/Local Despues.png" alt="Acabados profesionales en superficies">
+            <div class="ba">
+              <img class="ba-before" src="Images/Moho-before.png" alt="Antes de limpieza residencial">
+              <img class="ba-after" src="Images/moho-after.png" alt="Después de limpieza residencial">
+              <span class="after-label">Después</span>
+              <span class="handle"><i>↔</i></span>
+              <input type="range" min="0" max="100" value="50" aria-label="Comparar antes y después residencial">
             </div>
           </article>
 
@@ -216,7 +249,7 @@
       <div class="wrap reveal-scale">
         <div class="manifesto-box">
           <span class="quote-mark">“</span>
-          <p>Uno de mis momentos favoritos es cuando los clientes ven el resultado final y reflejan en sus rostros la misma alegría que sentí yo el primer día. Ver cómo un espacio olvidado se convierte en un lugar al que deseas regresar solo para contemplarlo, lo vale todo.</p>
+          <p>Uno de mis momentos favoritos es cuando los clientes ven el resultado final y reflejan en sus rostros la misma alegría que sentí yo el primer día. Ver cómo un espacio olvidado se convierte en un lugar al que deseas regresar, solo para contemplarlo, lo vale todo.</p>
           <div class="author-info">
             <strong>Julián</strong>
             Fundador de RenovaH2O
@@ -249,7 +282,7 @@
               <div class="team-badge">Soporte & Control de Calidad</div>
               <h3>Apoyo Estratégico</h3>
               <div class="role">Supervisión & Producción Visual</div>
-              <p>El crecimiento de RenovaH2O cuenta con el respaldo fundamental de mi esposa, quien participa activamente en la documentación visual (grabación y edición de nuestros videos antes/después) y en la supervisión en sitio durante proyectos de mayor envergadura.</p>
+              <p>El crecimiento de RenovaH2O cuenta con el respaldo fundamental de mi esposa Nairoby, quien participa activamente en la documentación visual (grabación y edición de nuestros videos antes/después) y en la supervisión en sitio durante proyectos de mayor envergadura.</p>
               <p>Trabajamos con la visión firme de expandir nuestro equipo de planta, manteniendo intacta la esencia de exigencia, puntualidad y excelencia visual que nos define.</p>
             </div>
           </div>
@@ -287,11 +320,101 @@
       </div>
     </section>
 
+    <!-- Sección Google Business Profile -->
+    <section class="section gbp-section">
+      <div class="wrap">
+        <div class="reveal">
+          <div class="eyebrow">Confianza Verificada</div>
+          <h2 class="title">Respaldados por<br>nuestros <span class="blue">clientes en Google.</span></h2>
+          <p class="sub" style="margin: 20px auto 0;">La calidad de nuestro servicio se refleja en cada opinión y calificación de quienes ya renovaron sus espacios con nosotros.</p>
+        </div>
+
+        <div class="gbp-grid">
+          <!-- Tarjeta de Reseña Destacada -->
+          <div class="gbp-card reveal">
+            <div class="gbp-rating">
+              <div class="gbp-stars">★★★★★</div>
+              <div class="gbp-score">5.0 / 5.0</div>
+            </div>
+            <p>“Excelente presentación del servicio y trabajo sumamente ordenado. La diferencia en las áreas exteriores se notó de inmediato. Muy recomendado para comercios y residencias en Panamá Oeste.”</p>
+            <div class="gbp-author">— Cliente Verificado en Google Maps</div>
+          </div>
+
+          <!-- Caja de Ubicación y Enlaces a Google Maps -->
+          <div class="reveal">
+            <div class="gbp-info-box">
+              <div>
+                <h3>RenovaH2O en Google</h3>
+                <p>Operamos en Arraiján, La Chorrera y toda la provincia de Panamá Oeste brindando atención profesional directa. Consulta nuestro perfil verificado en Google Business.</p>
+              </div>
+              <div class="gbp-actions">
+                <a class="btn btn-white" href="https://maps.google.com/?q=RenovaH2O+Panama" target="_blank" rel="noopener">Ver Perfil y Reseñas</a>
+                <a class="btn btn-blue" href="https://search.google.com/local/writereview?placeid=ChI..." target="_blank" rel="noopener">Dejar una Reseña</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Redes Sociales -->
+    <section class="section socials">
+      <div class="wrap">
+        <div class="reveal">
+          <div class="eyebrow">Comunidad</div>
+          <h2 class="title">Síguenos en nuestras<br><span class="blue">redes sociales.</span></h2>
+          <p class="sub" style="margin: 20px auto 0;">Acompáñanos en nuestro día a día y mira videos reales de nuestras transformaciones antes y después.</p>
+        </div>
+
+        <div class="socials-grid">
+          <!-- Instagram -->
+          <a class="social-card reveal" href="https://instagram.com/renovah2o" target="_blank" rel="noopener">
+            <div class="social-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </div>
+            <h3>Instagram</h3>
+            <p>Historias, reels y resultados diarios.</p>
+            <span class="social-link">@renovah2o</span>
+          </a>
+
+          <!-- YouTube -->
+          <a class="social-card reveal" href="https://youtube.com/@renovah2o" target="_blank" rel="noopener">
+            <div class="social-icon">
+              <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </div>
+            <h3>YouTube</h3>
+            <p>Videos extensos y procesos de limpieza.</p>
+            <span class="social-link">RenovaH2O</span>
+          </a>
+
+          <!-- TikTok -->
+          <a class="social-card reveal" href="https://tiktok.com/@renovah2o" target="_blank" rel="noopener">
+            <div class="social-icon">
+              <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.82.56-1.31 1.52-1.33 2.52-.01 1.01.44 2 1.25 2.58.91.68 2.14.82 3.21.43.98-.33 1.73-1.13 2.03-2.12.18-.58.21-1.2.2-1.81V.02z"/></svg>
+            </div>
+            <h3>TikTok</h3>
+            <p>Contenido rápido y transformaciones impactantes.</p>
+            <span class="social-link">@renovah2o</span>
+          </a>
+
+          <!-- Facebook -->
+          <a class="social-card reveal" href="https://www.facebook.com/profile.php?id=61565248268444" target="_blank" rel="noopener">
+            <div class="social-icon">
+              <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <h3>Facebook</h3>
+            <p>Novedades, proyectos y reseñas de clientes.</p>
+            <span class="social-link">RenovaH2O</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- Final CTA -->
     <section class="final">
       <div class="wrap reveal">
         <div class="eyebrow">RenovaH2O</div>
-        <h2 class="display">¿Listo para renovar<br><span class="blue">tu propiedad?</span></h2>
+        <h2 class="display">¿Listo para renovar<br><span class="blue">tus superficies?</span></h2>
         <p class="sub">Escríbenos directamente y coordinemos una evaluación sin compromiso.</p>
         <a class="btn btn-blue" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20cotizar%20un%20servicio." target="_blank">Hablar con Julián por WhatsApp</a>
       </div>
@@ -354,12 +477,20 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          observer.unobserve(entry.target); // Animar una sola vez
+          observer.unobserve(entry.target);
         }
       });
     }, observerOptions);
 
     document.querySelectorAll('.reveal, .reveal-scale').forEach(el => revealObserver.observe(el));
+
+    // Comparador Antes/Después
+    document.querySelectorAll('.ba').forEach(slider => {
+      const input = slider.querySelector('input');
+      const setPos = v => slider.style.setProperty('--pos', v + '%');
+      setPos(input.value);
+      input.addEventListener('input', e => setPos(e.target.value));
+    });
   </script>
 </body>
 </html>
