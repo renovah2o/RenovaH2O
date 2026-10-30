@@ -22,6 +22,19 @@
 :root{--white:#fff;--soft:#f5f5f7;--soft2:#e8e8ed;--black:#050505;--ink:#1d1d1f;--gray:#6e6e73;--blue:#0071e3;--blue2:#2997ff;--line:#d2d2d7;--radius:28px;--max:1200px}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{border:0;background:none;cursor:pointer}.wrap{width:min(var(--max),calc(100% - 44px));margin:auto}.section{padding:130px 0}.section-sm{padding:90px 0}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:18px}.display{font-size:clamp(48px,7.5vw,96px);line-height:.94;letter-spacing:-.055em;font-weight:800}.title{font-size:clamp(40px,5.8vw,72px);line-height:.96;letter-spacing:-.055em;font-weight:800}.sub{font-size:clamp(18px,2vw,24px);line-height:1.3;letter-spacing:-.02em;color:var(--gray);max-width:720px}.blue{color:var(--blue)}
 
+/* Enlaces Azules Subrayados */
+.btn-link {
+  color: var(--blue2) !important;
+  text-decoration: underline !important;
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+.btn-link:hover {
+  color: var(--blue) !important;
+}
+
 /* Nav */
 .nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}.logo{height:40px;width:auto;object-fit:contain}.nav-links{display:flex;gap:30px;list-style:none}.nav-links a{font-size:13px;color:#d1d1d6;transition:.2s}.nav-links a:hover,.nav-links a.active{color:#fff}.nav-cta{font-size:13px;color:#fff;background:#0071e3;border-radius:980px;padding:7px 15px}.hamb{display:none;width:38px;height:38px}.hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}.mobile{display:none}
 
@@ -39,11 +52,10 @@
 .timeline-card h3{font-size:clamp(24px,3vw,36px);letter-spacing:-.03em;margin-bottom:16px;line-height:1.1}
 .timeline-card p{color:var(--gray);font-size:16px;line-height:1.6}
 
-/* Encuadre horizontal uniforme para fotos y videos en la historia */
 .timeline-img{border-radius:20px;overflow:hidden;width:100%;aspect-ratio:16/9;background:#111;position:relative}
 .timeline-img img, .timeline-img video{width:100%;height:100%;object-fit:cover;display:block}
 
-/* Slider Antes/Después integrado */
+/* Slider Antes/Después */
 .ba{height:100%;min-height:320px;position:relative;overflow:hidden;--pos:50%;border-radius:20px}
 .ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ba-before{filter:brightness(1) saturate(1)}
@@ -91,7 +103,7 @@
 .gbp-info-box{background:#000;color:#fff;border-radius:var(--radius);padding:48px;display:flex;flex-direction:column;justify-content:space-between;height:100%}
 .gbp-info-box h3{font-size:28px;letter-spacing:-.03em;margin-bottom:16px}
 .gbp-info-box p{color:#a1a1a6;font-size:15px;line-height:1.6;margin-bottom:30px}
-.gbp-actions{display:flex;gap:12px;flex-wrap:wrap}
+.gbp-actions{display:flex;gap:24px;flex-wrap:wrap;align-items:center}
 
 /* Redes Sociales Section */
 .socials{background:#000;color:#fff;text-align:center}
@@ -117,7 +129,7 @@
 .bottom{border-top:1px solid var(--line);padding-top:22px;color:#6e6e73;font-size:12px;display:flex;justify-content:space-between;gap:20px}
 .wa{position:fixed;right:22px;bottom:22px;z-index:950;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#25D366;color:#fff;box-shadow:0 18px 48px rgba(37,211,102,.35);transition:.25s ease}.wa:hover{transform:scale(1.08)}.wa svg{width:28px;height:28px;fill:#fff}
 
-/* Animaciones Scroll (Reveal Avanzado) */
+/* Animaciones Scroll */
 .reveal{opacity:0;transform:translateY(35px);transition:opacity .8s cubic-bezier(0.16, 1, 0.3, 1),transform .8s cubic-bezier(0.16, 1, 0.3, 1)}
 .reveal.visible{opacity:1;transform:none}
 .reveal-scale{opacity:0;transform:scale(0.94);transition:opacity .8s cubic-bezier(0.16, 1, 0.3, 1),transform .8s cubic-bezier(0.16, 1, 0.3, 1)}
@@ -196,8 +208,6 @@
         </div>
 
         <div class="timeline">
-          
-          <!-- Hito 1: Imagen horizontal encuadrada -->
           <article class="timeline-card reveal">
             <div>
               <span class="timeline-tag">Septiembre 2024</span>
@@ -209,7 +219,6 @@
             </div>
           </article>
 
-          <!-- Hito 2: Video con autoplay -->
           <article class="timeline-card reverse reveal">
             <div class="timeline-img">
               <video autoplay muted loop playsinline preload="auto">
@@ -224,7 +233,6 @@
             </div>
           </article>
 
-          <!-- Hito 3: Slider interactivo Antes/Después -->
           <article class="timeline-card reveal">
             <div>
               <span class="timeline-tag">Evolución Constante</span>
@@ -239,7 +247,6 @@
               <input type="range" min="0" max="100" value="50" aria-label="Comparar antes y después residencial">
             </div>
           </article>
-
         </div>
       </div>
     </section>
@@ -330,7 +337,6 @@
         </div>
 
         <div class="gbp-grid">
-          <!-- Tarjeta de Reseña Destacada -->
           <div class="gbp-card reveal">
             <div class="gbp-rating">
               <div class="gbp-stars">★★★★★</div>
@@ -340,7 +346,6 @@
             <div class="gbp-author">— Cliente Verificado en Google Maps</div>
           </div>
 
-          <!-- Caja de Ubicación y Enlaces a Google Maps -->
           <div class="reveal">
             <div class="gbp-info-box">
               <div>
@@ -348,8 +353,8 @@
                 <p>Operamos en Arraiján, La Chorrera y toda la provincia de Panamá Oeste brindando atención profesional directa. Consulta nuestro perfil verificado en Google Business.</p>
               </div>
               <div class="gbp-actions">
-                <a class="btn btn-white" href="https://maps.google.com/?q=RenovaH2O+Panama" target="_blank" rel="noopener">Ver Perfil y Reseñas</a>
-                <a class="btn btn-blue" href="https://g.page/r/CfQnL267XXbOEAI/review" target="_blank" rel="noopener">Dejar una Reseña</a>
+                <a class="btn-link" href="https://maps.google.com/?q=RenovaH2O+Panama" target="_blank" rel="noopener">Ver Perfil y Reseñas</a>
+                <a class="btn-link" href="https://g.page/r/CfQnL267XXbOEAI/review" target="_blank" rel="noopener">Dejar una Reseña</a>
               </div>
             </div>
           </div>
@@ -367,7 +372,6 @@
         </div>
 
         <div class="socials-grid">
-          <!-- Instagram -->
           <a class="social-card reveal" href="https://instagram.com/renovah2o" target="_blank" rel="noopener">
             <div class="social-icon">
               <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -377,7 +381,6 @@
             <span class="social-link">@renovah2o</span>
           </a>
 
-          <!-- YouTube -->
           <a class="social-card reveal" href="https://youtube.com/@renovah2o" target="_blank" rel="noopener">
             <div class="social-icon">
               <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -387,7 +390,6 @@
             <span class="social-link">RenovaH2O</span>
           </a>
 
-          <!-- TikTok -->
           <a class="social-card reveal" href="https://tiktok.com/@renovah2o" target="_blank" rel="noopener">
             <div class="social-icon">
               <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.82.56-1.31 1.52-1.33 2.52-.01 1.01.44 2 1.25 2.58.91.68 2.14.82 3.21.43.98-.33 1.73-1.13 2.03-2.12.18-.58.21-1.2.2-1.81V.02z"/></svg>
@@ -397,7 +399,6 @@
             <span class="social-link">@renovah2o</span>
           </a>
 
-          <!-- Facebook -->
           <a class="social-card reveal" href="https://www.facebook.com/profile.php?id=61565248268444" target="_blank" rel="noopener">
             <div class="social-icon">
               <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -416,7 +417,7 @@
         <div class="eyebrow">RenovaH2O</div>
         <h2 class="display">¿Listo para renovar<br><span class="blue">tus superficies?</span></h2>
         <p class="sub">Escríbenos directamente y coordinemos una evaluación sin compromiso.</p>
-        <a class="btn btn-blue" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20cotizar%20un%20servicio." target="_blank">Hablar con Julián por WhatsApp</a>
+        <a class="btn-link" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20cotizar%20un%20servicio." target="_blank">Hablar con Julián por WhatsApp</a>
       </div>
     </section>
   </main>
@@ -467,7 +468,7 @@
     // Año actual automático
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Intersection Observer para Animaciones Fluidas al Hacer Scroll (Reveal)
+    // Intersection Observer
     const observerOptions = {
       threshold: 0.12,
       rootMargin: "0px 0px -40px 0px"
