@@ -57,9 +57,15 @@
     .tag{color:var(--blue);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
     .card h2{font-size:clamp(22px,2.3vw,30px);line-height:1.08;letter-spacing:-.045em;margin:15px 0 12px;font-weight:800}
     .card p{color:var(--gray);font-size:15px;line-height:1.6;margin:0}
+    .card-copy-link{display:block;color:inherit;text-decoration:none;position:relative;z-index:6;cursor:pointer}
+    .card-copy-link h2{transition:color .2s ease}
+    .card-copy-link:hover h2{color:var(--blue)}
+    .card-copy-link:focus-visible{outline:2px solid var(--blue);outline-offset:5px;border-radius:4px}
     .read{color:var(--blue);font-weight:700;font-size:14px;margin-top:auto;padding-top:22px;position:static;align-self:flex-start}
     .read:hover{color:#005bb8}
     .read:after{content:"";position:absolute;inset:0;z-index:2}
+    .slider-card .read:after{display:none}
+    .slider-card .read{position:relative;z-index:6}
     .ba{height:280px;position:relative;overflow:hidden;--pos:50%;background:#000;z-index:1;flex-shrink:0}
     .ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
     .ba-before{filter:none}
@@ -126,8 +132,10 @@
       <img class="card-image" src="Images/WWaction.png" alt="Hidrolavado y limpieza a presión" loading="lazy">
       <div class="card-body">
         <div class="tag">Guía</div>
+        <a class="card-copy-link" href="hidrolavado-vs-limpieza-tradicional.html">
         <h2>Hidrolavado vs. limpieza tradicional: ¿cuál es la diferencia?</h2>
         <p>Conoce las diferencias entre limpiar manualmente y utilizar agua a presión, y cuándo puede ser conveniente cada método.</p>
+      </a>
         <a class="read" href="hidrolavado-vs-limpieza-tradicional.html">Leer artículo →</a>
       </div>
     </article>
@@ -137,14 +145,16 @@
       <img class="card-image" src="Images/washing-1.png" alt="Limpieza exterior y mantenimiento" loading="lazy">
       <div class="card-body">
         <div class="tag">Mantenimiento</div>
+        <a class="card-copy-link" href="cuando-hacer-hidrolavado.html">
         <h2>¿Cuándo hacer un hidrolavado?</h2>
         <p>7 señales que pueden indicar que una acera, terraza, fachada o estacionamiento necesita limpieza profesional.</p>
+      </a>
         <a class="read" href="cuando-hacer-hidrolavado.html">Leer artículo →</a>
       </div>
     </article>
 
     <!-- Artículo con el comparador Slide to Reveal LAVADO A PRESION -->
-    <article class="card">
+    <article class="card slider-card">
       <div class="ba">
         <img class="ba-before" src="Images/before-peter1.jpeg" alt="Antes de lavado de pisos">
         <img class="ba-after" src="Images/After-peter2.jpeg" alt="Después de lavado de pisos">
@@ -154,14 +164,16 @@
       </div>
       <div class="card-body">
         <div class="tag">Guía</div>
+        <a class="card-copy-link" href="lavado-de-pisos.html">
         <h2>Lavado de pisos a presión: cómo recuperar superficies exteriores</h2>
         <p>Conoce cómo el lavado a presión puede ayudar a limpiar pisos, concreto, cemento, adoquines y otras superficies exteriores.</p>
+      </a>
         <a class="read" href="lavado-de-pisos.html">Leer artículo →</a>
       </div>
     </article>
 
     <!-- Artículo con el comparador Slide to Reveal ESTACIONAMIENTOS -->
-    <article class="card">
+    <article class="card slider-card">
       <div class="ba">
         <img class="ba-before" src="Images/Local Antes.png" alt="Antes de limpiar">
         <img class="ba-after" src="Images/Local Despues.png" alt="Después de limpiar">
@@ -171,8 +183,10 @@
       </div>
       <div class="card-body">
         <div class="tag">Comercial</div>
+        <a class="card-copy-link" href="lavado-de-estacionamientos.html">
         <h2>Lavado de estacionamientos a presión</h2>
         <p>Limpieza de estacionamientos y áreas de concreto para residencias, comercios, escuelas, iglesias, hospitales y otras propiedades.</p>
+      </a>
         <a class="read" href="lavado-de-estacionamientos.html">Leer artículo →</a>
       </div>
     </article>
@@ -182,8 +196,10 @@
       <img class="card-image" src="Images/surface1.jpeg" alt="Lavado de terrazas a presión" loading="lazy">
       <div class="card-body">
         <div class="tag">Residencial</div>
+        <a class="card-copy-link" href="lavado-de-terrazas.html">
         <h2>Lavado de terrazas a presión</h2>
         <p>Descubre cómo limpiar terrazas, patios y otras áreas exteriores afectadas por humedad, verdín, moho y suciedad acumulada.</p>
+      </a>
         <a class="read" href="lavado-de-terrazas.html">Leer artículo →</a>
       </div>
     </article>
@@ -193,14 +209,16 @@
       <img class="card-image" src="Images/surface2.jpg" alt="Servicio de hidrolavado en La Chorrera" loading="lazy">
       <div class="card-body">
         <div class="tag">La Chorrera</div>
+        <a class="card-copy-link" href="hidrolavado-chorrera.html">
         <h2>Servicio de hidrolavado en La Chorrera</h2>
         <p>Hidrolavado de pisos, aceras, estacionamientos, terrazas, fachadas y otras superficies exteriores en La Chorrera.</p>
+      </a>
         <a class="read" href="hidrolavado-chorrera.html">Leer artículo →</a>
       </div>
     </article>
     
     <!-- Artículo con el comparador Slide to Reveal ARRAIJAN -->
-    <article class="card">
+    <article class="card slider-card">
       <div class="ba">
         <img class="ba-before" src="Images/parada-antes.jpeg" alt="Antes de limpiar">
         <img class="ba-after" src="Images/parada-despues.jpeg" alt="Después de limpiar">
@@ -210,13 +228,15 @@
       </div>
       <div class="card-body">
         <div class="tag">Arraiján</div>
+        <a class="card-copy-link" href="hidrolavado-arraijan.html">
         <h2>Servicio de hidrolavado en Arraiján</h2>
         <p>Lavado a presión para residencias, comercios y propiedades en Arraiján y sus alrededores.</p>
+      </a>
         <a class="read" href="hidrolavado-arraijan.html">Leer artículo →</a>
       </div>
     </article>
 
-    <article class="card">
+    <article class="card slider-card">
        <div class="ba">
         <img class="ba-before" src="Images/Residencia Antes.png" alt="Antes de lavado de pisos">
         <img class="ba-after" src="Images/Residencia Despues.png" alt="Después de lavado de pisos">
@@ -226,8 +246,10 @@
       </div>
       <div class="card-body">
         <div class="tag">Panamá Oeste</div>
+        <a class="card-copy-link" href="lavado-a-presion-panama-oeste.html">
         <h2>Lavado a presión en Panamá Oeste</h2>
         <p>Servicio de lavado a presión, lavado de alta presión e hidrolavado para superficies exteriores.</p>
+      </a>
         <a class="read" href="lavado-a-presion-panama-oeste.html">Leer artículo →</a>
       </div>
     </article>
@@ -237,8 +259,10 @@
       <img class="card-image" src="Images/surface2.jpg" alt="Servicio de hidrolavado en La Chorrera" loading="lazy">
       <div class="card-body">
         <div class="tag">La Chorrera</div>
+        <a class="card-copy-link" href="servicio-de-limpiar-pisos.html">
         <h2>Servicio de Limpieza de Pisos</h2>
         <p>Hidrolavado de pisos, aceras, estacionamientos, terrazas, fachadas y otras superficies exteriores en Panamá Ciudad, Arraiján, Chorrera.</p>
+      </a>
         <a class="read" href="servicio-de-limpiar-pisos.html">Leer artículo →</a>
       </div>
     </article>
@@ -248,8 +272,10 @@
       <img class="card-image" src="Images/Moho-bef-aft.png" alt="Servicio de hidrolavado en La Chorrera" loading="lazy">
       <div class="card-body">
         <div class="tag">Quitar Limo y Moho</div>
+        <a class="card-copy-link" href="limpieza-profunda-pisos-limo-moho.html">
         <h2>Como Quitar el Limo y el Moho</h2>
         <p>Descubre cómo eliminar el limo, el moho y las manchas negras de tus pisos exteriores para recuperar su frescura, mejorar su apariencia y disfrutar de superficies más limpias y seguras.</p>
+      </a>
         <a class="read" href="limpieza-profunda-pisos-limo-moho.html">Leer artículo →</a>
       </div>
     </article>
@@ -260,8 +286,10 @@
       <img class="card-image" src="Images/Hidros.jpeg" alt="Servicio de hidrolavado en La Chorrera" loading="lazy">
       <div class="card-body">
         <div class="tag">Hidrolavadoras en Panamá</div>
+        <a class="card-copy-link" href="hidrolavadora-panama.html">
         <h2>¿Como saber cual necesito?</h2>
         <p>Guía práctica de hidrolavadoras: potencia, usos y la elección ideal para tu proyecto.</p>
+      </a>
         <a class="read" href="hidrolavadora-panama.html">Leer artículo →</a>
       </div>
     </article>
