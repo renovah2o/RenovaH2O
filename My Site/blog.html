@@ -30,14 +30,17 @@
     body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
     a{color:inherit;text-decoration:none}
     .wrap{width:min(var(--max),calc(100% - 44px));margin:auto}
-    .nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12);padding:0}
+    .nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}
     .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}
     .brand{display:flex;align-items:center}
     .brand img{height:40px;width:auto;max-width:190px;object-fit:contain;display:block}
-    nav{display:flex;gap:30px;align-items:center}
-    nav a{font-size:13px;color:#d1d1d6;font-weight:500;transition:.2s}
-    nav a:hover{color:#fff}
-    nav a:last-child{background:var(--blue);color:#fff;border-radius:980px;padding:7px 15px}
+    .nav-links{display:flex;gap:30px;align-items:center;list-style:none}
+    .nav-links a{font-size:13px;color:#d1d1d6;font-weight:500;transition:.2s}
+    .nav-links a:hover{color:#fff}
+    .nav-cta{font-size:13px;color:#fff!important;background:var(--blue);border-radius:980px;padding:7px 15px}
+    .hamb{display:none;width:38px;height:38px;border:0;background:none;cursor:pointer}
+    .hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}
+    .mobile{display:none}
     .hero{background:#000;color:#fff;text-align:center;min-height:440px;margin-top:58px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:80px 22px}
     .hero:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 65% 85% at 50% 100%,rgba(0,113,227,.28),transparent 70%),linear-gradient(180deg,#08090b,#000)}
     .hero-inner{position:relative;z-index:1;width:min(100%,1000px);margin:auto}
@@ -76,25 +79,37 @@
     .whatsapp-float{position:fixed;width:58px;height:58px;bottom:22px;right:22px;background:#25D366;border-radius:50%;box-shadow:0 18px 48px rgba(37,211,102,.35);z-index:950;display:flex;align-items:center;justify-content:center;transition:transform .25s ease}
     .whatsapp-float:hover{transform:scale(1.08)}
     .whatsapp-icon{width:28px;height:28px;fill:#fff}
-    @media(max-width:900px){nav{gap:18px}.container{padding:70px 0 90px}.card-image,.ba{height:240px}.card-body{padding:26px}}
-    @media(max-width:700px){.nav-inner{width:calc(100% - 28px)}nav{gap:13px}nav a{font-size:12px}nav a:last-child{padding:7px 11px}.brand img{height:36px;max-width:145px}.hero{min-height:400px;padding:70px 14px}.container{width:calc(100% - 28px);padding:55px 0 75px}.grid{grid-template-columns:1fr;gap:18px}.card-image,.ba{height:230px}.card-body{padding:25px}.cta{padding:78px 18px}footer{padding:30px 20px}}
-    @media(max-width:430px){.brand img{max-width:112px;height:32px}nav{gap:10px}nav a{font-size:11px}.hero h1{font-size:clamp(42px,12vw,58px)}}
+    @media(max-width:1040px){.nav-links{gap:18px}}
+    @media(max-width:900px){.nav-links,.nav-cta{display:none}.hamb{display:block}.container{padding:70px 0 90px}.card-image,.ba{height:240px}.card-body{padding:26px}.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding-top:60px}.mobile a{display:block;font-size:28px;font-weight:700;letter-spacing:-.04em;margin:15px;text-align:center;color:#fff}}
+    @media(max-width:700px){.nav-inner{width:calc(100% - 28px)}.brand img{height:36px;max-width:145px}.hero{min-height:400px;padding:70px 14px}.container{width:calc(100% - 28px);padding:55px 0 75px}.grid{grid-template-columns:1fr;gap:18px}.card-image,.ba{height:230px}.card-body{padding:25px}.cta{padding:78px 18px}footer{padding:30px 20px}}
+    @media(max-width:430px){.brand img{max-width:112px;height:32px}.hero h1{font-size:clamp(42px,12vw,58px)}}
   </style>
 </head>
 <body>
 
-<header class="nav"><div class="wrap nav-inner">
-  <a class="brand" href="https://renovah2o.com/" aria-label="RenovaH2O - Inicio">
-    <img src="https://renovah2o.com/Images/Logo%20Silver%20LL.png" alt="RenovaH2O">
-  </a>
-  <nav>
-    <a class="home" href="https://renovah2o.com/">Inicio</a>
-    <a href="https://renovah2o.com/blog">Blog</a>
-    <a href="https://renovah2o.com/#servicios">Servicios</a>
-    <a href="https://renovah2o.com/nosotros">Nosotros</a>
-    <a href="https://renovah2o.com/#cotizar">Cotización</a>
-  </nav>
-</div></header>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="https://renovah2o.com/" aria-label="RenovaH2O - Inicio">
+      <img src="https://renovah2o.com/Images/Logo%20Silver%20LL.png" alt="RenovaH2O">
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://renovah2o.com/">Inicio</a></li>
+      <li><a href="https://renovah2o.com/#servicios">Servicios</a></li>
+      <li><a href="https://renovah2o.com/nosotros">Nosotros</a></li>
+      <li><a href="https://renovah2o.com/blog">Blog</a></li>
+    </ul>
+    <a class="nav-cta" href="https://renovah2o.com/#cotizar">Cotizar</a>
+    <button class="hamb" id="hamb" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile" id="mobile"><div>
+  <a href="https://renovah2o.com/">Inicio</a>
+  <a href="https://renovah2o.com/#servicios">Servicios</a>
+  <a href="https://renovah2o.com/nosotros">Nosotros</a>
+  <a href="https://renovah2o.com/blog">Blog</a>
+  <a href="https://renovah2o.com/#cotizar">Cotizar</a>
+  <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
+</div></div>
 
 <section class="hero">
   <div class="hero-inner">
@@ -276,6 +291,20 @@
 </a>
 
 <script>
+  // Menú móvil, igual que en la página principal
+  const hamburger = document.getElementById('hamb');
+  const mobileMenu = document.getElementById('mobile');
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
   // Inicialización del control deslizante para el comparador Antes/Después
   document.querySelectorAll('.ba').forEach(slider => {
     const input = slider.querySelector('input');
