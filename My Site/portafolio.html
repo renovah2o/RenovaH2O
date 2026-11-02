@@ -71,6 +71,97 @@
 @media(max-width:900px){.nav-links,.nav-cta{display:none}.hamb{display:block}.footer-grid{grid-template-columns:1.5fr 1fr 1fr}.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding-top:60px}.mobile a{display:block;font-size:28px;font-weight:700;letter-spacing:-.04em;margin:15px;text-align:center;color:#fff;}.mobile a[aria-current="page"]{color:var(--blue2)}}
 @media(max-width:760px){.results-grid{grid-template-columns:1fr}.page-hero{padding:100px 0 90px}}
 @media(max-width:620px){.wrap{width:min(100% - 28px,var(--max))}.section{padding:90px 0}.display{font-size:clamp(48px,15vw,76px)}.footer-grid{grid-template-columns:1fr 1fr;gap:35px}.footer-grid>div:first-child{grid-column:1/-1}.bottom{display:block}.bottom div+div{margin-top:10px}.wa{right:22px;bottom:22px}.page-hero h1{font-size:clamp(38px,11vw,64px)}.final{padding:110px 0}.ba{height:430px}}
+
+/* Dropdown Servicios */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-arrow {
+  font-size: 15px;
+  transition: transform .25s ease;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: -15px;
+  min-width: 210px;
+  padding: 10px;
+  list-style: none;
+  background: rgba(20,20,22,.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: .25s ease;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 9px;
+  color: #d1d1d6;
+  font-size: 13px;
+}
+
+.dropdown-menu a:hover {
+  background: rgba(255,255,255,.09);
+  color: white;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown:focus-within .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown:hover .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+<!-- OTRO CSS PARA QUE LA BARRA DE MENU ESTE ALINEADA -->
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links > li {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  height: 58px;
+  line-height: 1;
+}
+
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-arrow {
+  display: inline-block;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
 </style>
 </head>
 <body>
@@ -88,7 +179,24 @@
       <a href="index.html"><img class="logo" src="Images/Logo Silver LL.png" alt="RenovaH2O"></a>
       <ul class="nav-links">
         <!--<li><a href="index.html#resultados">Resultados</a></li>-->
-        <li><a href="index.html#servicios">Servicios</a></li>
+        <!--<li><a href="index.html#servicios">Servicios</a></li>-->
+
+              <!-- BOTON DROPDOWN EN BARRA DE MENU -->
+         <li class="dropdown">
+            <a href="#servicios" class="dropdown-toggle">
+              Servicios <span class="dropdown-arrow">⌄</span>
+            </a>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a href="limpieza-de-pisos-panama.html">Residencial</a>
+              </li>
+              <li>
+                <a href="#servicios">Comercial</a>
+              </li>
+            </ul>
+          </li>
+        
         <!--<li><a href="index.html#proceso">Proceso</a></li>-->
         <!--<li><a href="index.html#publico">¿Para quién?</a></li>-->
         <!--<li><a href="index.html#faq">FAQ</a></li>-->
