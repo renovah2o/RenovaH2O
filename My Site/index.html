@@ -61,6 +61,96 @@
 .plan-list span{display:block;color:#a1a1a6;font-size:14px;margin-top:3px}
 @media(max-width:900px){.plan{grid-template-columns:1fr;gap:36px;padding:48px 36px}}
 @media(max-width:620px){.feature-grid.duo{grid-template-columns:1fr}.plan{padding:38px 24px}}
+
+/* Dropdown Servicios */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-arrow {
+  font-size: 15px;
+  transition: transform .25s ease;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: -15px;
+  min-width: 210px;
+  padding: 10px;
+  list-style: none;
+  background: rgba(20,20,22,.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: .25s ease;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 9px;
+  color: #d1d1d6;
+  font-size: 13px;
+}
+
+.dropdown-menu a:hover {
+  background: rgba(255,255,255,.09);
+  color: white;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown:focus-within .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown:hover .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+<!-- OTRO CSS PARA QUE LA BARRA DE MENU ESTE ALINEADA -->
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links > li {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  height: 58px;
+  line-height: 1;
+}
+
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-arrow {
+  display: inline-block;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
 </style>
 </head>
 <body>
@@ -79,7 +169,24 @@
       <ul class="nav-links">
         <li><a href="#inicio">Inicio</a></li>
         <!-- <li><a href="#resultados">Resultados</a></li> -->
-        <li><a href="#servicios">Servicios</a></li>
+
+<!-- BOTON DROPDOWN EN BARRA DE MENU -->
+         <li class="dropdown">
+            <a href="#servicios" class="dropdown-toggle">
+              Servicios <span class="dropdown-arrow">⌄</span>
+            </a>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a href="limpieza-de-pisos-panama.html">Residencial</a>
+              </li>
+              <li>
+                <a href="#servicios">Comercial</a>
+              </li>
+            </ul>
+          </li>
+
+        <!-- <li><a href="#servicios">Servicios</a></li> -->
         <!-- <li><a href="#proceso">Proceso</a></li> -->
         <!-- <li><a href="#publico">¿Para quién?</a></li> -->
         <!-- <li><a href="#faq">FAQ</a></li> -->
@@ -202,13 +309,21 @@
               <p style="text-align: left;"> Remoción de suciedad, manchas, polvo, moho y residuos para mejorar la presencia de tu negocio.</p>
             </div>
           </article>
-          <article class="feature reveal">
-            <img src="Images/Cleaning Res.png" alt="Limpieza residencial">
+
+          <a class="feature reveal" href="limpieza-de-pisos-panama.html"
+            aria-label="Conoce nuestro servicio de hidrolavado residencial">
+
+            <img src="Images/Cleaning Res.png" alt="Hidrolavado residencial">
+
             <div class="feature-content">
-              <h3 style="text-align: left;">Hidrolavado Residencial</h3>
-              <p style="text-align: left;">Aceras, entradas, patios, paredes, cercas y terrazas con acabado limpio y uniforme.</p>
+              <h3>Hidrolavado Residencial</h3>
+              <p>Aceras, entradas, patios, paredes, cercas y terrazas con acabado limpio y uniforme.</p>
+              <span class="btn-text">Conocer el servicio</span>
             </div>
-          </article>
+
+          </a>
+
+
         </div>
 
         <!-- Plan de mantenimiento periódico -->
