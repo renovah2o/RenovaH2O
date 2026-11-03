@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada (404) | RenovaH2O</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #000;
+      --white: #fff;
+      --gray: #a1a1a6;
+      --blue: #0071e3;
+      --blue-hover: #0077ed;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .nav-bar {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      justify-content: center;
+    }
+    .logo { height: 36px; width: auto; }
+    .content {
+      padding: 40px 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .error-code {
+      font-size: clamp(80px, 12vw, 140px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -.05em;
+      color: var(--blue);
+    }
+    h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: -.04em;
+      margin: 12px 0 16px;
+    }
+    p {
+      color: var(--gray);
+      font-size: 16px;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 24px;
+      border-radius: 980px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .2s ease;
+    }
+    .btn-blue { background: var(--blue); color: var(--white); }
+    .btn-blue:hover { background: var(--blue-hover); transform: translateY(-1px); }
+    .btn-outline { border: 1px solid rgba(255,255,255,0.2); color: var(--white); }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+    footer {
+      padding: 24px;
+      font-size: 12px;
+      color: var(--gray);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav-bar">
+    <a href="/"><img class="logo" src="Images/Logo Silver LL.png" alt="RenovaH2O"></a>
+  </header>
+
+  <main class="content">
+    <div class="error-code">404</div>
+    <h1>Página no encontrada</h1>
+    <p>El enlace que seguiste no existe o la dirección cambió. Te ayudamos a volver al camino.</p>
+    <div class="actions">
+      <a href="/" class="btn btn-blue">Volver al Inicio</a>
+      <a href="https://wa.me/50763518111" class="btn btn-outline" target="_blank" rel="noopener">Contactar Soporte</a>
+    </div>
+  </main>
+
+  <footer>
+    © RenovaH2O · Hidrolavado Comercial y Residencial
+  </footer>
+
+</body>
+</html>
