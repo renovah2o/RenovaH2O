@@ -25,34 +25,54 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-
 :root{--white:#fff;--soft:#f5f5f7;--soft2:#e8e8ed;--black:#050505;--ink:#1d1d1f;--gray:#6e6e73;--blue:#0071e3;--blue2:#2997ff;--line:#d2d2d7;--radius:28px;--max:1200px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:var(--blue);text-decoration:none}button,input,select,textarea{font:inherit}
+.blue{color:var(--blue)}
+.blue2{color:var(--blue2)}
 .wrap{width:min(var(--max),calc(100% - 44px));margin:auto}
-.nav{position:fixed;z-index:1000;top:0;left:0;right:0;min-height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12);padding:0}
-.nav-inner{height:58px;display:flex;align-items:center;justify-content:space-between}
+
+/* Nav */
+.nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12);padding:0}
+.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}
 .brand img{display:block;width:auto;height:40px;max-width:190px;object-fit:contain}
-.nav nav{display:flex;align-items:center;gap:30px}
-.nav nav a{font-size:13px;color:#d1d1d6;font-weight:500;transition:.2s}
-.nav nav a:hover{color:#fff}
-.nav .nav-cta{font-size:13px;color:#fff;background:var(--blue);border-radius:980px;padding:7px 15px}
+.navlinks{display:flex;gap:30px;align-items:center;list-style:none}
+.navlinks > li{display:flex;align-items:center;height:100%}
+.navlinks a{display:inline-flex;align-items:center;height:58px;line-height:1;font-size:13px;color:#d1d1d6;font-weight:500;transition:.2s}
+.navlinks a:hover,.navlinks a.active{color:#fff}
+.navlinks .nav-cta{font-size:13px;color:#fff!important;background:var(--blue);border-radius:980px;padding:7px 15px;height:auto!important}
 .hamb{display:none;width:38px;height:38px;background:none;border:0}
 .hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}
 .mobile{display:none}
+
+/* Dropdown Servicios (Escritorio) */
+.dropdown { position: relative; }
+.dropdown-toggle { display: inline-flex; align-items: center; gap: 6px; }
+.dropdown-arrow { display: inline-block; font-size: 15px; line-height: 1; position: relative; top: -1px; transition: transform .25s ease; }
+.dropdown-menu { position: absolute; top: 100%; left: -15px; min-width: 210px; padding: 10px; list-style: none; background: rgba(20,20,22,.97); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; opacity: 0; visibility: hidden; transform: translateY(8px); transition: .25s ease; z-index: 1001; }
+.dropdown-menu a { display: block; padding: 12px 14px; border-radius: 9px; color: #d1d1d6; font-size: 13px; height: auto; line-height: 1.4; text-decoration: none; }
+.dropdown-menu a:hover { background: rgba(255,255,255,.09); color: white; }
+.dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+.dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
+
 .hero{margin-top:58px;background:#000;color:#fff;text-align:center;position:relative;overflow:hidden;padding:88px 0 72px}
 .hero:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.64),rgba(0,0,0,.86));pointer-events:none}
 .hero>.wrap{position:relative;z-index:1}
-.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:18px}
-.hero .eyebrow{color:#b9b9c0}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:#b9b9c0;margin-bottom:18px}
 h1{max-width:1000px;margin:0 auto 24px;font-size:clamp(42px,7vw,86px);line-height:.98;letter-spacing:-.06em;font-weight:800}
 .hero p{max-width:820px;margin:0 auto;color:#d2d2d7;font-size:clamp(17px,2vw,22px);line-height:1.35;letter-spacing:-.02em}
 .hero-media{display:block;width:100%;max-height:440px;aspect-ratio:16/9;object-fit:cover;object-position:center;margin:38px auto 0;border-radius:var(--radius);background:#111;opacity:.92}
-main{padding:88px 0 110px}
+
+main{padding:88px 0 60px}
 .content{max-width:850px;margin:0 auto}
 .content h2{font-size:clamp(30px,4vw,42px);line-height:1.05;letter-spacing:-.045em;font-weight:800;margin:70px 0 20px}
 .content h2:first-of-type{margin-top:60px}
@@ -71,21 +91,82 @@ th{background:var(--soft);font-weight:700}
 tr:last-child td{border-bottom:0}
 .note{color:var(--gray);font-size:13px!important}
 .content a:not(.button){text-decoration:underline;text-underline-offset:3px}
+
 .cta{margin-top:70px;padding:48px;border-radius:var(--radius);background:radial-gradient(ellipse 70% 90% at 100% 100%,rgba(0,113,227,.35),transparent 65%),#000;color:#fff}
 .cta h2{margin:0 0 18px;color:#fff}
 .cta p{color:#c7c7cc;margin:0 0 25px}
 .button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:980px;background:var(--blue);color:#fff!important;text-decoration:none!important;font-weight:600;transition:.2s}
 .button:hover{background:#0077ed;transform:translateY(-1px)}
+
 .related{margin-top:65px;padding-top:30px;border-top:1px solid var(--line)}
 .related h2{margin-top:0}
-.related a{display:block;margin:14px 0;color:var(--blue);font-weight:500}
-footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center;font-size:13px}
+.related a{display:block;margin:14px 0;color:var(--blue);font-weight:500;text-decoration:none}
+.related a:hover{text-decoration:underline}
+
+/* Redes Sociales Section (Blanca, exactamente antes del footer) */
+.socials{background:var(--white);color:var(--ink);text-align:center;padding:90px 0;border-top:1px solid var(--soft2);margin-top:80px}
+.socials .eyebrow{color:var(--gray)}
+.socials-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:50px}
+.social-card{background:var(--soft);border:1px solid var(--soft2);padding:40px 24px;border-radius:var(--radius);text-align:center;transition:all .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,.025)}
+.social-card:hover{background:#fff;transform:translateY(-6px);border-color:var(--blue);box-shadow:0 18px 45px rgba(0,0,0,.08)}
+.social-icon{width:56px;height:56px;border-radius:16px;background:#eef6ff;color:var(--blue);display:grid;place-items:center;margin-bottom:20px;transition:.3s ease}
+.social-card:hover .social-icon{background:var(--blue);color:#fff}
+.social-icon svg{width:28px;height:28px;fill:currentColor}
+.social-card h3{font-size:20px;letter-spacing:-.02em;margin-bottom:6px;color:var(--ink)}
+.social-card p{font-size:13px;color:var(--gray);margin-bottom:18px}
+.social-link{font-size:13px;font-weight:600;color:var(--blue);display:inline-flex;align-items:center;gap:4px}
+.social-link:after{content:' ›';font-size:1.2em;transition:.2s ease}
+.social-card:hover .social-link:after{transform:translateX(3px)}
+
+/* Footer Idéntico a Index */
+.footer{background:#000;color:#a1a1a6;padding:65px 0 30px}
+.footer-wrap{width:min(var(--max),calc(100% - 44px));margin:auto}
+.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:50px;padding-bottom:50px}
+.footer h4{font-size:12px;color:#fff;margin-bottom:18px;text-transform:uppercase;letter-spacing:.08em}
+.footer a,.footer p{display:block;color:#a1a1a6;font-size:13px;margin:9px 0;text-decoration:none}
+.footer a:hover{color:#fff}
+.footer-logo{height:38px}
+.bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;color:#7a7a7f;font-size:12px;display:flex;justify-content:space-between;gap:20px}
+
 .whatsapp-float{position:fixed;width:58px;height:58px;bottom:22px;right:22px;background:#25d366;border-radius:50%;box-shadow:0 18px 48px rgba(37,211,102,.3);z-index:950;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:.25s}
 .whatsapp-float:hover{transform:scale(1.08)}
 .whatsapp-icon{width:28px;height:28px;fill:#fff}
-@media(max-width:900px){.nav nav,.nav>.nav-cta{display:none}.nav-inner>.nav-cta{display:none}.hamb{display:block}.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding-top:45px}.mobile a{display:block;font-size:25px;font-weight:700;letter-spacing:-.04em;margin:17px;text-align:center;color:#fff}.content h2{margin-top:56px}.cta{padding:38px}}
-@media(max-width:620px){.wrap{width:min(100% - 28px,var(--max))}.hero{padding:70px 0 52px}.hero-media{margin-top:28px;border-radius:20px;max-height:300px}main{padding:58px 0 80px}.content h2{font-size:32px}.content h3{font-size:21px}.content p,.content li{font-size:15px}.answer{padding:18px}.cta{padding:28px 23px;border-radius:22px}.whatsapp-float{width:54px;height:54px;right:16px;bottom:16px}}
 
+@media(max-width:900px){
+  .navlinks{display:none}
+  .hamb{display:block}
+  .socials-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:35px}
+  .footer-grid>div:first-child{grid-column:1/-1}
+
+  .mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
+  .mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  .mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center;text-decoration:none}
+  .mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; }
+  .mobile .sub-header { display: inline-flex; align-items: center; justify-content: center; position: relative; margin: 12px 0; }
+  .mobile .sub-header a { margin: 0 !important; }
+  .mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 18px; padding: 4px 10px; cursor: pointer; display: inline-flex; align-items: center; }
+  .mobile .arrow-icon { display: inline-block; transition: transform 0.25s ease; line-height: 1; }
+  .mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 4px 0 12px 0; width: 100%; text-align: center; }
+  .mobile .mobile-submenu li { width: 100%; text-align: center; }
+  .mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
+  .mobile .has-sub.open .arrow-icon { transform: rotate(180deg); }
+  .mobile .has-sub.open .mobile-submenu { display: block; }
+}
+
+@media(max-width:620px){
+  .wrap{width:min(100% - 28px,var(--max))}
+  .hero{padding:70px 0 52px}
+  .hero-media{margin-top:28px;border-radius:20px;max-height:300px}
+  main{padding:58px 0 50px}
+  .content h2{font-size:32px}
+  .content h3{font-size:21px}
+  .content p,.content li{font-size:15px}
+  .answer{padding:18px}
+  .cta{padding:28px 23px;border-radius:22px}
+  .socials-grid{grid-template-columns:1fr}
+  .whatsapp-float{width:54px;height:54px;right:16px;bottom:16px}
+}
   </style>
 
   <script type="application/ld+json">
@@ -114,26 +195,46 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
 </head>
 
 <body>
+  <!-- Navegación Unificada -->
   <header class="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="https://renovah2o.com/" aria-label="RenovaH2O - Inicio">
         <img src="https://renovah2o.com/Images/Logo%20Silver%20LL.png" alt="RenovaH2O" width="190" height="48">
       </a>
       <nav aria-label="Navegación principal">
-        <a href="https://renovah2o.com/#resultados">Resultados</a>
-        <a href="https://renovah2o.com/#servicios">Servicios</a>
-        <a href="https://renovah2o.com/#proceso">Proceso</a>
-        <a href="https://renovah2o.com/nosotros">Nosotros</a>
-        <a href="https://renovah2o.com/blog">Blog</a>
+        <ul class="navlinks">
+          <li><a href="https://renovah2o.com/">Inicio</a></li>
+          <li class="dropdown">
+            <a href="https://renovah2o.com/#servicios" class="dropdown-toggle" aria-expanded="false">Servicios <span class="dropdown-arrow" aria-hidden="true">⌄</span></a>
+            <ul class="dropdown-menu">
+              <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
+              <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
+            </ul>
+          </li>
+          <li><a href="https://renovah2o.com/nosotros">Nosotros</a></li>
+          <li><a href="https://renovah2o.com/blog" class="active">Blog</a></li>
+          <li><a href="https://renovah2o.com/#cotizar" class="nav-cta">Cotizar</a></li>
+        </ul>
       </nav>
-      <a class="nav-cta" href="https://renovah2o.com/#cotizar">Cotizar</a>
       <button class="hamb" id="hamb" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </header>
-  <div class="mobile" id="mobile">
+
+  <!-- Menú móvil con acordeón idéntico -->
+  <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
     <div>
       <a href="https://renovah2o.com/">Inicio</a>
-      <a href="https://renovah2o.com/#servicios">Servicios</a>
+      <div class="has-sub">
+        <div class="sub-header">
+          <a href="https://renovah2o.com/#servicios">Servicios</a>
+          <button class="sub-toggle" aria-label="Expandir submenú de servicios"><span class="arrow-icon">⌄</span></button>
+        </div>
+        <ul class="mobile-submenu">
+          <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
+          <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
+        </ul>
+      </div>
+      <a href="https://renovah2o.com/nosotros">Nosotros</a>
       <a href="https://renovah2o.com/blog">Blog</a>
       <a href="https://renovah2o.com/#cotizar">Cotizar</a>
       <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
@@ -143,7 +244,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
   <header class="hero">
     <div class="wrap">
       <div class="eyebrow">Guía de compra y limpieza profesional en Panamá</div>
-      <h1>Hidrolavadora en Panamá: tipos, precios y cómo elegir la adecuada</h1>
+      <h1>Hidrolavadora en Panamá: tipos, <span class="blue2">precios y cómo elegir</span> la adecuada</h1>
       <p>¿Buscas una hidrolavadora en Panamá para limpiar tu carro, patio, terraza, fachada o estacionamiento? Conoce las diferencias entre los equipos portátiles, eléctricos y de gasolina, qué significan PSI y GPM, cuánto podrías invertir y cuándo puede convenirte contratar un servicio de hidrolavado profesional.</p>
       <video class="hero-media" autoplay muted loop playsinline preload="metadata"
         aria-label="Video de limpieza profesional con equipo de hidrolavado">
@@ -162,7 +263,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
           <p><strong>¿Necesitas comprar una máquina o limpiar una superficie?</strong> Esta guía es informativa: RenovaH2O no vende hidrolavadoras. Ofrecemos servicios profesionales de limpieza exterior con equipos de alto caudal, accesorios especializados y técnicas adaptadas al tipo de superficie en Panamá Oeste y ciudad de Panamá.</p>
         </div>
 
-        <h2>¿Qué tipos de hidrolavadoras se consiguen en Panamá?</h2>
+        <h2>¿Qué tipos de <span class="blue">hidrolavadoras</span> se consiguen en Panamá?</h2>
         <p>En Panamá se encuentran equipos eléctricos compactos para el hogar, modelos eléctricos más robustos y máquinas a gasolina para trabajos exigentes. También existen equipos portátiles alimentados por batería, aunque su rendimiento y autonomía varían mucho entre modelos. Antes de comprar, revisa la ficha técnica, la garantía, el servicio posventa, los accesorios disponibles y la disponibilidad de repuestos.</p>
 
         <h3>1. Hidrolavadoras portátiles de batería</h3>
@@ -177,7 +278,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
         <h3>2. Hidrolavadoras eléctricas domésticas</h3>
         <p>Son una opción común para lavar vehículos, herramientas, patios pequeños y muebles de jardín. En comercios panameños se publican modelos básicos alrededor de los $70 y opciones domésticas más potentes que pueden costar varios cientos de dólares.</p>
         <ul>
-          <li><strong>Ventajas:</strong> no requieren gasolina, suelen ser compactas y son prácticas para uso ocasional.</li>
+          <li><strong>Ventajas:</strong> no requieren gasolina, son compactas y prácticas para uso ocasional.</li>
           <li><strong>Limitaciones:</strong> el caudal, el ciclo de trabajo, la alimentación eléctrica y los accesorios pueden limitar su rendimiento en áreas grandes.</li>
           <li><strong>Antes de comprar:</strong> verifica el voltaje, el caudal real, la longitud de manguera, la disponibilidad de repuestos y las condiciones de garantía.</li>
         </ul>
@@ -200,7 +301,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
         <p>En esta categoría no conviene dar un precio único sin conocer la configuración. El costo puede variar sustancialmente por la marca de la bomba, el motor, el bastidor o skid, la transmisión, las mangueras, los carretes, los filtros, los sistemas de inyección química y los accesorios incluidos. En Panamá, solicita una cotización detallada y confirma si el precio corresponde solo a la máquina o a un sistema listo para trabajar.</p>
         <p class="note">Importante: no encontramos una referencia pública suficientemente comparable para establecer un rango fiable de precios locales para equipos completos de 8–10 GPM. Es preferible indicarlo claramente en vez de presentar una cifra especulativa.</p>
 
-        <h2>Precios orientativos de hidrolavadoras en Panamá</h2>
+        <h2>Precios orientativos de hidrolavadoras <span class="blue">en Panamá</span></h2>
         <p>Los siguientes rangos son una guía inicial para presupuestar, no una lista de precios fija. Los valores se basan en ejemplos publicados por comercios panameños para determinadas categorías; la oferta cambia según modelo, marca, inventario y accesorios.</p>
         <div class="table-wrap">
           <table>
@@ -256,7 +357,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
         </ul>
         <p>No compres mirando solo el número más alto del anuncio. Comprueba si la ficha distingue entre presión máxima y presión de trabajo, y entre caudal máximo y caudal nominal. Compara los valores bajo condiciones equivalentes.</p>
 
-        <h2>¿Por qué los accesorios pueden cambiar el resultado?</h2>
+        <h2>¿Por qué los accesorios pueden <span class="blue">cambiar el resultado</span>?</h2>
         <p>La hidrolavadora es solo una parte del sistema. En un trabajo profesional, los accesorios adecuados permiten controlar el patrón de limpieza, la productividad y el acabado.</p>
         <ul>
           <li><strong>Boquillas:</strong> cada patrón tiene un propósito. Una boquilla incorrecta o usada demasiado cerca puede marcar o deteriorar una superficie.</li>
@@ -266,7 +367,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
         </ul>
         <p>Un equipo de mayor capacidad no garantiza un mejor acabado si se utiliza con una técnica incorrecta. La evaluación de la superficie y el control del proceso son tan importantes como la máquina.</p>
 
-        <h2>¿Comprar una hidrolavadora o contratar un servicio profesional?</h2>
+        <h2>¿Comprar una hidrolavadora o <span class="blue">contratar un servicio profesional</span>?</h2>
         <p>La decisión depende de cuánto la usarás, el tamaño de las superficies y el acabado que esperas. Comprar puede ser razonable si tienes tareas pequeñas y frecuentes, espacio de almacenamiento y disposición para realizar mantenimiento y aprender a utilizar el equipo de forma segura.</p>
         <p>Contratar un servicio puede convenir cuando necesitas limpiar grandes áreas, como estacionamientos, aceras, fachadas, terrazas o pisos de concreto, pero no quieres asumir el costo de un equipo de mayor capacidad, accesorios, mantenimiento, combustible, químicos y tiempo de operación.</p>
         <ul>
@@ -275,7 +376,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
           <li><strong>Compara el costo total</strong>, no solo el precio inicial de la máquina: incluye accesorios, mantenimiento, repuestos, consumibles y tiempo.</li>
         </ul>
 
-        <h2>¿Qué equipo se necesita para limpiar pisos, aceras y estacionamientos?</h2>
+        <h2>¿Qué equipo se necesita para limpiar pisos, <span class="blue">aceras y estacionamientos</span>?</h2>
         <p>En superficies amplias, la selección del equipo debe responder al material, el tipo de suciedad, el acceso al agua, el drenaje y el resultado esperado. Para algunos trabajos se utiliza una máquina de alto caudal junto con un disco limpiador de superficies; en otros, una lanza, una boquilla distinta o un tratamiento compatible puede ser más apropiado.</p>
         <p>En RenovaH2O trabajamos con equipos de alto caudal y configuraciones profesionales, seleccionando accesorios, boquillas y productos compatibles con el trabajo. No se trata simplemente de aplicar la mayor presión posible: buscamos un procedimiento adecuado para la superficie y el acabado esperado.</p>
         <p>La limpieza profesional puede ser una alternativa para residencias, comercios, administraciones de propiedades y empresas que necesitan mantener aceras, fachadas, estacionamientos, terrazas y otras áreas exteriores sin comprar ni operar su propio equipo.</p>
@@ -290,7 +391,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
           <li>Comprueba el suministro de agua y los requerimientos eléctricos o de ventilación del equipo.</li>
         </ul>
 
-        <h2>Preguntas frecuentes sobre hidrolavadoras en Panamá</h2>
+        <h2>Preguntas frecuentes sobre <span class="blue">hidrolavadoras en Panamá</span></h2>
 
         <h3>¿Cuánto cuesta una hidrolavadora en Panamá?</h3>
         <p>Algunos modelos eléctricos domésticos se anuncian desde aproximadamente $70. Los eléctricos de mayor capacidad y los equipos a gasolina pueden costar cientos o miles de dólares, según caudal, presión, marca y accesorios. Los sistemas de alto caudal pueden requerir cotización específica.</p>
@@ -313,12 +414,12 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
         <h3>¿Cuándo conviene contratar a RenovaH2O?</h3>
         <p>Si necesitas limpiar superficies exteriores extensas o buscas una evaluación para aceras, terrazas, fachadas, estacionamientos y pisos, puedes enviarnos fotos del área y tu ubicación aproximada. Revisaremos el tipo de trabajo para orientarte sobre la cotización.</p>
 
-        <h2>Servicio profesional de hidrolavado en Panamá Oeste y ciudad de Panamá</h2>
+        <h2>Servicio profesional de hidrolavado en <span class="blue2">Panamá Oeste y ciudad de Panamá</span></h2>
         <p>Si tu objetivo no es comprar una máquina, sino recuperar la apariencia de tu propiedad, RenovaH2O ofrece servicios de hidrolavado y limpieza exterior para residencias, comercios y propiedades. Atendemos consultas en La Chorrera, Arraiján, Panamá Oeste y ciudad de Panamá, según las características del proyecto.</p>
         <p>Envíanos fotos de la superficie, una descripción breve y la ubicación aproximada. Así podremos entender mejor el trabajo y orientarte sobre los siguientes pasos.</p>
 
         <div class="related">
-          <h2>Más guías de RenovaH2O</h2>
+          <h2>Más guías de <span class="blue">RenovaH2O</span></h2>
           <a href="https://renovah2o.com/limpieza-profunda-pisos-limo-moho">Limpieza profunda de pisos: cómo quitar limo, moho y manchas negras</a>
           <a href="https://renovah2o.com/hidrolavado-vs-limpieza-tradicional">Hidrolavado vs. limpieza tradicional: ¿cuál es la diferencia?</a>
           <a href="https://renovah2o.com/cuando-hacer-hidrolavado">¿Cuándo hacer un hidrolavado? Señales de que tu propiedad lo necesita</a>
@@ -326,7 +427,7 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
         </div>
 
         <section class="cta" aria-labelledby="cta-title">
-          <h2 id="cta-title">¿Necesitas una superficie limpia, no otra máquina?</h2>
+          <h2 id="cta-title">¿Necesitas una superficie limpia, <span class="blue2">no otra máquina</span>?</h2>
           <p>Si quieres recuperar la apariencia de tus pisos, aceras, terrazas, fachadas o estacionamientos, cuéntanos qué necesitas limpiar. Te orientaremos sobre una posible solución profesional.</p>
           <a class="button" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20consultar%20por%20un%20servicio%20profesional%20de%20hidrolavado." target="_blank" rel="noopener noreferrer">Consultar por WhatsApp</a>
         </section>
@@ -334,8 +435,90 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
     </div>
   </main>
 
-  <footer>
-    <div class="wrap">RenovaH2O · Limpieza exterior e hidrolavado profesional en Panamá · @RenovaH2O</div>
+  <!-- Sección Redes Sociales (Blanca, ubicada exactamente antes del footer) -->
+  <section class="socials">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">Comunidad</div>
+        <h2 style="font-size:clamp(36px,5vw,56px);font-weight:800;letter-spacing:-.04em;">Síguenos en nuestras<br><span class="blue">redes sociales.</span></h2>
+        <p style="margin: 20px auto 0;color:var(--gray);">Acompáñanos en nuestro día a día y mira videos reales de nuestras transformaciones antes y después.</p>
+      </div>
+
+      <div class="socials-grid">
+        <a class="social-card" href="https://instagram.com/renovah2o" target="_blank" rel="noopener" aria-label="Instagram de RenovaH2O">
+          <div class="social-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </div>
+          <h3>Instagram</h3>
+          <p>Historias, reels y resultados diarios.</p>
+          <span class="social-link">@renovah2o</span>
+        </a>
+
+        <a class="social-card" href="https://youtube.com/@renovah2o" target="_blank" rel="noopener" aria-label="YouTube de RenovaH2O">
+          <div class="social-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </div>
+          <h3>YouTube</h3>
+          <p>Videos extensos y procesos de limpieza.</p>
+          <span class="social-link">RenovaH2O</span>
+        </a>
+
+        <a class="social-card" href="https://tiktok.com/@renovah2o" target="_blank" rel="noopener" aria-label="TikTok de RenovaH2O">
+          <div class="social-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.82.56-1.31 1.52-1.33 2.52-.01 1.01.44 2 1.25 2.58.91.68 2.14.82 3.21.43.98-.33 1.73-1.13 2.03-2.12.18-.58.21-1.2.2-1.81V.02z"/></svg>
+          </div>
+          <h3>TikTok</h3>
+          <p>Contenido rápido y transformaciones impactantes.</p>
+          <span class="social-link">@renovah2o</span>
+        </a>
+
+        <a class="social-card" href="https://www.facebook.com/profile.php?id=61565248268444" target="_blank" rel="noopener" aria-label="Facebook de RenovaH2O">
+          <div class="social-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </div>
+          <h3>Facebook</h3>
+          <p>Novedades, proyectos y reseñas de clientes.</p>
+          <span class="social-link">RenovaH2O</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Actualizado Igual a Index -->
+  <footer class="footer">
+    <div class="footer-wrap">
+      <div class="footer-grid">
+        <div>
+          <a href="https://renovah2o.com/" aria-label="Ir al inicio"><img class="footer-logo" src="https://renovah2o.com/Images/Logo%20Silver%20LL.png" alt="RenovaH2O Logo" width="150" height="38"></a>
+          <p style="max-width:330px;margin-top:18px">Hidrolavado comercial y residencial premium en Panamá. Limpieza exterior especializada para elevar la imagen de tu propiedad.</p>
+        </div>
+        <div>
+          <h4>Servicios</h4>
+          <a href="limpieza-de-estacionamientos-panama.html">Limpieza Comercial</a>
+          <a href="limpieza-de-pisos-panama.html">Hidrolavado Residencial</a>
+          <a href="https://renovah2o.com/#servicios">Mantenimiento Programado</a>
+        </div>
+        <div>
+          <h4>Navegación</h4>
+          <a href="https://renovah2o.com/#resultados">Galería de Resultados</a>
+          <a href="https://renovah2o.com/#proceso">Nuestro Proceso</a>
+          <a href="https://renovah2o.com/nosotros">Sobre Nosotros</a>
+          <a href="https://renovah2o.com/blog">Blog & Consejos</a>
+          <a href="https://renovah2o.com/#faq">Preguntas Frecuentes</a>
+        </div>
+        <div>
+          <h4>Contacto Directo</h4>
+          <a href="tel:+50763518111">+507 6351-8111</a>
+          <a href="mailto:info@renovah2o.com">info@renovah2o.com</a>
+          <a href="https://instagram.com/renovah2o" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp Chat</a>
+        </div>
+      </div>
+      <div class="bottom">
+        <div>© <span id="year"></span> RenovaH2O. Todos los derechos reservados.</div>
+        <div>Panamá · Panamá Oeste (Arraiján y La Chorrera)</div>
+      </div>
+    </div>
   </footer>
 
   <a href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20consultar%20por%20un%20servicio%20de%20hidrolavado."
@@ -355,12 +538,23 @@ footer{background:var(--soft);color:var(--gray);padding:34px 0;text-align:center
         const open = menu.classList.toggle('open');
         button.setAttribute('aria-expanded', String(open));
       });
-      menu.querySelectorAll('a').forEach(function (link) {
+      menu.querySelectorAll('a:not(.has-sub > a)').forEach(function (link) {
         link.addEventListener('click', function () {
           menu.classList.remove('open');
           button.setAttribute('aria-expanded', 'false');
         });
       });
+
+      // Control del acordeón móvil de Servicios
+      document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const parent = btn.closest('.has-sub');
+          parent.classList.toggle('open');
+        });
+      });
+
+      document.getElementById('year').textContent = new Date().getFullYear();
     })();
   </script>
 
