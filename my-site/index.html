@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es-PA">
 <head>
-      <!-- Google tag (gtag.js) -->
+  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C7DLLMX4ZR"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Datos Estructurados Schema.org (SEO Local y Servicios) -->
+<!-- Datos Estructurados Schema.org -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -69,22 +69,10 @@
     "longitude": -79.6964
   },
   "areaServed": [
-    {
-      "@type": "AdministrativeArea",
-      "name": "Panamá"
-    },
-    {
-      "@type": "AdministrativeArea",
-      "name": "Panamá Oeste"
-    },
-    {
-      "@type": "City",
-      "name": "Arraiján"
-    },
-    {
-      "@type": "City",
-      "name": "La Chorrera"
-    }
+    { "@type": "AdministrativeArea", "name": "Panamá" },
+    { "@type": "AdministrativeArea", "name": "Panamá Oeste" },
+    { "@type": "City", "name": "Arraiján" },
+    { "@type": "City", "name": "La Chorrera" }
   ],
   "sameAs": [
     "https://instagram.com/renovah2o",
@@ -124,15 +112,7 @@
 .hero{background:#000;color:#fff;text-align:center;min-height:calc(100svh - 58px);margin-top:58px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.hero-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:.62;transform:scale(1.02)}.hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.72) 75%,#000)}
 .hero-content{position:relative;z-index:2;padding:85px 20px 65px}.hero .eyebrow{color:#b9b9c0}.hero h1{max-width:1050px;margin:auto}.hero .sub{color:#d2d2d7;margin:34px auto 32px}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;border-radius:980px;font-size:15px;font-weight:600;transition:.2s ease}.btn-blue{background:#0071e3;color:#fff}.btn-blue:hover{background:#0077ed;transform:translateY(-1px)}.btn-white{background:#fff;color:#111}.btn-white:hover{background:#f5f5f7;transform:translateY(-1px)}.btn-text{color:#2997ff}.btn-text:after{content:' ›';font-size:1.15em}.hero-proof{display:flex;justify-content:center;gap:35px;margin-top:58px;color:#bcbcc1;font-size:13px}.hero-proof span:before{content:'✓';color:#fff;margin-right:7px}
 .intro{text-align:center;background:var(--white)}.intro .sub{margin:26px auto 0}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:70px}.feature{min-height:430px;border-radius:var(--radius);overflow:hidden;position:relative;background:#000;color:#fff;padding:38px;display:flex;align-items:flex-end;text-decoration:none;transition:transform .35s ease}.feature img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s ease}.feature:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.82))}.feature:hover img{transform:scale(1.045)}.feature:hover{transform:translateY(-4px)}
-.feature-content {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
+.feature-content { position: relative; z-index: 2; width: 100%; text-align: left; display: flex; flex-direction: column; align-items: flex-start; }
 .feature h3{font-size:30px;line-height:1;letter-spacing:-.04em;margin-bottom:10px}.feature p{color:#c7c7cc;font-size:15px;max-width:330px}
 .black{background:hsl(0, 0%, 0%);color:#fff}.black .eyebrow{color:#a1a1a6}.black .sub{color:#a1a1a6}.results-head{display:flex;justify-content:space-between;gap:40px;align-items:end}.results-head .sub{max-width:520px}.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:60px}.work{border-radius:var(--radius);overflow:hidden;background:#111}.ba{height:480px;position:relative;overflow:hidden;--pos:50%}.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ba-before{filter:brightness(1) saturate(1)} 
@@ -202,18 +182,19 @@
 .dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
 .dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
 
-/* Estilos Menú Móvil Centrados (SEO y AI-Friendly) */
+/* Estilos Menú Móvil Centrados (Corregidos Flex Alignment) */
 .mobile{display:none}
 .mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
 .mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
 .mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}
 .mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; }
-.mobile .has-sub > a { display: inline-flex; justify-content: center; align-items: center; width: 100%; text-align: center; }
-.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 24px; font-weight: 300; padding-left: 8px; cursor: pointer; transition: transform 0.25s ease; line-height: 1; }
+.mobile .sub-header { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.mobile .sub-header > a { margin: 12px 0; display: inline-block; }
+.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 20px; font-weight: 300; cursor: pointer; transition: transform 0.25s ease; padding: 5px; display: inline-flex; align-items: center; justify-content: center; }
 .mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 8px 0 12px 0; width: 100%; text-align: center; }
 .mobile .mobile-submenu li { width: 100%; text-align: center; }
 .mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
-.mobile .has-sub.open .sub-toggle { transform: rotate(45deg); }
+.mobile .has-sub.open .sub-toggle { transform: rotate(180deg); }
 .mobile .has-sub.open .mobile-submenu { display: block; }
 </style>
 </head>
@@ -250,7 +231,7 @@
     </div>
 </header>
 
-<!-- Menú móvil con acordeón -->
+<!-- Menú móvil con acordeón ajustado -->
 <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
   <div>
     <a href="index.html">Inicio</a>
@@ -271,12 +252,11 @@
   </div>
 </div>
 
-
   <main id="inicio">
 
     <!-- Hero -->
     <section class="hero">
-      <video class="hero-media" autoplay muted loop playsinline oncontextmenu="return false;" preload="auto" aria-label="Video de hidrolavado profesional en Panamá">
+      <video id="heroVideo" class="hero-media" autoplay muted loop playsinline oncontextmenu="return false;" preload="auto" aria-label="Video de hidrolavado profesional en Panamá">
         <source src="https://cdn.renovah2o.com/video.mp4" type="video/mp4">
         Tu navegador no soporta la reproducción de video.
       </video>
@@ -603,69 +583,51 @@
         </div>
     </div>
 </footer>
- 
 
   <script>
-    /* // 1. PRIMERO: Cargar el Header dinámicamente
-    fetch('header.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('header-container').innerHTML = data;
-        
-        // Configurar el menú móvil (se activa solo una vez que el header se inyecta)
-        const mobile = document.getElementById('mobile');
-        const hamb = document.getElementById('hamb');
-        if (hamb && mobile) {
-          hamb.onclick = () => mobile.classList.toggle('open');
-          mobile.querySelectorAll('a:not(.has-sub > a)').forEach(a => a.onclick = () => mobile.classList.remove('open'));
-          
-          document.querySelectorAll('.mobile .has-sub > a').forEach(item => {
-            item.addEventListener('click', (e) => {
-              e.preventDefault();
-              item.parentElement.classList.toggle('open');
-            });
-          });
-        }
-      });
+    // Año automático
+    const yearSpan = document.getElementById('year');
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    // 2. SEGUNDO: Cargar el Footer dinámicamente
-    fetch('footer.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('footer-container').innerHTML = data;
-        
-        // Año actual automático (dentro del footer inyectado)
-        const yearSpan = document.getElementById('year');
-        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
-      }); */
-
-    // 3. TERCERO: Demás funciones de la página principal
+    // Forzar Autoplay del video en móviles (iOS y Android)
+    document.addEventListener('DOMContentLoaded', () => {
+      const video = document.getElementById('heroVideo');
+      if (video) {
+        video.muted = true;
+        video.play().catch(error => {
+          console.log("Autoplay bloqueado por el navegador:", error);
+        });
+      }
+    });
 
     // Menú móvil principal
-const hamburger = document.getElementById('hamb');
-const mobileMenu = document.getElementById('mobile');
+    const hamburger = document.getElementById('hamb');
+    const mobileMenu = document.getElementById('mobile');
 
-hamburger.addEventListener('click', () => {
-  const isOpen = mobileMenu.classList.toggle('open');
-  hamburger.setAttribute('aria-expanded', String(isOpen));
-});
+    if (hamburger && mobileMenu) {
+      hamburger.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', String(isOpen));
+      });
 
-// Ocultar menú al hacer clic en enlaces simples
-mobileMenu.querySelectorAll('a:not(.has-sub > a)').forEach(link => {
-  link.addEventListener('click', () => {
-    mobileMenu.classList.remove('open');
-    hamburger.setAttribute('aria-expanded', 'false');
-  });
-});
+      // Ocultar menú al hacer clic en enlaces simples
+      mobileMenu.querySelectorAll('a:not(.sub-header > a)').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
 
-// Control exclusivo del submenú al hacer clic ÚNICAMENTE en la flecha (sub-toggle)
-document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const parent = btn.closest('.has-sub');
-    parent.classList.toggle('open');
-  });
-});
+    // Control del submenú móvil en la flecha
+    document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const parent = btn.closest('.has-sub');
+        parent.classList.toggle('open');
+      });
+    });
+
     // FAQ Acordeón
     document.querySelectorAll('.faq-q').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
 
