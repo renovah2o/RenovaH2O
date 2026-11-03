@@ -123,7 +123,11 @@
 .testimonial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:60px}.testimonial{background:var(--soft);border-radius:25px;padding:32px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}.stars{color:#0071e3;letter-spacing:2px}.testimonial p{font-size:20px;line-height:1.25;letter-spacing:-.025em;margin-top:28px}.author{color:var(--gray);font-size:13px;margin-top:28px}.faq{background:var(--soft)}.faq-wrap{max-width:900px;margin:auto}.faq-item{border-top:1px solid var(--line)}.faq-item:last-child{border-bottom:1px solid var(--line)}.faq-q{width:100%;display:flex;justify-content:space-between;text-align:left;padding:24px 0;font-size:20px;letter-spacing:-.02em}.plus{font-size:28px;font-weight:300;transition:.25s}.faq-a{max-height:0;overflow:hidden;color:var(--gray);font-size:15px;transition:.35s ease;padding-right:50px}.faq-item.open .faq-a{max-height:160px;padding-bottom:24px}.faq-item.open .plus{transform:rotate(45deg)}
 .final{background:#000;color:#fff;text-align:center;padding:150px 0}.final .sub{margin:28px auto;color:#a1a1a6}.footer{background:#f5f5f7;padding:65px 0 30px}.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:50px;padding-bottom:50px}.footer h4{font-size:12px;color:#6e6e73;margin-bottom:18px}.footer a,.footer p{display:block;color:#6e6e73;font-size:13px;margin:9px 0}.footer-logo{height:38px}.footer-credit{font-size:10px;color:#9a9a9f;text-decoration:none;opacity:.7}.footer-credit:hover{opacity:1}.bottom{border-top:1px solid var(--line);padding-top:22px;color:#6e6e73;font-size:12px;display:flex;justify-content:space-between;gap:20px}.wa{position:fixed;right:22px;bottom:22px;z-index:950;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#25D366;color:#fff;box-shadow:0 18px 48px rgba(37,211,102,.35);transition:.25s ease}.wa:hover{transform:scale(1.08)}.wa svg{width:28px;height:28px;fill:#fff}.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}.reveal.visible{opacity:1;transform:none}
 @media(max-width:1040px){.nav-links{gap:18px}}
-@media(max-width:900px){.nav-links,.nav-cta{display:none}.hamb{display:block}.feature-grid,.results-grid,.testimonial-grid{grid-template-columns:1fr 1fr}.process-layout,.quote-layout{grid-template-columns:1fr;gap:45px}.process-photo{height:500px}.industry-grid{grid-template-columns:1fr 1fr}.footer-grid{grid-template-columns:1.5fr 1fr 1fr}.hero-proof{flex-wrap:wrap;gap:14px 24px}.results-head{display:block}.results-head .sub{margin-top:20px}.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding-top:60px}.mobile a{display:block;font-size:28px;font-weight:700;letter-spacing:-.04em;margin:15px;text-align:center;color:#fff;}}
+@media(max-width:900px){.nav-links,.nav-cta{display:none}.hamb{display:block}.feature-grid,.results-grid,.testimonial-grid{grid-template-columns:1fr 1fr}.process-layout,.quote-layout{grid-template-columns:1fr;gap:45px}.process-photo{height:500px}.industry-grid{grid-template-columns:1fr 1fr}.footer-grid{grid-template-columns:1.5fr 1fr 1fr}.hero-proof{flex-wrap:wrap;gap:14px 24px}.results-head{display:block}.results-head .sub{margin-top:20px}
+.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto}
+.mobile>div{width:100%;max-width:320px;padding:20px;text-align:center}
+.mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff}
+}
 @media(max-width:620px){.wrap{width:min(100% - 28px,var(--max))}.section{padding:90px 0}.section-sm{padding:70px 0}.hero{min-height:calc(100svh - 58px)}.hero-content{padding:80px 10px}.display{font-size:clamp(48px,15vw,76px)}.feature-grid,.results-grid,.testimonial-grid,.industry-grid,.form-grid{grid-template-columns:1fr}.feature{min-height:390px}.feature:nth-child(n+4){min-height:250px}.ba{height:430px}.process-photo{height:420px}.footer-grid{grid-template-columns:1fr 1fr;gap:35px}.footer-grid>div:first-child{grid-column:1/-1}.bottom{display:block}.bottom div+div{margin-top:10px}.hero-proof{font-size:12px}.wa{right:22px;bottom:22px}}
 
 /* ===== Servicios: 2 tarjetas + plan de mantenimiento ===== */
@@ -141,7 +145,7 @@
 @media(max-width:900px){.plan{grid-template-columns:1fr;gap:36px;padding:48px 36px}}
 @media(max-width:620px){.feature-grid.duo{grid-template-columns:1fr}.plan{padding:38px 24px}}
 
-/* Dropdown Servicios */
+/* Dropdown Servicios (Escritorio) */
 .dropdown { position: relative; }
 .dropdown-toggle { display: inline-flex; align-items: center; gap: 6px; }
 .dropdown-arrow { display: inline-block; font-size: 15px; line-height: 1; position: relative; top: -1px; transition: transform .25s ease; }
@@ -150,9 +154,17 @@
 .dropdown-menu a:hover { background: rgba(255,255,255,.09); color: white; }
 .dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
 .dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
+
+/* Estilos Menú Móvil con Acordeón (SEO y AI-Friendly) */
+.mobile .has-sub > a { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 26px; font-weight: 300; padding: 0 10px; cursor: pointer; transition: transform 0.25s ease; line-height: 1; }
+.mobile .mobile-submenu { display: none; list-style: none; padding-left: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 8px 0 12px 0; }
+.mobile .mobile-submenu a { font-size: 18px !important; margin: 8px 0 !important; color: #b5b5bb !important; }
+.mobile .has-sub.open .sub-toggle { transform: rotate(45deg); }
+.mobile .has-sub.open .mobile-submenu { display: block; }
 </style>
 </head>
-<body>
+<body itemscope itemtype="https://schema.org/WebPage">
 
   <!-- Botón WhatsApp flotante -->
   <a class="wa" aria-label="Contactar por WhatsApp a RenovaH2O" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20cotizar%20un%20servicio%20de%20hidrolavado." target="_blank" rel="noopener">
@@ -186,10 +198,17 @@
     </div>
   </header>
 
-  <!-- Menú móvil -->
-  <div class="mobile" id="mobile">
+  <!-- Menú móvil optimizado para SEO y rastreo de IAs -->
+  <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
     <div>
-      <a href="#servicios">Servicios</a>
+      <a href="#inicio">Inicio</a>
+      <div class="has-sub">
+        <a href="#servicios">Servicios <button class="sub-toggle" aria-label="Expandir submenú de servicios">+</button></a>
+        <ul class="mobile-submenu">
+          <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
+          <li><a href="#servicios">Comercial</a></li>
+        </ul>
+      </div>
       <a href="nosotros.html">Nosotros</a>
       <a href="blog.html">Blog</a>
       <a href="#cotizar">Cotizar</a>
@@ -516,7 +535,16 @@
     // Menú móvil
     const mobile = document.getElementById('mobile');
     document.getElementById('hamb').onclick = () => mobile.classList.toggle('open');
-    mobile.querySelectorAll('a').forEach(a => a.onclick = () => mobile.classList.remove('open'));
+    mobile.querySelectorAll('a:not(.has-sub > a)').forEach(a => a.onclick = () => mobile.classList.remove('open'));
+
+    // Acordeón para submenú móvil de Servicios (AI-Friendly & SEO Accessibility)
+    document.querySelectorAll('.mobile .has-sub > a').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const parent = item.parentElement;
+        parent.classList.toggle('open');
+      });
+    });
 
     // FAQ Acordeón
     document.querySelectorAll('.faq-q').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
