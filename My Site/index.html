@@ -155,11 +155,16 @@
 .dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
 .dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
 
-/* Estilos Menú Móvil con Acordeón (SEO y AI-Friendly) */
-.mobile .has-sub > a { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 26px; font-weight: 300; padding: 0 10px; cursor: pointer; transition: transform 0.25s ease; line-height: 1; }
-.mobile .mobile-submenu { display: none; list-style: none; padding-left: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 8px 0 12px 0; }
-.mobile .mobile-submenu a { font-size: 18px !important; margin: 8px 0 !important; color: #b5b5bb !important; }
+/* Estilos Menú Móvil Centrados (SEO y AI-Friendly) */
+.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
+.mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}
+.mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.mobile .has-sub > a { display: inline-flex; justify-content: center; align-items: center; width: 100%; text-align: center; }
+.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 24px; font-weight: 300; padding-left: 8px; cursor: pointer; transition: transform 0.25s ease; line-height: 1; }
+.mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 8px 0 12px 0; width: 100%; text-align: center; }
+.mobile .mobile-submenu li { width: 100%; text-align: center; }
+.mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
 .mobile .has-sub.open .sub-toggle { transform: rotate(45deg); }
 .mobile .has-sub.open .mobile-submenu { display: block; }
 </style>
