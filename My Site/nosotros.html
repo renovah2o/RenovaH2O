@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es-PA">
+<html lang="es-PA" itemscope itemtype="https://schema.org/AboutPage">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +28,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Datos Estructurados Schema.org (AboutPage y LocalBusiness) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -69,7 +68,8 @@
     "sameAs": [
       "https://instagram.com/renovah2o",
       "https://youtube.com/@renovah2o",
-      "https://tiktok.com/@renovah2o"
+      "https://tiktok.com/@renovah2o",
+      "https://www.facebook.com/profile.php?id=61565248268444"
     ]
   }
 }
@@ -93,9 +93,35 @@
 }
 
 /* Nav */
-.nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}.logo{height:40px;width:auto;object-fit:contain}.nav-links{display:flex;gap:30px;list-style:none;align-items:center}.nav-links > li{display:flex;align-items:center;height:100%}.nav-links a{display:inline-flex;align-items:center;height:58px;line-height:1;font-size:13px;color:#d1d1d6;transition:.2s}.nav-links a:hover,.nav-links a.active{color:#fff}.nav-cta{font-size:13px;color:#fff!important;background:#0071e3;border-radius:980px;padding:7px 15px;height:auto!important}.hamb{display:none;width:38px;height:38px}.hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}.mobile{display:none}
+.nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}.nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}.logo{height:40px;width:auto;object-fit:contain}.nav-links{display:flex;gap:30px;list-style:none;align-items:center}.nav-links > li{display:flex;align-items:center;height:100%}.nav-links a{display:inline-flex;align-items:center;height:58px;line-height:1;font-size:13px;color:#d1d1d6;transition:.2s}.nav-links a:hover,.nav-links a.active{color:#fff}.nav-cta{font-size:13px;color:#fff!important;background:#0071e3;border-radius:980px;padding:7px 15px;height:auto!important}.hamb{display:none;width:38px;height:38px}.hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}
 
-/* Hero Nosotros Pantalla Completa */
+/* Dropdown Servicios (Escritorio) */
+.dropdown { position: relative; }
+.dropdown-toggle { display: inline-flex; align-items: center; gap: 6px; }
+.dropdown-arrow { display: inline-block; font-size: 15px; line-height: 1; position: relative; top: -1px; transition: transform .25s ease; }
+.dropdown-menu { position: absolute; top: 100%; left: -15px; min-width: 210px; padding: 10px; list-style: none; background: rgba(20,20,22,.97); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; opacity: 0; visibility: hidden; transform: translateY(8px); transition: .25s ease; }
+.dropdown-menu a { display: block; padding: 12px 14px; border-radius: 9px; color: #d1d1d6; font-size: 13px; height: auto; line-height: 1.4; }
+.dropdown-menu a:hover { background: rgba(255,255,255,.09); color: white; }
+.dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+.dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
+
+/* Estilos Menú Móvil */
+.mobile{display:none}
+.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
+.mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}
+.mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.mobile .sub-header { display: inline-flex; align-items: center; justify-content: center; position: relative; margin: 12px 0; }
+.mobile .sub-header a { margin: 0 !important; }
+.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 18px; padding: 4px 10px; cursor: pointer; display: inline-flex; align-items: center; }
+.mobile .arrow-icon { display: inline-block; transition: transform 0.25s ease; line-height: 1; }
+.mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 4px 0 12px 0; width: 100%; text-align: center; }
+.mobile .mobile-submenu li { width: 100%; text-align: center; }
+.mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
+.mobile .has-sub.open .arrow-icon { transform: rotate(180deg); }
+.mobile .has-sub.open .mobile-submenu { display: block; }
+
+/* Hero Nosotros */
 .about-hero{background:#000;color:#fff;min-height:calc(100vh - 58px);margin-top:58px;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:40px 0}
 .about-hero-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%, rgba(0,113,227,0.22), transparent 70%);pointer-events:none}
 .about-hero .sub{color:#a1a1a6;margin:24px auto 0}
@@ -131,7 +157,7 @@
 .author-info{margin-top:36px;font-size:15px;color:#a1a1a6}
 .author-info strong{color:#fff;display:block;font-size:18px}
 
-/* Team & Founder Section */
+/* Team Section */
 .team{background:#fff}
 .team-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:70px;align-items:stretch}
 .team-card{background:var(--soft);border-radius:var(--radius);padding:48px;display:flex;flex-direction:column;justify-content:space-between}
@@ -139,14 +165,6 @@
 .team-card h3{font-size:32px;letter-spacing:-.03em;margin-bottom:6px}
 .team-card .role{font-size:15px;color:var(--gray);margin-bottom:24px;font-weight:500}
 .team-card p{color:var(--gray);font-size:15px;line-height:1.6;margin-bottom:16px}
-
-/* Values Grid */
-.values{background:var(--soft)}
-.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:60px}
-.value-card{background:#fff;padding:36px;border-radius:24px;border:1px solid var(--line)}
-.value-icon{width:48px;height:48px;background:var(--soft);border-radius:14px;display:grid;place-items:center;font-size:22px;margin-bottom:20px;color:var(--blue)}
-.value-card h4{font-size:20px;letter-spacing:-.02em;margin-bottom:10px}
-.value-card p{color:var(--gray);font-size:14px;line-height:1.55}
 
 /* Google Business Section */
 .gbp-section{background:var(--soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -162,28 +180,34 @@
 .gbp-info-box p{color:#a1a1a6;font-size:15px;line-height:1.6;margin-bottom:30px}
 .gbp-actions{display:flex;gap:24px;flex-wrap:wrap;align-items:center}
 
-/* Redes Sociales Section */
-.socials{background:#000;color:#fff;text-align:center}
-.socials .eyebrow{color:#a1a1a6}
+/* Redes Sociales Section (Fondo Claro) */
+.socials{background:var(--soft);color:var(--ink);text-align:center}
+.socials .eyebrow{color:var(--gray)}
+.socials .sub{color:var(--gray)}
 .socials-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:60px}
-.social-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:40px 24px;border-radius:var(--radius);text-align:center;transition:all .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.social-card:hover{background:rgba(255,255,255,0.08);transform:translateY(-6px);border-color:var(--blue2)}
-.social-icon{width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,0.08);display:grid;place-items:center;margin-bottom:20px;transition:.3s ease}
+.social-card{background:#fff;border:1px solid var(--line);padding:40px 24px;border-radius:var(--radius);text-align:center;transition:all .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.04)}
+.social-card:hover{background:#fff;transform:translateY(-6px);border-color:var(--blue);box-shadow:0 18px 40px rgba(0,0,0,.08)}
+.social-icon{width:56px;height:56px;border-radius:16px;background:#e4f1ff;display:grid;place-items:center;margin-bottom:20px;transition:.3s ease;color:var(--blue)}
 .social-card:hover .social-icon{background:var(--blue);color:#fff}
 .social-icon svg{width:28px;height:28px;fill:currentColor}
-.social-card h3{font-size:20px;letter-spacing:-.02em;margin-bottom:6px}
-.social-card p{font-size:13px;color:#a1a1a6;margin-bottom:18px}
-.social-link{font-size:13px;font-weight:600;color:var(--blue2);display:inline-flex;align-items:center;gap:4px}
+.social-card h3{font-size:20px;letter-spacing:-.02em;margin-bottom:6px;color:var(--ink)}
+.social-card p{font-size:13px;color:var(--gray);margin-bottom:18px}
+.social-link{font-size:13px;font-weight:600;color:var(--blue);display:inline-flex;align-items:center;gap:4px}
 .social-link:after{content:' ›';font-size:1.2em;transition:.2s ease}
 .social-card:hover .social-link:after{transform:translateX(3px)}
 
 /* CTA Final & Footer */
 .final{background:#000;color:#fff;text-align:center;padding:140px 0;border-top:1px solid rgba(255,255,255,0.1)}
 .final .sub{margin:28px auto;color:#a1a1a6}
-.footer{background:#f5f5f7;padding:65px 0 30px}
+
+.footer{background:#000;color:#a1a1a6;padding:65px 0 30px}
 .footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:50px;padding-bottom:50px}
-.footer h4{font-size:12px;color:#6e6e73;margin-bottom:18px}.footer a,.footer p{display:block;color:#6e6e73;font-size:13px;margin:9px 0}.footer-logo{height:38px}
-.bottom{border-top:1px solid var(--line);padding-top:22px;color:#6e6e73;font-size:12px;display:flex;justify-content:space-between;gap:20px}
+.footer h4{font-size:12px;color:#fff;margin-bottom:18px;text-transform:uppercase;letter-spacing:.08em}
+.footer a,.footer p{display:block;color:#a1a1a6;font-size:13px;margin:9px 0}
+.footer a:hover{color:#fff}
+.footer-logo{height:38px}
+.bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;color:#7a7a7f;font-size:12px;display:flex;justify-content:space-between;gap:20px}
+
 .wa{position:fixed;right:22px;bottom:22px;z-index:950;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#25D366;color:#fff;box-shadow:0 18px 48px rgba(37,211,102,.35);transition:.25s ease}.wa:hover{transform:scale(1.08)}.wa svg{width:28px;height:28px;fill:#fff}
 
 /* Animaciones Scroll */
@@ -195,37 +219,25 @@
 @media(max-width:900px){
   .nav-links,.nav-cta{display:none}.hamb{display:block}
   .about-hero{min-height:auto;padding:120px 0 80px}
-  .values-grid,.team-layout,.gbp-grid{grid-template-columns:1fr}
+  .team-layout,.gbp-grid{grid-template-columns:1fr}
   .socials-grid{grid-template-columns:1fr 1fr}
   .timeline-card,.timeline-card.reverse{grid-template-columns:1fr;gap:24px;padding:32px}
   .footer-grid{grid-template-columns:1fr 1fr;gap:35px}
   .footer-grid>div:first-child{grid-column:1/-1}
-  .mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding-top:60px}
-  .mobile a{display:block;font-size:28px;font-weight:700;letter-spacing:-.04em;margin:15px;text-align:center;color:#fff}
 }
 @media(max-width:620px){
   .socials-grid{grid-template-columns:1fr}
 }
-
-/* Dropdown Servicios */
-.dropdown { position: relative; }
-.dropdown-toggle { display: inline-flex; align-items: center; gap: 6px; }
-.dropdown-arrow { display: inline-block; font-size: 15px; line-height: 1; position: relative; top: -1px; transition: transform .25s ease; }
-.dropdown-menu { position: absolute; top: 100%; left: -15px; min-width: 210px; padding: 10px; list-style: none; background: rgba(20,20,22,.97); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; opacity: 0; visibility: hidden; transform: translateY(8px); transition: .25s ease; }
-.dropdown-menu a { display: block; padding: 12px 14px; border-radius: 9px; color: #d1d1d6; font-size: 13px; height: auto; line-height: 1.4; }
-.dropdown-menu a:hover { background: rgba(255,255,255,.09); color: white; }
-.dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
-.dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
 </style>
 </head>
-<body>
+<body itemscope itemtype="https://schema.org/AboutPage">
 
   <!-- Botón WhatsApp flotante -->
-  <a class="wa" aria-label="Contactar por WhatsApp a RenovaH2O" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20le%C3%AD%20sobre%20su%20historia%20en%20la%20web%20y%20me%20gustar%C3%ADa%20cotizar%20un%20servicio." target="_blank" rel="noopener">
+  <a class="wa" aria-label="Contactar por WhatsApp a RenovaH2O" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20le%C3%ad%20sobre%20su%20historia%20en%20la%20web%20y%20me%20gustar%C3%ADa%20cotizar%20un%20servicio." target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884M20.463 3.488A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 
-  <!-- Header / Navegación -->
+  <!-- Header -->
   <header class="nav">
     <div class="wrap nav-inner">
       <a href="index.html" aria-label="Ir al inicio de RenovaH2O"><img class="logo" src="Images/Logo Silver LL.png" alt="RenovaH2O Logo" width="160" height="40"></a>
@@ -236,7 +248,7 @@
             <a href="index.html#servicios" class="dropdown-toggle" aria-expanded="false">Servicios <span class="dropdown-arrow" aria-hidden="true">⌄</span></a>
             <ul class="dropdown-menu">
               <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
-              <li><a href="index.html#servicios">Comercial</a></li>
+              <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
             </ul>
           </li>
           <li><a href="nosotros.html" class="active">Nosotros</a></li>
@@ -244,17 +256,26 @@
         </ul>
       </nav>
       <a class="nav-cta" href="index.html#cotizar">Cotizar</a>
-      <button class="hamb" id="hamb" aria-label="Abrir menú de navegación">
+      <button class="hamb" id="hamb" aria-label="Abrir menú de navegación" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
   <!-- Menú móvil -->
-  <div class="mobile" id="mobile">
+  <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
     <div>
       <a href="index.html">Inicio</a>
-      <a href="index.html#servicios">Servicios</a>
+      <div class="has-sub">
+        <div class="sub-header">
+          <a href="index.html#servicios">Servicios</a>
+          <button class="sub-toggle" aria-label="Expandir submenú de servicios"><span class="arrow-icon">⌄</span></button>
+        </div>
+        <ul class="mobile-submenu">
+          <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
+          <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
+        </ul>
+      </div>
       <a href="nosotros.html">Nosotros</a>
       <a href="blog.html">Blog</a>
       <a href="index.html#cotizar">Cotizar</a>
@@ -263,7 +284,7 @@
   </div>
 
   <main>
-    <!-- Hero Nosotros Full Screen -->
+    <!-- Hero Nosotros -->
     <section class="about-hero">
       <div class="about-hero-bg"></div>
       <div class="wrap reveal">
@@ -339,7 +360,7 @@
       </div>
     </section>
 
-    <!-- Equipo y Filosofía -->
+    <!-- Equipo -->
     <section class="section team">
       <div class="wrap">
         <div class="reveal">
@@ -371,37 +392,7 @@
       </div>
     </section>
 
-    <!-- Valores -->
-    <section class="section values">
-      <div class="wrap">
-        <div class="reveal" style="text-align:center">
-          <div class="eyebrow">Nuestra Filosofía</div>
-          <h2 class="title">Lo que nos mueve cada día.</h2>
-        </div>
-
-        <div class="values-grid">
-          <div class="value-card reveal">
-            <div class="value-icon" aria-hidden="true">👁</div>
-            <h4>Ojo para el Detalle</h4>
-            <p>No dejamos marcas, sombras ni franjas en tus superficies. Tratamos cada rincón con el cuidado que le daríamos a nuestra propia casa.</p>
-          </div>
-
-          <div class="value-card reveal">
-            <div class="value-icon" aria-hidden="true">⚡</div>
-            <h4>Equipos Correctos</h4>
-            <p>Utilizamos máquinas de gran caudal y accesorios profesionales para lograr una limpieza rápida, uniforme y sin desgastar tus materiales.</p>
-          </div>
-
-          <div class="value-card reveal">
-            <div class="value-icon" aria-hidden="true">🤝</div>
-            <h4>Escucha Activa</h4>
-            <p>Como docente y servidor, me aseguro de entender qué necesitas exactamente, explicarte el proceso y garantizar tu total tranquilidad.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Sección Google Business Profile -->
+    <!-- Google Business Section -->
     <section class="section gbp-section">
       <div class="wrap">
         <div class="reveal">
@@ -436,7 +427,17 @@
       </div>
     </section>
 
-    <!-- Sección Redes Sociales -->
+    <!-- Final CTA -->
+    <section class="final">
+      <div class="wrap reveal">
+        <div class="eyebrow">RenovaH2O</div>
+        <h2 class="display">¿Listo para renovar<br><span class="blue">tus superficies?</span></h2>
+        <p class="sub">Escríbenos directamente y coordinemos una evaluación sin compromiso.</p>
+        <a class="btn-link" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20cotizar%20un%20servicio." target="_blank" rel="noopener">Hablar con Julián por WhatsApp</a>
+      </div>
+    </section>
+
+    <!-- Sección Redes Sociales (Fondo Claro) -->
     <section class="section socials">
       <div class="wrap">
         <div class="reveal">
@@ -484,39 +485,29 @@
         </div>
       </div>
     </section>
-
-    <!-- Final CTA -->
-    <section class="final">
-      <div class="wrap reveal">
-        <div class="eyebrow">RenovaH2O</div>
-        <h2 class="display">¿Listo para renovar<br><span class="blue">tus superficies?</span></h2>
-        <p class="sub">Escríbenos directamente y coordinemos una evaluación sin compromiso.</p>
-        <a class="btn-link" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20quiero%20cotizar%20un%20servicio." target="_blank" rel="noopener">Hablar con Julián por WhatsApp</a>
-      </div>
-    </section>
   </main>
 
-  <!-- Footer -->
+  <!-- Footer en Negro -->
   <footer class="footer">
     <div class="wrap">
       <div class="footer-grid">
         <div>
-          <a href="index.html" aria-label="Ir al inicio"><img class="footer-logo" src="Images/Logo R Black NBG.png" alt="RenovaH2O Logo Negro" width="150" height="38"></a>
-          <p style="max-width:330px;margin-top:18px">Hidrolavado comercial y residencial premium en Panamá. Limpieza exterior diseñada para elevar la imagen de tu propiedad.</p>
+          <a href="index.html" aria-label="Ir al inicio"><img class="footer-logo" src="Images/Logo Silver LL.png" alt="RenovaH2O Logo" width="150" height="38"></a>
+          <p style="max-width:330px;margin-top:18px">Hidrolavado comercial y residencial premium en Panamá. Limpieza exterior especializada para elevar la imagen de tu propiedad.</p>
         </div>
         <div>
           <h4>Servicios</h4>
-          <a href="index.html#servicios">Fachadas Comerciales</a>
-          <a href="index.html#servicios">Aceras y Pisos</a>
+          <a href="limpieza-de-estacionamientos-panama.html">Limpieza Comercial</a>
           <a href="limpieza-de-pisos-panama.html">Hidrolavado Residencial</a>
           <a href="index.html#servicios">Mantenimiento Programado</a>
         </div>
         <div>
-          <h4>Empresa</h4>
+          <h4>Navegación</h4>
           <a href="index.html#resultados">Galería de Resultados</a>
           <a href="index.html#proceso">Nuestro Proceso</a>
           <a href="nosotros.html">Sobre Nosotros</a>
           <a href="blog.html">Blog & Consejos</a>
+          <a href="index.html#faq">Preguntas Frecuentes</a>
         </div>
         <div>
           <h4>Contacto Directo</h4>
@@ -528,21 +519,38 @@
       </div>
       <div class="bottom">
         <div>© <span id="year"></span> RenovaH2O. Todos los derechos reservados.</div>
-        <div>Panamá · Panamá Oeste (Arraiján y La Chorrera)</div>
+        <div>Panamá · Panamá Oeste</div>
       </div>
     </div>
   </footer>
 
   <script>
-    // Menú móvil
-    const mobile = document.getElementById('mobile');
-    document.getElementById('hamb').onclick = () => mobile.classList.toggle('open');
-    mobile.querySelectorAll('a').forEach(a => a.onclick = () => mobile.classList.remove('open'));
+    // Menú móvil principal
+    const hamburger = document.getElementById('hamb');
+    const mobileMenu = document.getElementById('mobile');
+    
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', String(isOpen));
+    });
 
-    // Año actual automático
+    mobileMenu.querySelectorAll('a:not(.has-sub > a)').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const parent = btn.closest('.has-sub');
+        parent.classList.toggle('open');
+      });
+    });
+
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Intersection Observer
     const observerOptions = {
       threshold: 0.12,
       rootMargin: "0px 0px -40px 0px"
@@ -559,7 +567,6 @@
 
     document.querySelectorAll('.reveal, .reveal-scale').forEach(el => revealObserver.observe(el));
 
-    // Comparador Antes/Después
     document.querySelectorAll('.ba').forEach(slider => {
       const input = slider.querySelector('input');
       const setPos = v => slider.style.setProperty('--pos', v + '%');
