@@ -1,0 +1,4 @@
+/hidrolavadora-panama.html /limpieza-de-pisos-panama 301
+/servicio-de-limpiar-pisos.html /limpieza-de-pisos-panama 301
+/index.html / 301
+/*.html /:splat 301
