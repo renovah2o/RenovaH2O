@@ -134,15 +134,14 @@ main{padding:90px 0 60px;background:#fff}
   .mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
   .mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
   .mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}
-  .mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; }
-  .mobile .sub-header { display: inline-flex; align-items: center; justify-content: center; position: relative; margin: 12px 0; }
-  .mobile .sub-header a { margin: 0 !important; }
-  .mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 18px; padding: 4px 10px; cursor: pointer; display: inline-flex; align-items: center; }
-  .mobile .arrow-icon { display: inline-block; transition: transform 0.25s ease; line-height: 1; }
+  .mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
+  .mobile .sub-header { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; margin: 12px 0; cursor: pointer; }
+  .mobile .sub-header a { font-size: 24px; font-weight: 700; margin: 0 !important; color: #fff; letter-spacing: -.04em; }
+  .mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 20px; font-weight: 400; cursor: pointer; transition: transform 0.25s ease; padding: 4px; display: inline-flex; align-items: center; justify-content: center; }
   .mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 4px 0 12px 0; width: 100%; text-align: center; }
   .mobile .mobile-submenu li { width: 100%; text-align: center; }
   .mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
-  .mobile .has-sub.open .arrow-icon { transform: rotate(180deg); }
+  .mobile .has-sub.open .sub-toggle { transform: rotate(180deg); }
   .mobile .has-sub.open .mobile-submenu { display: block; }
 }
 
@@ -224,7 +223,7 @@ main{padding:90px 0 60px;background:#fff}
     <div class="has-sub">
       <div class="sub-header">
         <a href="https://renovah2o.com/#servicios">Servicios</a>
-        <button class="sub-toggle" aria-label="Expandir submenú de servicios"><span class="arrow-icon">⌄</span></button>
+        <button class="sub-toggle" type="button" aria-expanded="false" aria-label="Expandir submenú de servicios"><span class="arrow-icon">⌄</span></button>
       </div>
       <ul class="mobile-submenu">
         <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
@@ -384,7 +383,7 @@ main{padding:90px 0 60px;background:#fff}
     });
 
     // Ocultar al hacer clic en enlaces simples
-    menu.querySelectorAll('a:not(.has-sub > a)').forEach(function(link){
+    menu.querySelectorAll('.mobile-submenu a, .mobile > div > a').forEach(function(link){
       link.addEventListener('click', function(){
         menu.classList.remove('open');
         button.setAttribute('aria-expanded', 'false');
@@ -392,11 +391,13 @@ main{padding:90px 0 60px;background:#fff}
     });
 
     // Control del acordeón móvil de Servicios
-    document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.mobile .sub-header > a, .mobile .sub-toggle').forEach(control => {
+      control.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        const parent = btn.closest('.has-sub');
-        parent.classList.toggle('open');
+        const parent = control.closest('.has-sub');
+        const isOpen = parent.classList.toggle('open');
+        parent.querySelector('.sub-toggle').setAttribute('aria-expanded', String(isOpen));
       });
     });
 

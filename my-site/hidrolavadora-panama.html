@@ -558,7 +558,7 @@ hamburger.addEventListener('click', () => {
 });
 
 // Ocultar menú al hacer clic en enlaces simples
-mobileMenu.querySelectorAll('a:not(.has-sub a)').forEach(link => {
+mobileMenu.querySelectorAll('.mobile-submenu a, .mobile > div > a').forEach(link => {
   link.addEventListener('click', () => {
     mobileMenu.classList.remove('open');
     hamburger.setAttribute('aria-expanded', 'false');
@@ -578,14 +578,6 @@ if (mobileServicesHeader) {
     }
   });
 }
-
-// Cerrar menú móvil al hacer clic en una opción del submenú
-mobileMenu.querySelectorAll('.mobile-submenu a').forEach(link => {
-  link.addEventListener('click', () => {
-    mobileMenu.classList.remove('open');
-    hamburger.setAttribute('aria-expanded', 'false');
-  });
-});
 
 // Animaciones de entrada al hacer scroll (Reveal)
 if('IntersectionObserver' in window){
