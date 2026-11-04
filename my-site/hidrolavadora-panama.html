@@ -148,19 +148,20 @@ tr:last-child td{border-bottom:0}
   .footer-grid{grid-template-columns:1fr 1fr;gap:35px}
   .footer-grid>div:first-child{grid-column:1/-1}
 
-  .mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
-  .mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
-  .mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center;text-decoration:none}
-  .mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; }
-  .mobile .sub-header { display: inline-flex; align-items: center; justify-content: center; position: relative; margin: 12px 0; }
-  .mobile .sub-header a { margin: 0 !important; }
-  .mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 18px; padding: 4px 10px; cursor: pointer; display: inline-flex; align-items: center; }
-  .mobile .arrow-icon { display: inline-block; transition: transform 0.25s ease; line-height: 1; }
-  .mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 4px 0 12px 0; width: 100%; text-align: center; }
-  .mobile .mobile-submenu li { width: 100%; text-align: center; }
-  .mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
-  .mobile .has-sub.open .arrow-icon { transform: rotate(180deg); }
-  .mobile .has-sub.open .mobile-submenu { display: block; }
+/* Estilos Menú Móvil Corregidos y Consonos */
+.mobile{display:none}
+.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
+.mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}
+.mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
+.mobile .sub-header { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; margin: 12px 0; cursor: pointer; }
+.mobile .sub-header a { font-size: 24px; font-weight: 700; margin: 0 !important; color: #fff; letter-spacing: -.04em; }
+.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 20px; font-weight: 400; cursor: pointer; transition: transform 0.25s ease; padding: 4px; display: inline-flex; align-items: center; justify-content: center; }
+.mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 4px 0 12px 0; width: 100%; text-align: center; }
+.mobile .mobile-submenu li { width: 100%; text-align: center; }
+.mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
+.mobile .has-sub.open .sub-toggle { transform: rotate(180deg); }
+.mobile .has-sub.open .mobile-submenu { display: block; }
 }
 
 @media(max-width:620px){
@@ -229,26 +230,28 @@ tr:last-child td{border-bottom:0}
     </div>
   </header>
 
-  <!-- Menú móvil con acordeón idéntico -->
-  <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
-    <div>
-      <a href="https://renovah2o.com/">Inicio</a>
-      <div class="has-sub">
-        <div class="sub-header">
-          <a href="https://renovah2o.com/#servicios">Servicios</a>
-          <button class="sub-toggle" aria-label="Expandir submenú de servicios"><span class="arrow-icon">⌄</span></button>
-        </div>
-        <ul class="mobile-submenu">
-          <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
-          <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
-        </ul>
+<!-- Menú móvil con acordeón -->
+<div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
+  <div>
+    <a href="index.html">Inicio</a>
+    <div class="has-sub">
+      <div class="sub-header" id="mobileServicesHeader">
+        <a href="javascript:void(0);">Servicios</a>
+        <button class="sub-toggle" type="button" aria-expanded="false" aria-label="Desplegar submenú de servicios">
+          <span class="arrow-icon">⌄</span>
+        </button>
       </div>
-      <a href="https://renovah2o.com/nosotros">Nosotros</a>
-      <a href="https://renovah2o.com/blog">Blog</a>
-      <a href="https://renovah2o.com/#cotizar">Cotizar</a>
-      <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
+      <ul class="mobile-submenu">
+        <li><a href="limpieza-de-pisos-panama.html" class="active">Residencial</a></li>
+        <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
+      </ul>
     </div>
+    <a href="nosotros.html">Nosotros</a>
+    <a href="blog.html">Blog</a>
+    <a href="index.html#cotizar">Cotizar</a>
+    <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
   </div>
+</div>
 
   <header class="hero">
     <div class="wrap">
@@ -538,34 +541,57 @@ tr:last-child td{border-bottom:0}
     </svg>
   </a>
 
-  <script>
-    (function () {
-      const button = document.getElementById('hamb');
-      const menu = document.getElementById('mobile');
-      if (!button || !menu) return;
-      button.addEventListener('click', function () {
-        const open = menu.classList.toggle('open');
-        button.setAttribute('aria-expanded', String(open));
-      });
-      menu.querySelectorAll('a:not(.has-sub > a)').forEach(function (link) {
-        link.addEventListener('click', function () {
-          menu.classList.remove('open');
-          button.setAttribute('aria-expanded', 'false');
-        });
-      });
+<script>
+// Menú móvil principal
+const hamburger = document.getElementById('hamb');
+const mobileMenu = document.getElementById('mobile');
 
-      // Control del acordeón móvil de Servicios
-      document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const parent = btn.closest('.has-sub');
-          parent.classList.toggle('open');
-        });
-      });
+hamburger.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', String(isOpen));
+});
 
-      document.getElementById('year').textContent = new Date().getFullYear();
-    })();
-  </script>
+// Ocultar menú al hacer clic en enlaces simples
+mobileMenu.querySelectorAll('a:not(.has-sub a)').forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  });
+});
+
+// Control del Dropdown Móvil (Despliega el submenú al tocar "Servicios" o la flecha)
+const mobileServicesHeader = document.getElementById('mobileServicesHeader');
+if (mobileServicesHeader) {
+  mobileServicesHeader.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const parent = mobileServicesHeader.closest('.has-sub');
+    const isOpen = parent.classList.toggle('open');
+    const btn = mobileServicesHeader.querySelector('.sub-toggle');
+    if (btn) {
+      btn.setAttribute('aria-expanded', String(isOpen));
+    }
+  });
+}
+
+// Cerrar menú móvil al hacer clic en una opción del submenú
+mobileMenu.querySelectorAll('.mobile-submenu a').forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  });
+});
+
+// Animaciones de entrada al hacer scroll (Reveal)
+if('IntersectionObserver' in window){
+    const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.12});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+}else{
+    document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+}
+
+// Año actual automático
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
