@@ -182,16 +182,16 @@
 .dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
 .dropdown:hover .dropdown-arrow { transform: rotate(180deg); }
 
-/* Estilos Menú Móvil Centrados (Corregidos Flex Alignment) */
+/* Estilos Menú Móvil Corregidos y Consonos */
 .mobile{display:none}
 .mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
 .mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
 .mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}
-.mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; }
-.mobile .sub-header { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-.mobile .sub-header > a { margin: 12px 0; display: inline-block; }
-.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 20px; font-weight: 300; cursor: pointer; transition: transform 0.25s ease; padding: 5px; display: inline-flex; align-items: center; justify-content: center; }
-.mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 8px 0 12px 0; width: 100%; text-align: center; }
+.mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
+.mobile .sub-header { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; margin: 12px 0; }
+.mobile .sub-header a { font-size: 24px; font-weight: 700; margin: 0 !important; color: #fff; }
+.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 20px; font-weight: 400; cursor: pointer; transition: transform 0.25s ease; padding: 4px 8px; display: inline-flex; align-items: center; justify-content: center; }
+.mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 4px 0 12px 0; width: 100%; text-align: center; }
 .mobile .mobile-submenu li { width: 100%; text-align: center; }
 .mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
 .mobile .has-sub.open .sub-toggle { transform: rotate(180deg); }
@@ -231,21 +231,22 @@
     </div>
 </header>
 
-<!-- Menú móvil con acordeón ajustado -->
+<!-- Menú móvil con acordeón corregido -->
 <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
   <div>
     <a href="index.html">Inicio</a>
-      <div class="has-sub">
-        <!-- Ahora todo el bloque actúa como botón para abrir y cerrar el submenú -->
-        <button class="sub-header sub-toggle" type="button" aria-expanded="false">
-          <span>Servicios</span>
-          <span class="arrow-icon" style="margin-left: 6px;">⌄</span>
+    <div class="has-sub">
+      <div class="sub-header">
+        <a href="limpieza-de-pisos-panama.html">Servicios</a>
+        <button class="sub-toggle" type="button" aria-expanded="false" aria-label="Desplegar submenú de servicios">
+          <span class="arrow-icon">⌄</span>
         </button>
-        <ul class="mobile-submenu">
-          <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
-          <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
-        </ul>
       </div>
+      <ul class="mobile-submenu">
+        <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
+        <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
+      </ul>
+    </div>
     <a href="nosotros.html">Nosotros</a>
     <a href="blog.html">Blog</a>
     <a href="index.html#cotizar">Cotizar</a>
