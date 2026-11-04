@@ -235,16 +235,17 @@
 <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
   <div>
     <a href="index.html">Inicio</a>
-    <div class="has-sub">
-      <div class="sub-header">
-        <a href="index.html#servicios">Servicios</a>
-        <button class="sub-toggle" aria-label="Expandir submenú de servicios"><span class="arrow-icon">⌄</span></button>
+      <div class="has-sub">
+        <!-- Ahora todo el bloque actúa como botón para abrir y cerrar el submenú -->
+        <button class="sub-header sub-toggle" type="button" aria-expanded="false">
+          <span>Servicios</span>
+          <span class="arrow-icon" style="margin-left: 6px;">⌄</span>
+        </button>
+        <ul class="mobile-submenu">
+          <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
+          <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
+        </ul>
       </div>
-      <ul class="mobile-submenu">
-        <li><a href="limpieza-de-pisos-panama.html">Residencial</a></li>
-        <li><a href="limpieza-de-estacionamientos-panama.html">Comercial</a></li>
-      </ul>
-    </div>
     <a href="nosotros.html">Nosotros</a>
     <a href="blog.html">Blog</a>
     <a href="index.html#cotizar">Cotizar</a>
@@ -584,34 +585,37 @@
     </div>
 </footer>
 
-  <script>
-    // Año automático
+ <script>
+    // 1. Año actual automático en el footer
     const yearSpan = document.getElementById('year');
-    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+    if (yearSpan) {
+      yearSpan.textContent = new Date().getFullYear();
+    }
 
-    // Forzar Autoplay del video en móviles (iOS y Android)
+    // 2. Autoplay garantizado del video hero en dispositivos móviles (iOS / Android)
     document.addEventListener('DOMContentLoaded', () => {
       const video = document.getElementById('heroVideo');
       if (video) {
         video.muted = true;
         video.play().catch(error => {
-          console.log("Autoplay bloqueado por el navegador:", error);
+          console.log("Autoplay de video restringido por el navegador:", error);
         });
       }
     });
 
-    // Menú móvil principal
+    // 3. Control del Menú Móvil Principal
     const hamburger = document.getElementById('hamb');
     const mobileMenu = document.getElementById('mobile');
 
     if (hamburger && mobileMenu) {
+      // Abrir / Cerrar menú móvil
       hamburger.addEventListener('click', () => {
         const isOpen = mobileMenu.classList.toggle('open');
         hamburger.setAttribute('aria-expanded', String(isOpen));
       });
 
-      // Ocultar menú al hacer clic en enlaces simples
-      mobileMenu.querySelectorAll('a:not(.sub-header > a)').forEach(link => {
+      // Cerrar la cortina del menú móvil al hacer clic en enlaces de navegación finales
+      mobileMenu.querySelectorAll('.mobile-submenu a, .mobile > div > a').forEach(link => {
         link.addEventListener('click', () => {
           mobileMenu.classList.remove('open');
           hamburger.setAttribute('aria-expanded', 'false');
@@ -619,33 +623,40 @@
       });
     }
 
-    // Control del submenú móvil en la flecha
+    // 4. Control del Dropdown Móvil (Despliega el submenú al tocar "Servicios")
     document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const parent = btn.closest('.has-sub');
-        parent.classList.toggle('open');
+        const isOpen = parent.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(isOpen));
       });
     });
 
-    // FAQ Acordeón
-    document.querySelectorAll('.faq-q').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+    // 5. Animación de elementos al hacer scroll (Reveal)
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver(entries => entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      }), { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    }
 
-    // Animación al hacer scroll (Reveal)
-    const obs = new IntersectionObserver(entries => entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    }), { threshold: .1 });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-    // Comparador Antes/Después
+    // 6. Comparador interactivo de Imágenes Antes / Después
     document.querySelectorAll('.ba').forEach(slider => {
       const input = slider.querySelector('input');
-      const setPos = v => slider.style.setProperty('--pos', v + '%');
-      setPos(input.value);
-      input.addEventListener('input', e => setPos(e.target.value));
+      if (input) {
+        const setPos = v => slider.style.setProperty('--pos', v + '%');
+        setPos(input.value);
+        input.addEventListener('input', e => setPos(e.target.value));
+      }
     });
 
-    // Envío de formulario a WhatsApp
+    // 7. Procesamiento del Formulario de Cotización enviando datos a WhatsApp
     const quoteForm = document.getElementById('quoteForm');
     if (quoteForm) {
       quoteForm.addEventListener('submit', e => {
