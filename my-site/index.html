@@ -188,9 +188,9 @@
 .mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
 .mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}
 .mobile .has-sub { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
-.mobile .sub-header { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; margin: 12px 0; }
-.mobile .sub-header a { font-size: 24px; font-weight: 700; margin: 0 !important; color: #fff; }
-.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 20px; font-weight: 400; cursor: pointer; transition: transform 0.25s ease; padding: 4px 8px; display: inline-flex; align-items: center; justify-content: center; }
+.mobile .sub-header { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; margin: 12px 0; cursor: pointer; }
+.mobile .sub-header a { font-size: 24px; font-weight: 700; margin: 0 !important; color: #fff; letter-spacing: -.04em; }
+.mobile .sub-toggle { background: none; border: 0; color: #fff; font-size: 20px; font-weight: 400; cursor: pointer; transition: transform 0.25s ease; padding: 4px; display: inline-flex; align-items: center; justify-content: center; }
 .mobile .mobile-submenu { display: none; list-style: none; padding: 0; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin: 4px 0 12px 0; width: 100%; text-align: center; }
 .mobile .mobile-submenu li { width: 100%; text-align: center; }
 .mobile .mobile-submenu a { font-size: 20px !important; margin: 10px 0 !important; color: #b5b5bb !important; display: block; text-align: center; }
@@ -236,8 +236,8 @@
   <div>
     <a href="index.html">Inicio</a>
     <div class="has-sub">
-      <div class="sub-header">
-        <a href="limpieza-de-pisos-panama.html">Servicios</a>
+      <div class="sub-header" id="mobileServicesHeader">
+        <a href="javascript:void(0);">Servicios</a>
         <button class="sub-toggle" type="button" aria-expanded="false" aria-label="Desplegar submenú de servicios">
           <span class="arrow-icon">⌄</span>
         </button>
@@ -624,15 +624,19 @@
       });
     }
 
-    // 4. Control del Dropdown Móvil (Despliega el submenú al tocar "Servicios")
-    document.querySelectorAll('.mobile .sub-toggle').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    // 4. Control del Dropdown Móvil (Despliega el submenú al tocar "Servicios" o la flecha)
+    const mobileServicesHeader = document.getElementById('mobileServicesHeader');
+    if (mobileServicesHeader) {
+      mobileServicesHeader.addEventListener('click', (e) => {
         e.stopPropagation();
-        const parent = btn.closest('.has-sub');
+        const parent = mobileServicesHeader.closest('.has-sub');
         const isOpen = parent.classList.toggle('open');
-        btn.setAttribute('aria-expanded', String(isOpen));
+        const btn = mobileServicesHeader.querySelector('.sub-toggle');
+        if (btn) {
+          btn.setAttribute('aria-expanded', String(isOpen));
+        }
       });
-    });
+    }
 
     // 5. Animación de elementos al hacer scroll (Reveal)
     if ('IntersectionObserver' in window) {
