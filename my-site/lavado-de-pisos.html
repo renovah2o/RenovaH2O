@@ -114,6 +114,13 @@ main{padding:90px 0 60px;background:#fff}
 .social-link{font-size:13px;font-weight:600;color:var(--blue);display:inline-flex;align-items:center;gap:4px}
 .social-link:after{content:' ›';font-size:1.2em;transition:.2s ease}
 .social-card:hover .social-link:after{transform:translateX(3px)}
+.share-options{margin-top:54px}
+.share-options h3{font-size:20px;margin-bottom:16px}
+.share-links{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+.share-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border:1px solid var(--soft2);border-radius:999px;color:var(--blue);font-size:14px;font-weight:600;transition:background .2s ease,color .2s ease,border-color .2s ease}
+.share-link:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.share-button{background:var(--white);font-family:inherit;cursor:pointer}
+.share-status{min-height:1.5em;margin-top:12px;color:var(--gray);font-size:13px}
 
 /* Footer Idéntico a Index */
 .footer{background:#000;color:#a1a1a6;padding:65px 0 30px}
@@ -336,6 +343,17 @@ main{padding:90px 0 60px;background:#fff}
         <span class="social-link">RenovaH2O</span>
       </a>
     </div>
+
+    <div class="share-options">
+      <h3>Comparte esta página</h3>
+      <div class="share-links">
+        <a class="share-link" href="https://wa.me/?text=Conoce%20el%20servicio%20de%20lavado%20de%20pisos%20a%20presi%C3%B3n%20de%20RenovaH2O%3A%20https%3A%2F%2Frenovah2o.com%2Flavado-de-pisos" target="_blank" rel="noopener noreferrer" aria-label="Compartir esta página por WhatsApp">WhatsApp</a>
+        <a class="share-link" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Frenovah2o.com%2Flavado-de-pisos" target="_blank" rel="noopener noreferrer" aria-label="Compartir esta página en Facebook">Facebook</a>
+        <a class="share-link" href="https://twitter.com/intent/tweet?text=Lavado%20de%20pisos%20a%20presi%C3%B3n%20con%20RenovaH2O&url=https%3A%2F%2Frenovah2o.com%2Flavado-de-pisos" target="_blank" rel="noopener noreferrer" aria-label="Compartir esta página en X">X</a>
+        <button class="share-link share-button" id="share-instagram" type="button" aria-label="Copiar enlace para compartir esta página en Instagram">Instagram</button>
+      </div>
+      <p class="share-status" id="share-status" role="status" aria-live="polite"></p>
+    </div>
   </div>
 </section>
 
@@ -405,6 +423,19 @@ main{padding:90px 0 60px;background:#fff}
         parent.querySelector('.sub-toggle').setAttribute('aria-expanded', String(isOpen));
       });
     });
+
+    const instagramButton = document.getElementById('share-instagram');
+    const shareStatus = document.getElementById('share-status');
+    if (instagramButton && shareStatus) {
+      instagramButton.addEventListener('click', async function(){
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          shareStatus.textContent = 'Enlace copiado. Abre Instagram y pégalo donde quieras compartirlo.';
+        } catch (error) {
+          shareStatus.textContent = 'No se pudo copiar el enlace automáticamente. Copia la dirección de esta página desde la barra del navegador.';
+        }
+      });
+    }
 
     document.getElementById('year').textContent = new Date().getFullYear();
   })();
