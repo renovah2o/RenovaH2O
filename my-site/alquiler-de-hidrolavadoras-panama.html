@@ -15,12 +15,13 @@
   <meta property="og:title" content="Alquiler de Hidrolavadoras en Panamá | RenovaH2O Rental">
   <meta property="og:description" content="Alquila equipos profesionales de 2700 o 4000 PSI con accesorios, capacitación, entrega y recogida en Ciudad de Panamá, Arraiján y La Chorrera.">
   <meta property="og:url" content="https://renovah2o.com/alquiler-de-hidrolavadoras-panama">
-  <meta property="og:image" content="https://renovah2o.com/Images/og-december.webp">
-  <meta property="og:image:alt" content="RenovaH2O Rental, alquiler de equipos profesionales de hidrolavado en Panamá">
+  <meta property="og:image" content="https://renovah2o.com/Images/alq-3.5%20GPM%20pressure%20washer.jpg">
+  <meta property="og:image:alt" content="Hidrolavadora profesional de 4000 PSI disponible para alquiler con RenovaH2O">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Alquiler de Hidrolavadoras en Panamá | RenovaH2O Rental">
   <meta name="twitter:description" content="Equipos profesionales de hidrolavado con entrega, recogida y orientación de uso.">
-  <meta name="twitter:image" content="https://renovah2o.com/Images/og-december.webp">
+  <meta name="twitter:image" content="https://renovah2o.com/Images/alq-3.5%20GPM%20pressure%20washer.jpg">
+  <link rel="stylesheet" href="/share.css">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -136,7 +137,7 @@
     .catalog{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
     .machine{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;display:flex;flex-direction:column}
     .machine-visual{height:270px;background:linear-gradient(145deg,#f1f2f4,#e4e6ea);display:grid;place-items:center;position:relative;overflow:hidden}
-    .machine-visual img{width:100%;height:100%;object-fit:cover}
+    .machine-visual img{width:100%;height:100%;min-width:0;min-height:0;object-fit:contain;padding:14px}
     .machine-visual .visual-note{position:absolute;bottom:14px;left:16px;background:rgba(255,255,255,.9);padding:6px 10px;border-radius:50px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
     .machine-body{padding:28px;display:flex;flex-direction:column;flex:1}
     .machine h3{font-size:26px;letter-spacing:-.04em;line-height:1.1}
@@ -151,6 +152,8 @@
     .accessories{background:var(--soft)}
     .accessory-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
     .accessory{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;display:flex;flex-direction:column}
+    .accessory-visual{height:170px;background:var(--soft);border-radius:14px;display:grid;place-items:center;overflow:hidden;margin-bottom:20px}
+    .accessory-visual img{width:100%;height:100%;min-width:0;min-height:0;object-fit:contain;padding:10px}
     .accessory .tag{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
     .accessory h3{font-size:21px;line-height:1.15;letter-spacing:-.03em;margin:12px 0 8px}
     .accessory p{font-size:13px;color:var(--gray);flex:1}
@@ -161,7 +164,7 @@
     .dark .sub{color:#a1a1a6}
     .feature-layout{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
     .feature-photo{min-height:480px;border-radius:var(--radius);overflow:hidden;background:#141414}
-    .feature-photo img{width:100%;height:100%;min-height:480px;object-fit:cover}
+    .feature-photo img{width:100%;height:100%;min-height:480px;object-fit:contain;padding:22px;background:#fff}
     .feature-copy .sub{margin:22px 0 26px}
     .benefits{display:grid;gap:18px;margin-top:30px}
     .benefit{display:grid;grid-template-columns:42px 1fr;gap:14px}
@@ -290,15 +293,6 @@
       </div>
     </section>
 
-    <section class="trust-strip" aria-label="Características del servicio">
-      <div class="wrap trust-items">
-        <div><strong>Hasta 24 horas</strong><span>Tarifa diaria</span></div>
-        <div><strong>$10 por hora extra</strong><span>Tiempo adicional</span></div>
-        <div><strong>$250</strong><span>Depósito reembolsable</span></div>
-        <div><strong>3 zonas de cobertura</strong><span>Panamá · Arraiján · La Chorrera</span></div>
-      </div>
-    </section>
-
     <section class="section" id="catalogo">
       <div class="wrap">
         <div class="section-head">
@@ -309,7 +303,7 @@
         <div class="catalog">
           <article class="machine">
             <div class="machine-visual">
-              <img src="https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1000&q=85" alt="Equipo profesional de limpieza para alquiler" loading="lazy">
+              <img src="/Images/alq-3.5%20GPM%20pressure%20washer.jpg" alt="Hidrolavadora profesional de 4000 PSI y 3.5 GPM disponible para alquiler" loading="lazy">
               <span class="visual-note">Mayor presión y caudal</span>
             </div>
             <div class="machine-body">
@@ -328,7 +322,7 @@
           </article>
           <article class="machine">
             <div class="machine-visual">
-              <img src="https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=1000&q=85" alt="Maquinaria de limpieza profesional" loading="lazy">
+              <img src="/Images/alq-2.3%20gpm%20pressure%20washer.jpg" alt="Hidrolavadora profesional de 2700 PSI y 2.3 GPM disponible para alquiler" loading="lazy">
               <span class="visual-note">Alternativa compacta</span>
             </div>
             <div class="machine-body">
@@ -358,10 +352,10 @@
           <p class="sub">Agrega accesorios para adaptar el equipo al tipo de superficie y al trabajo que deseas realizar.</p>
         </div>
         <div class="accessory-grid">
-          <article class="accessory"><span class="tag">Superficies planas</span><h3>Disco de hidrolavado de 20"</h3><p>Accesorio para limpiar superficies planas con un recorrido uniforme. Se alquila junto con una hidrolavadora.</p><div class="price">$50</div></article>
-          <article class="accessory"><span class="tag">Suciedad adherida</span><h3>Turbo nozzle</h3><p>Boquilla rotativa para aplicaciones compatibles que requieren un chorro concentrado. Se alquila junto con una hidrolavadora.</p><div class="price">$10</div></article>
-          <article class="accessory"><span class="tag">Áreas amplias</span><h3>Broom de 24"</h3><p>Accesorio tipo escoba de agua para cubrir franjas amplias de superficie. Se alquila junto con una hidrolavadora.</p><div class="price">$30</div></article>
-          <article class="accessory"><span class="tag">Alcance adicional</span><h3>Manguera adicional</h3><p>Manguera doble capa non-marking para ampliar el alcance de trabajo.</p><div class="price">$30 <small style="font-size:13px;font-weight:500;letter-spacing:0">/ 50 pies</small></div></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-disco.jpg" alt="Disco limpiador de superficies de 20 pulgadas" loading="lazy"></div><span class="tag">Superficies planas</span><h3>Disco de hidrolavado de 20"</h3><p>Accesorio para limpiar superficies planas con un recorrido uniforme. Se alquila junto con una hidrolavadora.</p><div class="price">$50</div></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-turbo.jpg" alt="Boquilla turbo para hidrolavadora" loading="lazy"></div><span class="tag">Suciedad adherida</span><h3>Turbo nozzle</h3><p>Boquilla rotativa para aplicaciones compatibles que requieren un chorro concentrado. Se alquila junto con una hidrolavadora.</p><div class="price">$10</div></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-broom.jpg" alt="Accesorio tipo broom para hidrolavadora" loading="lazy"></div><span class="tag">Áreas amplias</span><h3>Broom de 24"</h3><p>Accesorio tipo escoba de agua para cubrir franjas amplias de superficie. Se alquila junto con una hidrolavadora.</p><div class="price">$30</div></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-Manguera.jpg" alt="Manguera adicional de alta presión de 50 pies" loading="lazy"></div><span class="tag">Alcance adicional</span><h3>Manguera adicional</h3><p>Manguera doble capa non-marking para ampliar el alcance de trabajo.</p><div class="price">$30 <small style="font-size:13px;font-weight:500;letter-spacing:0">/ 50 pies</small></div></article>
         </div>
         <p class="note"><strong>Importante:</strong> los accesorios no se alquilan por separado. Deben contratarse junto con una de las hidrolavadoras disponibles. Cada hidrolavadora incluye una manguera de 50 pies.</p>
       </div>
@@ -381,7 +375,7 @@
           </div>
         </div>
         <div class="feature-photo">
-          <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=85" alt="Preparación y mantenimiento de equipos de limpieza profesional" loading="lazy">
+          <img src="/Images/alq-sellos.jpg" alt="Set de sellos de repuesto y herramienta para mantenimiento de accesorios" loading="lazy">
         </div>
       </div>
     </section>
@@ -442,7 +436,7 @@
         <div class="steps">
           <article class="step"><div class="step-num">PASO 01</div><h3>Consulta disponibilidad</h3><p>Indica el equipo, accesorios, fecha y ubicación de tu proyecto.</p></article>
           <article class="step"><div class="step-num">PASO 02</div><h3>Completa los requisitos</h3><p>Presenta identificación, recibo de utilidad y realiza el pago y depósito.</p></article>
-          <article class="step"><div class="step-num">PASO 03</div><h3>Recibe capacitación</h3><p>Entregamos el equipo, documentamos su estado y explicamos su funcionamiento en persona. También recibes una guía rápida.</p></article>
+          <article class="step"><div class="step-num">PASO 03</div><h3>Recibe el equipo</h3><p>Te entregamos el equipo, documentamos su estado y te capacitamos en persona sobre su funcionamiento. También recibes una guía rápida.</p></article>
           <article class="step"><div class="step-num">PASO 04</div><h3>Devolución e inspección</h3><p>Coordinamos la recogida, revisamos el equipo y gestionamos la devolución del depósito dentro de las siguientes 24 horas.</p></article>
         </div>
       </div>
@@ -565,5 +559,6 @@
       });
     });
   </script>
+  <script src="/share.js" defer></script>
 </body>
 </html>
