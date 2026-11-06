@@ -232,7 +232,7 @@
     .bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;color:#7a7a7f;font-size:11px;display:flex;justify-content:space-between;gap:20px}
     .wa{position:fixed;right:22px;bottom:22px;z-index:950;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#25D366;color:#fff;box-shadow:0 18px 48px rgba(37,211,102,.3)}
     .wa svg{width:28px;height:28px;fill:#fff}
-    @media(max-width:950px){.nav-links,.nav-cta{display:none}.hamb{display:block}.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.98);z-index:999;align-items:center;justify-content:center;padding:25px;overflow:auto}.mobile>div{width:100%;max-width:340px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{display:block;color:#fff;font-size:23px;font-weight:700;margin:10px}.mobile .mobile-submenu{list-style:none;display:grid;gap:5px;margin:5px 0 12px}.mobile .mobile-submenu a{font-size:18px;color:#b5b5bb}.mobile .mobile-submenu[hidden]{display:none}.trust-items{grid-template-columns:repeat(2,1fr)}.feature-layout{grid-template-columns:1fr;gap:35px}.feature-photo,.feature-photo img{min-height:380px}.steps{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:950px){.nav-links,.nav-cta{display:none}.hamb{display:block}.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}.mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center}.mobile .has-sub{width:100%;display:flex;flex-direction:column;align-items:center;position:relative}.mobile .sub-header{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;margin:12px 0;cursor:pointer}.mobile .sub-header a{font-size:24px;font-weight:700;margin:0;color:#fff;letter-spacing:-.04em}.mobile .sub-toggle{background:none;border:0;color:#fff;font-size:20px;font-weight:400;cursor:pointer;transition:transform .25s ease;padding:4px;display:inline-flex;align-items:center;justify-content:center}.mobile .mobile-submenu{display:none;list-style:none;padding:0;background:rgba(255,255,255,.05);border-radius:12px;margin:4px 0 12px;width:100%;text-align:center}.mobile .mobile-submenu li{width:100%;text-align:center}.mobile .mobile-submenu a{font-size:20px!important;margin:10px 0!important;color:#b5b5bb!important;display:block;text-align:center}.mobile .has-sub.open .sub-toggle{transform:rotate(180deg)}.mobile .has-sub.open .mobile-submenu{display:block}.trust-items{grid-template-columns:repeat(2,1fr)}.feature-layout{grid-template-columns:1fr;gap:35px}.feature-photo,.feature-photo img{min-height:380px}.steps{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:650px){.wrap{width:min(100% - 28px,var(--max))}.section{padding:78px 0}.section-sm{padding:60px 0}.hero{min-height:650px}.hero-content{padding:85px 8px}.display{font-size:clamp(46px,14vw,72px)}.catalog,.accessory-grid,.two-col,.requirements-grid{grid-template-columns:1fr}.machine-visual{height:230px}.machine-body{padding:23px}.trust-items{gap:18px 8px}.trust-items strong{font-size:12px}.trust-items span{font-size:11px}.panel{padding:25px}.steps{grid-template-columns:1fr}.feature-photo,.feature-photo img{min-height:300px}.footer-grid{grid-template-columns:1fr 1fr;gap:25px}.footer-grid>div:first-child{grid-column:1/-1}.bottom{display:block}.bottom div+div{margin-top:8px}.wa{right:16px;bottom:16px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
   
@@ -264,18 +264,29 @@
         </ul>
       </nav>
       <a class="nav-cta" href="#contacto">Consultar alquiler</a>
-      <button class="hamb" id="hamb" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="hamb" id="hamb" aria-label="Abrir menú de navegación" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </header>
   <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
     <div>
       <a href="/">Inicio</a>
-      <a href="/limpieza-de-pisos-panama">Residencial</a>
-      <a href="/limpieza-de-estacionamientos-panama">Comercial</a>
-      <a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a>
+      <div class="has-sub">
+        <div class="sub-header" id="mobileServicesHeader">
+          <a href="/#servicios">Servicios</a>
+          <button class="sub-toggle" type="button" aria-expanded="false" aria-label="Desplegar submenú de servicios">
+            <span class="arrow-icon">⌄</span>
+          </button>
+        </div>
+        <ul class="mobile-submenu">
+          <li><a href="/limpieza-de-pisos-panama">Residencial</a></li>
+          <li><a href="/limpieza-de-estacionamientos-panama">Comercial</a></li>
+          <li><a href="/alquiler-de-hidrolavadoras-panama" aria-current="page">Alquileres</a></li>
+        </ul>
+      </div>
       <a href="/nosotros">Nosotros</a>
       <a href="/blog">Blog</a>
       <a href="#contacto">Consultar alquiler</a>
+      <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
     </div>
   </div>
 
@@ -550,10 +561,21 @@
         const open = mobileMenu.classList.toggle('open');
         hamburger.setAttribute('aria-expanded', String(open));
       });
-      mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mobileMenu.querySelectorAll('.mobile-submenu a, .mobile > div > a').forEach(link => link.addEventListener('click', () => {
         mobileMenu.classList.remove('open');
         hamburger.setAttribute('aria-expanded', 'false');
       }));
+    }
+
+    const mobileServicesHeader = document.getElementById('mobileServicesHeader');
+    if (mobileServicesHeader) {
+      mobileServicesHeader.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const parent = mobileServicesHeader.closest('.has-sub');
+        const isOpen = parent.classList.toggle('open');
+        mobileServicesHeader.querySelector('.sub-toggle').setAttribute('aria-expanded', String(isOpen));
+      });
     }
 
     document.querySelectorAll('.faq-q').forEach(button => {
