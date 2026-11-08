@@ -50,6 +50,7 @@
     .notice.warning{background:#fff8e6;color:#745600}
     .notice.error{background:#fff0ef;color:#a3262e}
     .empty{padding:26px;border-radius:14px;background:#f5f5f7;text-align:center}
+    .empty-links{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}
     .button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border:0;border-radius:999px;background:#0071e3;color:#fff;font-weight:700;cursor:pointer}
     .button:disabled{opacity:.55;cursor:not-allowed}
     .button.secondary{border:1px solid #d5d5db;background:#fff;color:#1d1d1f}
@@ -267,11 +268,21 @@
         empty.className = "empty";
         const message = document.createElement("p");
         message.textContent = "Tu carrito está vacío.";
-        const link = document.createElement("a");
-        link.className = "button";
-        link.href = "/alquiler-de-hidrolavadoras-panama";
-        link.textContent = "Ver alquileres";
-        empty.append(message, link);
+        const links = document.createElement("div");
+        links.className = "empty-links";
+        const destinations = [
+          ["/alquiler-de-hidrolavadoras-panama", "Ver alquileres"],
+          ["/limpieza-de-pisos-panama", "Ver paquetes residenciales"],
+          ["/limpieza-de-estacionamientos-panama", "Ver paquetes comerciales"]
+        ];
+        for (const [href, label] of destinations) {
+          const link = document.createElement("a");
+          link.className = "button";
+          link.href = href;
+          link.textContent = label;
+          links.append(link);
+        }
+        empty.append(message, links);
         cartItems.append(empty);
         summary.replaceChildren();
         setCheckoutAvailability();
