@@ -222,6 +222,7 @@
 @media(max-width:620px){.nav .nav-inner{width:min(100% - 28px,1200px)}.nav .logo{width:120px;height:auto}.nav .cart-button,.nav .hamb{width:34px;height:34px}}
 .checkout-packages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}
 .checkout-package{padding:22px;border:1px solid #e4e4e8;border-radius:20px;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.045)}
+.checkout-package-image{display:block;width:100%;height:auto;max-height:300px;aspect-ratio:16/10;object-fit:cover;margin:0 0 18px;border-radius:14px}
 .checkout-package h3{margin:0 0 8px;font-size:20px}
 .checkout-package p{color:var(--gray);font-size:14px}
 .checkout-package input{width:100%;min-height:44px;margin:8px 0 14px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px}
@@ -343,7 +344,8 @@
         </article>
         <div class="checkout-packages" aria-label="Paquetes residenciales disponibles para comprar">
             <article class="checkout-package">
-                <h3>Hidrolavado residencial · 65 a 100 m²</h3>
+               <img class="checkout-package-image" src="/Images/100m2.jpeg" alt="Ejemplo de superficie residencial de 100 metros cuadrados" loading="lazy" decoding="async">
+               <h3>Hidrolavado residencial · 65 a 100 m²</h3>
                 <p>Selecciona el metraje que estimas. El precio es $2.00 por m² y el equipo confirmará la medida en el sitio.</p>
                 <label for="area-65-100">Metros cuadrados</label>
                 <input id="area-65-100" type="number" min="65" max="100" step="1" value="65" data-price-quantity>
@@ -351,7 +353,8 @@
                 <button class="btn btn-blue add-to-cart" type="button" data-sku="residential-65-100" data-quantity-input="#area-65-100">Agregar al carrito</button>
             </article>
             <article class="checkout-package">
-                <h3>Hidrolavado residencial · 115 a 500 m²</h3>
+               <img class="checkout-package-image" src="/Images/500m2.jpeg" alt="Ejemplo de superficie residencial de 500 metros cuadrados" loading="lazy" decoding="async">
+               <h3>Hidrolavado residencial · 115 a 500 m²</h3>
                 <p>Selecciona el metraje que estimas. El precio es $1.75 por m² y el equipo confirmará la medida en el sitio.</p>
                 <label for="area-115-500">Metros cuadrados</label>
                 <input id="area-115-500" type="number" min="115" max="500" step="1" value="115" data-price-quantity>

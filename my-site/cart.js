@@ -3,6 +3,7 @@
   const products = {
     "rental-35": {
       name: "Hidrolavadora 4000 PSI · 3.5 GPM (hasta 24 horas)",
+      image: "/Images/alq-3.5%20GPM%20pressure%20washer.jpg",
       category: "alquileres",
       kind: "machine",
       unitAmount: 5000,
@@ -11,6 +12,7 @@
     },
     "rental-23": {
       name: "Hidrolavadora 2700 PSI · 2.3 GPM (hasta 24 horas)",
+      image: "/Images/alq-2.3%20gpm%20pressure%20washer.jpg",
       category: "alquileres",
       kind: "machine",
       unitAmount: 4000,
@@ -19,6 +21,7 @@
     },
     "rental-surface-cleaner": {
       name: "Disco de hidrolavado de 20 pulgadas",
+      image: "/Images/alq-disco.jpg",
       category: "alquileres",
       kind: "accessory",
       unitAmount: 5000,
@@ -27,6 +30,7 @@
     },
     "rental-turbo-nozzle": {
       name: "Turbo nozzle",
+      image: "/Images/alq-turbo.jpg",
       category: "alquileres",
       kind: "accessory",
       unitAmount: 1000,
@@ -35,6 +39,7 @@
     },
     "rental-broom": {
       name: "Broom de 24 pulgadas",
+      image: "/Images/alq-broom.jpg",
       category: "alquileres",
       kind: "accessory",
       unitAmount: 3000,
@@ -43,6 +48,7 @@
     },
     "rental-extra-hose": {
       name: "Manguera adicional de 50 pies",
+      image: "/Images/alq-Manguera.jpg",
       category: "alquileres",
       kind: "accessory",
       unitAmount: 3000,
@@ -51,6 +57,7 @@
     },
     "residential-holiday-promo": {
       name: "Promoción navideña de hidrolavado residencial",
+      image: "/Images/promo-navidad-renovah2o.png",
       category: "residencial",
       kind: "area",
       pricing: "promo",
@@ -63,6 +70,7 @@
     },
     "residential-65-100": {
       name: "Hidrolavado residencial · 65 a 100 m²",
+      image: "/Images/100m2.jpeg",
       category: "residencial",
       kind: "area",
       unitAmount: 200,
@@ -71,6 +79,7 @@
     },
     "residential-115-500": {
       name: "Hidrolavado residencial · 115 a 500 m²",
+      image: "/Images/500m2.jpeg",
       category: "residencial",
       kind: "area",
       unitAmount: 175,
