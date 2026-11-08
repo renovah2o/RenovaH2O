@@ -49,6 +49,9 @@
     .notice{margin:16px 0 0;padding:12px 14px;border-radius:10px;background:#f2f7ff;color:#174e85;font-size:14px}
     .notice[hidden],.auth-section[hidden],.account-app[hidden],.account-panel[hidden]{display:none}
     .account-app{display:block}
+    .account-breadcrumb{display:flex;align-items:center;gap:9px;margin:0 0 24px;color:var(--gray);font-size:13px}
+    .account-breadcrumb a{color:var(--blue);text-decoration:none}
+    .account-breadcrumb a:hover{text-decoration:underline}
     .account-top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:26px}
     .account-user{color:var(--gray);font-size:14px;overflow-wrap:anywhere}
     .account-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
@@ -264,9 +267,11 @@
       }
       if (panelId) {
         const panel = document.getElementById(panelId);
-        document.querySelector("#breadcrumb-current").textContent = panel.dataset.title;
+        const breadcrumb = document.querySelector("#breadcrumb-current");
+        if (breadcrumb) breadcrumb.textContent = panel.dataset.title;
       } else {
-        document.querySelector("#breadcrumb-current").textContent = "Mi cuenta";
+        const breadcrumb = document.querySelector("#breadcrumb-current");
+        if (breadcrumb) breadcrumb.textContent = "Mi cuenta";
       }
     }
 
@@ -468,6 +473,11 @@
     </section>
 
     <section class="account-app" id="account-app" hidden>
+      <nav class="account-breadcrumb" aria-label="Ruta de cuenta">
+        <a href="#cuenta">Mi cuenta</a>
+        <span aria-hidden="true">/</span>
+        <span id="breadcrumb-current">Mi cuenta</span>
+      </nav>
       <div class="page-heading">
         <p class="eyebrow">Tu espacio RenovaH2O</p>
         <h1>Mi cuenta</h1>
