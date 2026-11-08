@@ -68,6 +68,19 @@
     .profile-form{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
     .profile-form .primary{grid-column:1/-1}
     .profile-status{min-height:22px;margin:12px 0 0;color:var(--gray);font-size:13px}
+    .avatar-field{grid-column:1/-1;display:flex;align-items:center;gap:18px;margin:8px 0 12px}
+    .avatar-preview{display:grid;place-items:center;width:92px;height:92px;flex:none;overflow:hidden;border:1px solid #dfe7f1;border-radius:50%;background:#edf5ff;color:var(--blue);font-size:28px;font-weight:700}
+    .avatar-preview img{width:100%;height:100%;object-fit:cover}
+    .avatar-controls{display:grid;gap:8px}
+    .avatar-controls p{margin:0;color:var(--gray);font-size:13px}
+    .avatar-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .file-input{max-width:250px;font-size:13px}
+    .remove-avatar{min-height:0;padding:0;border:0;background:none;color:#b42318;font-size:13px;font-weight:600}
+    .profile-form fieldset{grid-column:1/-1;margin:8px 0 20px;padding:0;border:0}
+    .profile-form legend{margin-bottom:10px;font-size:14px;font-weight:600}
+    .service-options{display:flex;gap:10px;flex-wrap:wrap}
+    .service-choice{display:flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid #e2e2e7;border-radius:999px;color:#3b3b40;font-size:14px}
+    .service-choice input{accent-color:var(--blue)}
     .orders-list{display:grid;gap:12px}
     .order-card{padding:16px;border:1px solid #e8e8ed;border-radius:14px}
     .order-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
@@ -103,6 +116,11 @@
     const accessEmail = document.querySelector("#access-email");
     const profileName = document.querySelector("#profile-name");
     const profilePhone = document.querySelector("#profile-phone");
+    const profileBirthday = document.querySelector("#profile-birthday");
+    const avatarFile = document.querySelector("#profile-avatar");
+    const avatarImage = document.querySelector("#profile-avatar-image");
+    const avatarInitials = document.querySelector("#profile-avatar-initials");
+    const avatarStatus = document.querySelector("#avatar-status");
     const profileStatus = document.querySelector("#profile-status");
     const ordersList = document.querySelector("#orders-list");
     const saveProfileButton = document.querySelector("#save-profile");
@@ -110,6 +128,17 @@
     let supabase;
     let authMode = "signin";
     let activeUserId;
+    let activeAvatarPath;
+    let selectedAvatarFile;
+    let removeAvatarRequested = false;
+    let avatarPreviewUrl;
+
+    const today = new Date();
+    profileBirthday.max = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, "0"),
+      String(today.getDate()).padStart(2, "0")
+    ].join("-");
 
     function showAuthMessage(text) {
       authMessage.textContent = text;
@@ -138,6 +167,34 @@
 
     function formatCurrency(amount, currency) {
       return new Intl.NumberFormat("es-PA", { style: "currency", currency }).format(amount / 100);
+    }
+
+    function setAvatar(url, fullName = "") {
+      if (url) {
+        avatarImage.src = url;
+        avatarImage.hidden = false;
+        avatarInitials.hidden = true;
+      } else {
+        avatarImage.removeAttribute("src");
+        avatarImage.hidden = true;
+        const initials = fullName.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("");
+        avatarInitials.textContent = initials.toLocaleUpperCase("es-PA") || "RH";
+        avatarInitials.hidden = false;
+      }
+    }
+
+    async function getAvatarUrl(path) {
+      if (!path) return null;
+      const { data, error } = await supabase.storage
+        .from("profile-avatars")
+        .createSignedUrl(path, 3600);
+      if (error) throw error;
+      return data.signedUrl;
+    }
+
+    function getPreferredServices() {
+      return Array.from(document.querySelectorAll('input[name="preferred-services"]:checked'))
+        .map(input => input.value);
     }
 
     function renderOrders(orders) {
@@ -192,6 +249,20 @@
     async function loadAccountData(user) {
       accountEmail.textContent = user.email ?? "";
       accessEmail.value = user.email ?? "";
+      profileName.value = "";
+      profilePhone.value = "";
+      profileBirthday.value = "";
+      activeAvatarPath = null;
+      avatarFile.value = "";
+      selectedAvatarFile = undefined;
+      if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+      avatarPreviewUrl = undefined;
+      removeAvatarRequested = false;
+      document.querySelectorAll('input[name="preferred-services"]').forEach(input => {
+        input.checked = false;
+      });
+      setAvatar(null);
+      avatarStatus.textContent = "";
       profileStatus.textContent = "Cargando perfil…";
       ordersList.replaceChildren();
       const loading = document.createElement("p");
@@ -201,7 +272,10 @@
 
       try {
         const [profileResult, ordersResult] = await Promise.all([
-          supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle(),
+          supabase.from("profiles")
+            .select("full_name, phone, birthday, preferred_services, profile_avatar_path")
+            .eq("id", user.id)
+            .maybeSingle(),
           supabase.from("orders")
             .select("id, status, total_amount, currency, created_at, order_items(id, product_name, quantity)")
             .eq("user_id", user.id)
@@ -214,7 +288,22 @@
         } else if (profileResult.data) {
           profileName.value = profileResult.data.full_name ?? "";
           profilePhone.value = profileResult.data.phone ?? "";
+          profileBirthday.value = profileResult.data.birthday ?? "";
+          const preferredServices = profileResult.data.preferred_services ?? [];
+          document.querySelectorAll('input[name="preferred-services"]').forEach(input => {
+            input.checked = preferredServices.includes(input.value);
+          });
+          activeAvatarPath = profileResult.data.profile_avatar_path ?? null;
           profileStatus.textContent = "";
+          try {
+            const avatarUrl = await getAvatarUrl(activeAvatarPath);
+            if (activeUserId !== user.id) return;
+            setAvatar(avatarUrl, profileName.value);
+            avatarStatus.textContent = "";
+          } catch (error) {
+            setAvatar(null, profileName.value);
+            avatarStatus.textContent = `No se pudo cargar la foto: ${error.message}`;
+          }
         } else {
           profileStatus.textContent = "No encontramos tu perfil. Contacta a soporte para revisarlo.";
         }
@@ -243,7 +332,14 @@
       accountApp.hidden = !signedIn;
       activeUserId = signedIn ? session.user.id : undefined;
       if (signedIn) loadAccountData(session.user);
-      else showRoute();
+      else {
+        activeAvatarPath = null;
+        selectedAvatarFile = undefined;
+        if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+        avatarPreviewUrl = undefined;
+        removeAvatarRequested = false;
+        showRoute();
+      }
     }
 
     const routes = {
@@ -334,22 +430,120 @@
       if (!userId) return;
       saveProfileButton.disabled = true;
       profileStatus.textContent = "Guardando…";
+      let uploadedAvatarPath;
       try {
+        if (selectedAvatarFile) {
+          const extensionByType = {
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/webp": "webp"
+          };
+          const extension = extensionByType[selectedAvatarFile.type];
+          if (!extension) throw new Error("Usa una imagen JPG, PNG o WebP.");
+          if (selectedAvatarFile.size > 2 * 1024 * 1024) {
+            throw new Error("La foto debe pesar 2 MB o menos.");
+          }
+
+          uploadedAvatarPath = `${userId}/${crypto.randomUUID()}.${extension}`;
+          const { error: uploadError } = await supabase.storage
+            .from("profile-avatars")
+            .upload(uploadedAvatarPath, selectedAvatarFile, {
+              contentType: selectedAvatarFile.type,
+              cacheControl: "3600",
+              upsert: false
+            });
+          if (uploadError) throw uploadError;
+        }
+
+        const nextAvatarPath = selectedAvatarFile
+          ? uploadedAvatarPath
+          : removeAvatarRequested ? null : activeAvatarPath;
         const { error } = await supabase.from("profiles")
           .update({
             full_name: profileName.value.trim() || null,
-            phone: profilePhone.value.trim() || null
+            phone: profilePhone.value.trim() || null,
+            birthday: profileBirthday.value || null,
+            preferred_services: getPreferredServices(),
+            profile_avatar_path: nextAvatarPath
           })
           .eq("id", userId)
           .select("id")
           .single();
-        if (error) profileStatus.textContent = `No se pudo guardar: ${error.message}`;
-        else if (activeUserId === userId) profileStatus.textContent = "Perfil actualizado.";
+        if (error) {
+          if (uploadedAvatarPath) {
+            await supabase.storage.from("profile-avatars").remove([uploadedAvatarPath]);
+          }
+          profileStatus.textContent = `No se pudo guardar: ${error.message}`;
+        } else if (activeUserId === userId) {
+          if (activeAvatarPath && activeAvatarPath !== nextAvatarPath) {
+            const { error: removeError } = await supabase.storage
+              .from("profile-avatars")
+              .remove([activeAvatarPath]);
+            if (removeError) avatarStatus.textContent = `Perfil guardado, pero no se pudo borrar la foto anterior: ${removeError.message}`;
+          }
+          activeAvatarPath = nextAvatarPath;
+          selectedAvatarFile = undefined;
+          removeAvatarRequested = false;
+          avatarFile.value = "";
+          if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+          avatarPreviewUrl = undefined;
+          try {
+            setAvatar(await getAvatarUrl(activeAvatarPath), profileName.value);
+            if (!avatarStatus.textContent.startsWith("Perfil guardado")) avatarStatus.textContent = "";
+          } catch (error) {
+            setAvatar(null, profileName.value);
+            avatarStatus.textContent = `Perfil guardado, pero no se pudo mostrar la foto: ${error.message}`;
+          }
+          profileStatus.textContent = "Perfil actualizado.";
+        }
       } catch (error) {
+        if (uploadedAvatarPath) {
+          const { error: removeError } = await supabase.storage
+            .from("profile-avatars")
+            .remove([uploadedAvatarPath]);
+          if (removeError) {
+            avatarStatus.textContent = `También hubo un problema limpiando una carga incompleta: ${removeError.message}`;
+          }
+        }
         profileStatus.textContent = `No se pudo guardar: ${error.message}`;
       } finally {
         saveProfileButton.disabled = false;
       }
+    });
+
+    avatarFile.addEventListener("change", () => {
+      const file = avatarFile.files?.[0];
+      avatarStatus.textContent = "";
+      selectedAvatarFile = undefined;
+      removeAvatarRequested = false;
+      if (!file) return;
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        avatarFile.value = "";
+        avatarStatus.textContent = "Formato no admitido. Selecciona JPG, PNG o WebP.";
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        avatarFile.value = "";
+        avatarStatus.textContent = "La foto debe pesar 2 MB o menos.";
+        return;
+      }
+      selectedAvatarFile = file;
+      if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+      avatarPreviewUrl = URL.createObjectURL(file);
+      setAvatar(avatarPreviewUrl, profileName.value);
+      avatarStatus.textContent = "Vista previa lista. Guarda los cambios para actualizar tu foto.";
+    });
+
+    document.querySelector("#remove-avatar").addEventListener("click", () => {
+      selectedAvatarFile = undefined;
+      avatarFile.value = "";
+      removeAvatarRequested = Boolean(activeAvatarPath);
+      if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+      avatarPreviewUrl = undefined;
+      setAvatar(null, profileName.value);
+      avatarStatus.textContent = removeAvatarRequested
+        ? "La foto se quitará cuando guardes los cambios."
+        : "No hay una foto guardada.";
     });
 
     document.querySelector("#password-reset").addEventListener("click", async () => {
@@ -504,8 +698,32 @@
       <section class="account-panel card" id="panel-profile" data-title="Mi perfil" hidden>
         <div class="panel-heading"><div><h2>Mi perfil</h2><p>Actualiza los datos básicos de tu cuenta.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <form class="profile-form" id="profile-form">
+          <div class="avatar-field">
+            <div class="avatar-preview" aria-label="Foto de perfil">
+              <img id="profile-avatar-image" alt="Foto de perfil" hidden>
+              <span id="profile-avatar-initials">RH</span>
+            </div>
+            <div class="avatar-controls">
+              <label for="profile-avatar">Foto de perfil</label>
+              <p>JPG, PNG o WebP. Máximo 2 MB.</p>
+              <div class="avatar-actions">
+                <input class="file-input" id="profile-avatar" type="file" accept="image/jpeg,image/png,image/webp">
+                <button class="remove-avatar" id="remove-avatar" type="button">Quitar foto</button>
+              </div>
+              <p class="profile-status" id="avatar-status" role="status" aria-live="polite"></p>
+            </div>
+          </div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><input id="profile-phone" type="tel" maxlength="32" autocomplete="tel"></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" max="2026-11-08" autocomplete="bday"></div>
+          <fieldset>
+            <legend>Servicios de preferencia</legend>
+            <div class="service-options">
+              <label class="service-choice"><input type="checkbox" name="preferred-services" value="residencial"> Residencial</label>
+              <label class="service-choice"><input type="checkbox" name="preferred-services" value="comercial"> Comercial</label>
+              <label class="service-choice"><input type="checkbox" name="preferred-services" value="alquileres"> Alquileres</label>
+            </div>
+          </fieldset>
           <button class="primary" id="save-profile" type="submit">Guardar datos</button>
         </form>
         <p class="profile-status" id="profile-status" role="status" aria-live="polite"></p>
