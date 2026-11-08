@@ -115,14 +115,13 @@
     const serviceTypeSelect = document.querySelector("#service-type");
     const dateInput = document.querySelector("#service-date");
     const contactPhone = document.querySelector("#contact-phone");
-    const savedPhoneChoice = document.querySelector("#use-saved-phone");
+    const phoneAliasInput = document.querySelector("#phone-alias");
+    const phoneEntryFields = document.querySelector("#new-phone-fields");
+    const savedPhoneOptions = document.querySelector("#saved-phone-options");
     const newPhoneChoice = document.querySelector("#use-new-phone");
-    const savedPhoneChoiceLabel = document.querySelector("#saved-phone-choice-label");
-    const savedPhoneLabel = document.querySelector("#saved-phone-label");
-    const savedAddressChoice = document.querySelector("#use-saved-address");
+    const savedAddressOptions = document.querySelector("#saved-address-options");
     const newAddressChoice = document.querySelector("#use-new-address");
-    const savedAddressChoiceLabel = document.querySelector("#saved-address-choice-label");
-    const savedAddressLabel = document.querySelector("#saved-address-label");
+    const addressAliasInput = document.querySelector("#address-alias");
     const newAddressFields = document.querySelector("#new-address-fields");
     const provinceSelect = document.querySelector("#service-province");
     const districtSelect = document.querySelector("#service-district");
@@ -135,8 +134,8 @@
     let items = [];
     let category;
     let availabilityRequestId = 0;
-    let profilePhone = "";
-    let profileAddress = null;
+    let profilePhones = [];
+    let profileAddresses = [];
 
     const corregimientosByDistrict = {
       arraijan: [
@@ -560,16 +559,19 @@
     }
 
     function getServiceAddress() {
-      return newAddressChoice.checked
-        ? {
-            province: provinceSelect.value,
-            district: districtSelect.value,
-            corregimiento: corregimientoSelect.value,
-            neighborhood: document.querySelector("#service-neighborhood").value.trim(),
-            street: document.querySelector("#service-address-details").value.trim(),
-            reference: document.querySelector("#service-reference").value.trim()
-          }
-        : profileAddress;
+      if (!newAddressChoice.checked) {
+        return profileAddresses.find(address =>
+          address.id === checkoutForm.querySelector('input[name="address-choice"]:checked')?.value
+        )?.address ?? null;
+      }
+      return {
+        province: provinceSelect.value,
+        district: districtSelect.value,
+        corregimiento: corregimientoSelect.value,
+        neighborhood: document.querySelector("#service-neighborhood").value.trim(),
+        street: document.querySelector("#service-address-details").value.trim(),
+        reference: document.querySelector("#service-reference").value.trim()
+      };
     }
 
     function formatAddress(address) {
@@ -583,24 +585,71 @@
     }
 
     function updateContactChoices() {
-      const hasSavedPhone = Boolean(profilePhone);
-      savedPhoneChoiceLabel.hidden = !hasSavedPhone;
-      savedPhoneChoice.disabled = !hasSavedPhone;
-      if (!hasSavedPhone) newPhoneChoice.checked = true;
-      const useSavedPhone = hasSavedPhone && savedPhoneChoice.checked;
-      contactPhone.disabled = useSavedPhone;
+      const selectedPhone = checkoutForm.querySelector('input[name="phone-choice"]:checked');
+      const useSavedPhone = selectedPhone && selectedPhone.value !== "new";
+      phoneEntryFields.hidden = Boolean(useSavedPhone);
+      for (const control of phoneEntryFields.querySelectorAll("input")) control.disabled = Boolean(useSavedPhone);
       contactPhone.required = !useSavedPhone;
-      contactPhone.value = useSavedPhone ? profilePhone : profilePhone && contactPhone.value === profilePhone ? "" : contactPhone.value;
-      if (profilePhone) savedPhoneLabel.textContent = profilePhone;
-
-      const hasSavedAddress = Boolean(profileAddress);
-      savedAddressChoiceLabel.hidden = !hasSavedAddress;
-      savedAddressChoice.disabled = !hasSavedAddress;
-      if (!hasSavedAddress) newAddressChoice.checked = true;
-      const useSavedAddress = hasSavedAddress && savedAddressChoice.checked;
+      phoneAliasInput.required = !useSavedPhone;
+      const selectedAddress = checkoutForm.querySelector('input[name="address-choice"]:checked');
+      const useSavedAddress = selectedAddress && selectedAddress.value !== "new";
       newAddressFields.hidden = useSavedAddress;
       newAddressFields.disabled = useSavedAddress;
-      savedAddressLabel.textContent = formatAddress(profileAddress);
+      addressAliasInput.required = !useSavedAddress;
+    }
+
+    function renderContactChoices() {
+      savedAddressOptions.replaceChildren();
+      for (const address of profileAddresses) {
+        const label = document.createElement("label");
+        label.className = "choice-option";
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "address-choice";
+        radio.value = address.id;
+        radio.required = true;
+        radio.checked = address.is_default;
+        const copy = document.createElement("span");
+        copy.className = "choice-copy";
+        const title = document.createElement("strong");
+        title.textContent = `${address.alias}${address.is_default ? " · Predeterminada" : ""}`;
+        const detail = document.createElement("span");
+        detail.textContent = formatAddress(address.address);
+        copy.append(title, detail);
+        label.append(radio, copy);
+        savedAddressOptions.append(label);
+      }
+      savedPhoneOptions.replaceChildren();
+      for (const phone of profilePhones) {
+        const label = document.createElement("label");
+        label.className = "choice-option";
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "phone-choice";
+        radio.value = phone.id;
+        radio.required = true;
+        radio.checked = phone.is_default;
+        const copy = document.createElement("span");
+        copy.className = "choice-copy";
+        const title = document.createElement("strong");
+        title.textContent = `${phone.alias}${phone.is_default ? " · Predeterminado" : ""}`;
+        const detail = document.createElement("span");
+        detail.textContent = phone.phone;
+        copy.append(title, detail);
+        label.append(radio, copy);
+        savedPhoneOptions.append(label);
+      }
+      const defaultAddress = profileAddresses.find(address => address.is_default);
+      for (const radio of savedAddressOptions.querySelectorAll('input[name="address-choice"]')) {
+        radio.checked = radio.value === defaultAddress?.id;
+      }
+      newAddressChoice.checked = !defaultAddress;
+      const defaultPhone = profilePhones.find(phone => phone.is_default);
+      for (const radio of savedPhoneOptions.querySelectorAll('input[name="phone-choice"]')) {
+        radio.checked = radio.value === defaultPhone?.id;
+      }
+      newPhoneChoice.checked = !defaultPhone;
+      updateContactChoices();
     }
 
     function setCheckoutAvailability() {
@@ -616,28 +665,27 @@
 
     async function loadProfile() {
       if (!session) return;
-      const { data, error } = await supabase.from("profiles")
-        .select("phone, service_address")
-        .eq("id", session.user.id)
-        .maybeSingle();
-      if (error) {
+      const userId = session.user.id;
+      const [addressesResult, phonesResult] = await Promise.all([
+        supabase.from("profile_addresses")
+          .select("id, alias, address, is_default")
+          .eq("user_id", userId)
+          .order("is_default", { ascending: false })
+          .order("created_at", { ascending: true }),
+        supabase.from("profile_phones")
+          .select("id, alias, phone, is_default")
+          .eq("user_id", userId)
+          .order("is_default", { ascending: false })
+          .order("created_at", { ascending: true })
+      ]);
+      if (addressesResult.error || phonesResult.error) {
+        const error = addressesResult.error ?? phonesResult.error;
         setStatus(`No se pudieron cargar los datos guardados de tu perfil: ${error.message}`, "error");
         return;
       }
-      profilePhone = data?.phone ?? "";
-      profileAddress = data?.service_address ?? null;
-      if (profilePhone) {
-        savedPhoneChoice.checked = true;
-        contactPhone.value = profilePhone;
-      } else {
-        newPhoneChoice.checked = true;
-      }
-      if (profileAddress) {
-        savedAddressChoice.checked = true;
-      } else {
-        newAddressChoice.checked = true;
-      }
-      updateContactChoices();
+      profileAddresses = addressesResult.data ?? [];
+      profilePhones = phonesResult.data ?? [];
+      renderContactChoices();
     }
 
     async function initialize() {
@@ -681,10 +729,11 @@
     serviceTypeSelect.addEventListener("change", loadAvailability);
     provinceSelect.addEventListener("change", updateDistrictOptions);
     districtSelect.addEventListener("change", updateCorregimientoOptions);
-    savedPhoneChoice.addEventListener("change", updateContactChoices);
-    newPhoneChoice.addEventListener("change", updateContactChoices);
-    savedAddressChoice.addEventListener("change", updateContactChoices);
-    newAddressChoice.addEventListener("change", updateContactChoices);
+    checkoutForm.addEventListener("change", event => {
+      if (event.target.matches('input[name="phone-choice"], input[name="address-choice"]')) {
+        updateContactChoices();
+      }
+    });
     window.addEventListener("renovah2o-cart-changed", renderCart);
 
     checkoutForm.addEventListener("submit", async event => {
@@ -719,15 +768,19 @@
       submitButton.textContent = "Enviando orden…";
       try {
         const address = getServiceAddress();
-        const phone = savedPhoneChoice.checked && profilePhone ? profilePhone : contactPhone.value.trim();
-        const { data: orderId, error } = await supabase.rpc("checkout_place_order_with_profile", {
+        const addressSelection = checkoutForm.querySelector('input[name="address-choice"]:checked');
+        const phoneSelection = checkoutForm.querySelector('input[name="phone-choice"]:checked');
+        const { data: orderId, error } = await supabase.rpc("checkout_place_order_with_contacts", {
           p_items: items.map(item => ({ sku: item.sku, quantity: item.quantity })),
           p_service_type: serviceTypeSelect.value,
           p_service_date: dateInput.value,
           p_start_at: slot.starts_at,
-          p_contact_phone: phone,
-          p_profile_address: address,
-          p_save_profile_address: newAddressChoice.checked
+          p_address_id: newAddressChoice.checked ? null : addressSelection.value,
+          p_new_address: newAddressChoice.checked ? address : null,
+          p_address_alias: newAddressChoice.checked ? addressAliasInput.value.trim() : null,
+          p_phone_id: newPhoneChoice.checked ? null : phoneSelection.value,
+          p_new_phone: newPhoneChoice.checked ? contactPhone.value.trim() : null,
+          p_phone_alias: newPhoneChoice.checked ? phoneAliasInput.value.trim() : null
         });
         if (error) throw error;
 
@@ -824,18 +877,19 @@
           <fieldset class="field full">
             <legend>Dirección para el servicio o entrega</legend>
             <div class="choice-list">
-              <label class="choice-option" id="saved-address-choice-label">
-                <input id="use-saved-address" type="radio" name="address-choice" value="saved" required disabled>
-                <span class="choice-copy"><strong>Usar dirección guardada en mi perfil</strong><span id="saved-address-label" class="saved-address"></span></span>
-              </label>
+              <div id="saved-address-options" class="choice-list"></div>
               <label class="choice-option">
                 <input id="use-new-address" type="radio" name="address-choice" value="new" required checked>
-                <span class="choice-copy"><strong>Usar otra dirección</strong><span>Se guardará y reemplazará la dirección de tu perfil al enviar la orden.</span></span>
+                <span class="choice-copy"><strong>Agregar otra dirección</strong><span>Se guardará en tu perfil sin reemplazar las direcciones existentes.</span></span>
               </label>
             </div>
           </fieldset>
           <fieldset class="full" id="new-address-fields">
           <div class="form-grid">
+          <div class="field full">
+            <label for="address-alias">Alias de la dirección</label>
+            <input id="address-alias" type="text" maxlength="60" required placeholder="Casa, oficina, etc.">
+          </div>
           <div class="field">
             <label for="service-province">Provincia</label>
             <select id="service-province" autocomplete="address-level1" required>
@@ -873,16 +927,22 @@
           <fieldset class="field full">
             <legend>Teléfono de contacto</legend>
             <div class="choice-list">
-              <label class="choice-option" id="saved-phone-choice-label">
-                <input id="use-saved-phone" type="radio" name="phone-choice" value="saved" required disabled>
-                <span class="choice-copy"><strong>Usar teléfono guardado en mi perfil</strong><span id="saved-phone-label"></span></span>
-              </label>
+              <div id="saved-phone-options" class="choice-list"></div>
               <label class="choice-option">
                 <input id="use-new-phone" type="radio" name="phone-choice" value="new" required checked>
-                <span class="choice-copy"><strong>Usar otro teléfono</strong><span>Se guardará y reemplazará el teléfono de tu perfil al enviar la orden.</span></span>
+                <span class="choice-copy"><strong>Agregar otro teléfono</strong><span>Se guardará en tu perfil sin reemplazar los números existentes.</span></span>
               </label>
             </div>
-            <input id="contact-phone" type="tel" autocomplete="tel" minlength="7" maxlength="32" required placeholder="+507 6000-0000">
+            <div id="new-phone-fields" class="form-grid">
+              <div class="field">
+                <label for="phone-alias">Alias del teléfono</label>
+                <input id="phone-alias" type="text" maxlength="60" required placeholder="Personal, trabajo, etc.">
+              </div>
+              <div class="field">
+                <label for="contact-phone">Número de teléfono</label>
+                <input id="contact-phone" type="tel" autocomplete="tel" minlength="7" maxlength="32" required placeholder="+507 6000-0000">
+              </div>
+            </div>
           </fieldset>
           <div class="field full">
             <label class="checkbox"><input id="terms-confirmed" type="checkbox" required><span>Entiendo que no se realizará un cobro en línea; debo contactar a RenovaH2O y esperar a que un agente confirme el pago. Para servicios residenciales se verificará el metraje en el sitio y se notificará cualquier saldo adicional o devolución.</span></label>
