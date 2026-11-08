@@ -57,10 +57,19 @@
     .field{display:grid;gap:6px;margin:14px 0}
     .field.full{grid-column:1/-1}
     .field label,.field legend{font-size:13px;font-weight:600}
+    .field legend{margin-bottom:3px}
     .field input,.field select,.field textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
     .field textarea{min-height:90px;resize:vertical}
-    .checkbox{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#4b4b52}
+    .checkbox{display:flex;align-items:flex-start;justify-self:start;gap:9px;width:100%;text-align:left;font-size:13px;color:#4b4b52}
     .checkbox input{margin-top:4px;accent-color:#0071e3}
+    .choice-list{display:grid;gap:10px}
+    .choice-option{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #e2e2e7;border-radius:10px;text-align:left;cursor:pointer}
+    .choice-option input{width:auto;min-height:0;margin:3px 0 0;accent-color:#0071e3}
+    .choice-copy{display:grid;gap:3px}
+    .choice-copy strong{font-size:13px}
+    .choice-copy span,.saved-address{color:#62626a;font-size:13px;white-space:pre-line}
+    .saved-address{display:block;margin-top:3px}
+    .form-grid fieldset{min-width:0;margin:14px 0;padding:0;border:0}
     .slot-list,.alternative-date-list{display:grid;gap:8px;text-align:left}
     .slot-option{display:flex;align-items:flex-start;gap:11px;padding:13px;border:1px solid #d5e8dc;border-radius:10px;background:#f5fbf7;color:#245a38;font-size:14px;text-align:left;cursor:pointer}
     .slot-option:has(input:checked){border-color:#208044;background:#edfaf1}
@@ -106,7 +115,15 @@
     const serviceTypeSelect = document.querySelector("#service-type");
     const dateInput = document.querySelector("#service-date");
     const contactPhone = document.querySelector("#contact-phone");
-    const contactConfirmed = document.querySelector("#contact-confirmed");
+    const savedPhoneChoice = document.querySelector("#use-saved-phone");
+    const newPhoneChoice = document.querySelector("#use-new-phone");
+    const savedPhoneChoiceLabel = document.querySelector("#saved-phone-choice-label");
+    const savedPhoneLabel = document.querySelector("#saved-phone-label");
+    const savedAddressChoice = document.querySelector("#use-saved-address");
+    const newAddressChoice = document.querySelector("#use-new-address");
+    const savedAddressChoiceLabel = document.querySelector("#saved-address-choice-label");
+    const savedAddressLabel = document.querySelector("#saved-address-label");
+    const newAddressFields = document.querySelector("#new-address-fields");
     const provinceSelect = document.querySelector("#service-province");
     const districtSelect = document.querySelector("#service-district");
     const corregimientoSelect = document.querySelector("#service-corregimiento");
@@ -118,6 +135,8 @@
     let items = [];
     let category;
     let availabilityRequestId = 0;
+    let profilePhone = "";
+    let profileAddress = null;
 
     const corregimientosByDistrict = {
       arraijan: [
@@ -541,16 +560,47 @@
     }
 
     function getServiceAddress() {
-      const lines = [
-        `Provincia: ${provinceSelect.value}`,
-        `Distrito: ${districtSelect.value}`,
-        `Corregimiento: ${corregimientoSelect.value}`,
-        `Vecindario: ${document.querySelector("#service-neighborhood").value.trim()}`,
-        `Calle y casa/apartamento: ${document.querySelector("#service-address-details").value.trim()}`
-      ];
-      const reference = document.querySelector("#service-reference").value.trim();
-      if (reference) lines.push(`Referencia: ${reference}`);
-      return lines.join("\n");
+      return newAddressChoice.checked
+        ? {
+            province: provinceSelect.value,
+            district: districtSelect.value,
+            corregimiento: corregimientoSelect.value,
+            neighborhood: document.querySelector("#service-neighborhood").value.trim(),
+            street: document.querySelector("#service-address-details").value.trim(),
+            reference: document.querySelector("#service-reference").value.trim()
+          }
+        : profileAddress;
+    }
+
+    function formatAddress(address) {
+      if (!address) return "";
+      return [
+        address.neighborhood,
+        address.street,
+        `${address.corregimiento}, ${address.district}, ${address.province}`,
+        address.reference ? `Referencia: ${address.reference}` : ""
+      ].filter(Boolean).join(", ");
+    }
+
+    function updateContactChoices() {
+      const hasSavedPhone = Boolean(profilePhone);
+      savedPhoneChoiceLabel.hidden = !hasSavedPhone;
+      savedPhoneChoice.disabled = !hasSavedPhone;
+      if (!hasSavedPhone) newPhoneChoice.checked = true;
+      const useSavedPhone = hasSavedPhone && savedPhoneChoice.checked;
+      contactPhone.disabled = useSavedPhone;
+      contactPhone.required = !useSavedPhone;
+      contactPhone.value = useSavedPhone ? profilePhone : profilePhone && contactPhone.value === profilePhone ? "" : contactPhone.value;
+      if (profilePhone) savedPhoneLabel.textContent = profilePhone;
+
+      const hasSavedAddress = Boolean(profileAddress);
+      savedAddressChoiceLabel.hidden = !hasSavedAddress;
+      savedAddressChoice.disabled = !hasSavedAddress;
+      if (!hasSavedAddress) newAddressChoice.checked = true;
+      const useSavedAddress = hasSavedAddress && savedAddressChoice.checked;
+      newAddressFields.hidden = useSavedAddress;
+      newAddressFields.disabled = useSavedAddress;
+      savedAddressLabel.textContent = formatAddress(profileAddress);
     }
 
     function setCheckoutAvailability() {
@@ -567,14 +617,27 @@
     async function loadProfile() {
       if (!session) return;
       const { data, error } = await supabase.from("profiles")
-        .select("phone")
+        .select("phone, service_address")
         .eq("id", session.user.id)
         .maybeSingle();
       if (error) {
-        setStatus(`No se pudo cargar tu teléfono guardado: ${error.message}`, "error");
+        setStatus(`No se pudieron cargar los datos guardados de tu perfil: ${error.message}`, "error");
         return;
       }
-      if (data?.phone) contactPhone.value = data.phone;
+      profilePhone = data?.phone ?? "";
+      profileAddress = data?.service_address ?? null;
+      if (profilePhone) {
+        savedPhoneChoice.checked = true;
+        contactPhone.value = profilePhone;
+      } else {
+        newPhoneChoice.checked = true;
+      }
+      if (profileAddress) {
+        savedAddressChoice.checked = true;
+      } else {
+        newAddressChoice.checked = true;
+      }
+      updateContactChoices();
     }
 
     async function initialize() {
@@ -618,6 +681,10 @@
     serviceTypeSelect.addEventListener("change", loadAvailability);
     provinceSelect.addEventListener("change", updateDistrictOptions);
     districtSelect.addEventListener("change", updateCorregimientoOptions);
+    savedPhoneChoice.addEventListener("change", updateContactChoices);
+    newPhoneChoice.addEventListener("change", updateContactChoices);
+    savedAddressChoice.addEventListener("change", updateContactChoices);
+    newAddressChoice.addEventListener("change", updateContactChoices);
     window.addEventListener("renovah2o-cart-changed", renderCart);
 
     checkoutForm.addEventListener("submit", async event => {
@@ -633,8 +700,7 @@
         setStatus("Selecciona una fecha y horario disponibles.", "error");
         return;
       }
-      if (!contactConfirmed.checked) {
-        setStatus("Confirma el teléfono de contacto para continuar.", "error");
+      if (!checkoutForm.reportValidity()) {
         return;
       }
       if (items.some(item => products[item.sku].category !== category) ||
@@ -652,14 +718,16 @@
       submitButton.disabled = true;
       submitButton.textContent = "Enviando orden…";
       try {
-        const { data: orderId, error } = await supabase.rpc("checkout_place_order", {
+        const address = getServiceAddress();
+        const phone = savedPhoneChoice.checked && profilePhone ? profilePhone : contactPhone.value.trim();
+        const { data: orderId, error } = await supabase.rpc("checkout_place_order_with_profile", {
           p_items: items.map(item => ({ sku: item.sku, quantity: item.quantity })),
           p_service_type: serviceTypeSelect.value,
           p_service_date: dateInput.value,
           p_start_at: slot.starts_at,
-          p_service_address: getServiceAddress(),
-          p_contact_phone: contactPhone.value.trim(),
-          p_confirm_contact: contactConfirmed.checked
+          p_contact_phone: phone,
+          p_profile_address: address,
+          p_save_profile_address: newAddressChoice.checked
         });
         if (error) throw error;
 
@@ -753,6 +821,21 @@
             <div id="slot-list" class="slot-list" aria-live="polite"></div>
             <div id="alternative-dates" aria-live="polite"></div>
           </div>
+          <fieldset class="field full">
+            <legend>Dirección para el servicio o entrega</legend>
+            <div class="choice-list">
+              <label class="choice-option" id="saved-address-choice-label">
+                <input id="use-saved-address" type="radio" name="address-choice" value="saved" required disabled>
+                <span class="choice-copy"><strong>Usar dirección guardada en mi perfil</strong><span id="saved-address-label" class="saved-address"></span></span>
+              </label>
+              <label class="choice-option">
+                <input id="use-new-address" type="radio" name="address-choice" value="new" required checked>
+                <span class="choice-copy"><strong>Usar otra dirección</strong><span>Se guardará y reemplazará la dirección de tu perfil al enviar la orden.</span></span>
+              </label>
+            </div>
+          </fieldset>
+          <fieldset class="full" id="new-address-fields">
+          <div class="form-grid">
           <div class="field">
             <label for="service-province">Provincia</label>
             <select id="service-province" autocomplete="address-level1" required>
@@ -785,13 +868,22 @@
             <label for="service-reference">Referencia adicional <span>(opcional)</span></label>
             <textarea id="service-reference" maxlength="100" placeholder="Puntos de referencia para ubicar la dirección"></textarea>
           </div>
-          <div class="field full">
-            <label for="contact-phone">Teléfono de contacto</label>
+          </div>
+          </fieldset>
+          <fieldset class="field full">
+            <legend>Teléfono de contacto</legend>
+            <div class="choice-list">
+              <label class="choice-option" id="saved-phone-choice-label">
+                <input id="use-saved-phone" type="radio" name="phone-choice" value="saved" required disabled>
+                <span class="choice-copy"><strong>Usar teléfono guardado en mi perfil</strong><span id="saved-phone-label"></span></span>
+              </label>
+              <label class="choice-option">
+                <input id="use-new-phone" type="radio" name="phone-choice" value="new" required checked>
+                <span class="choice-copy"><strong>Usar otro teléfono</strong><span>Se guardará y reemplazará el teléfono de tu perfil al enviar la orden.</span></span>
+              </label>
+            </div>
             <input id="contact-phone" type="tel" autocomplete="tel" minlength="7" maxlength="32" required placeholder="+507 6000-0000">
-          </div>
-          <div class="field full">
-            <label class="checkbox"><input id="contact-confirmed" type="checkbox" required><span>Confirmo que este número es correcto y autorizo guardarlo en el teléfono de mi perfil para coordinar esta orden.</span></label>
-          </div>
+          </fieldset>
           <div class="field full">
             <label class="checkbox"><input id="terms-confirmed" type="checkbox" required><span>Entiendo que no se realizará un cobro en línea; debo contactar a RenovaH2O y esperar a que un agente confirme el pago. Para servicios residenciales se verificará el metraje en el sitio y se notificará cualquier saldo adicional o devolución.</span></label>
           </div>
