@@ -172,6 +172,10 @@
       return `${part("year")}-${part("month")}-${part("day")}`;
     }
 
+    function isSlotBookable(slot) {
+      return new Date(slot.starts_at).getTime() >= Date.now() + 48 * 60 * 60 * 1000;
+    }
+
     function priceFor(item) {
       const product = products[item.sku];
       if (product.pricing === "promo") {
@@ -436,7 +440,7 @@
             shiftDate(selectedDate, offset + index));
           const results = await Promise.all(dates.map(async serviceDate => ({
             serviceDate,
-            slots: await getAvailableSlots(serviceType, serviceDate)
+            slots: (await getAvailableSlots(serviceType, serviceDate)).filter(isSlotBookable)
           })));
           if (requestId !== availabilityRequestId) return;
 
@@ -490,8 +494,11 @@
       }
 
       slotList.textContent = "Consultando disponibilidad…";
+      let hasSlotsWithinMinimumNotice = false;
       try {
-        availableSlots = await getAvailableSlots(serviceTypeSelect.value, selectedDate);
+        const slots = await getAvailableSlots(serviceTypeSelect.value, selectedDate);
+        availableSlots = slots.filter(isSlotBookable);
+        hasSlotsWithinMinimumNotice = slots.some(slot => !isSlotBookable(slot));
       } catch (error) {
         if (requestId === availabilityRequestId) {
           slotList.textContent = `No se pudo consultar la disponibilidad: ${error.message}`;
@@ -502,7 +509,9 @@
       if (requestId !== availabilityRequestId) return;
       slotList.replaceChildren();
       if (!availableSlots.length) {
-        slotList.textContent = "No hay horarios disponibles para esa fecha.";
+        slotList.textContent = hasSlotsWithinMinimumNotice
+          ? "Ese horario requiere al menos 48 horas de anticipación. Elige una de las fechas alternativas."
+          : "No hay horarios disponibles para esa fecha.";
         alternativeDates.textContent = "Buscando fechas alternativas…";
         await findAlternativeDates(requestId, serviceTypeSelect.value, selectedDate);
         return;
@@ -734,8 +743,9 @@
       });
     }
 
-    dateInput.min = panamaDate();
-    dateInput.value = panamaDate();
+    const earliestBookableDate = panamaDate(new Date(Date.now() + 48 * 60 * 60 * 1000));
+    dateInput.min = earliestBookableDate;
+    dateInput.value = earliestBookableDate;
     dateInput.addEventListener("change", loadAvailability);
     serviceTypeSelect.addEventListener("change", loadAvailability);
     provinceSelect.addEventListener("change", updateDistrictOptions);
