@@ -631,6 +631,7 @@
         const address = document.createElement("p");
         address.className = "order-meta";
         address.textContent = order.service_address || "Sin dirección";
+        address.style.whiteSpace = "pre-line";
         card.append(heading, detail, address);
 
         const range = dateRangeParagraph(order.starts_at, order.ends_at);

@@ -61,9 +61,22 @@
     .field textarea{min-height:90px;resize:vertical}
     .checkbox{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#4b4b52}
     .checkbox input{margin-top:4px;accent-color:#0071e3}
-    .slot-list{display:grid;gap:8px}
-    .slot-option{display:flex;align-items:center;gap:9px;padding:12px;border:1px solid #e2e2e7;border-radius:10px;font-size:14px}
-    .slot-option input{accent-color:#0071e3}
+    .slot-list,.alternative-date-list{display:grid;gap:8px;text-align:left}
+    .slot-option{display:flex;align-items:flex-start;gap:11px;padding:13px;border:1px solid #d5e8dc;border-radius:10px;background:#f5fbf7;color:#245a38;font-size:14px;text-align:left;cursor:pointer}
+    .slot-option:has(input:checked){border-color:#208044;background:#edfaf1}
+    .slot-option input{position:absolute;width:1px;height:1px;opacity:0}
+    .slot-option input:focus-visible+.slot-checkmark{outline:3px solid #0071e3;outline-offset:3px}
+    .slot-checkmark{display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:#218346;color:#fff}
+    .slot-checkmark svg{width:14px;height:14px}
+    .slot-copy{display:grid;gap:2px}
+    .slot-copy strong{color:#176b36;font-size:14px}
+    .slot-copy span{color:#454b47}
+    .alternatives{margin-top:12px;text-align:left}
+    .alternatives h3{margin:0 0 8px;font-size:15px}
+    .alternative-date{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid #e2e2e7;border-radius:10px;background:#fff;text-align:left}
+    .alternative-date span{display:grid;gap:2px;color:#62626a;font-size:13px}
+    .alternative-date strong{color:#1d1d1f;font-size:14px}
+    .alternative-date button{flex:none;padding:7px 12px;border:1px solid #0071e3;border-radius:999px;background:#fff;color:#005bb5;font-weight:600;cursor:pointer}
     .form-status{min-height:22px;font-size:13px}
     .success{padding:18px;border:1px solid #b8dfc7;border-radius:14px;background:#f0fff4}
     .success h2{color:#176b36}
@@ -87,13 +100,16 @@
     const checkoutStatus = document.querySelector("#checkout-status");
     const authNotice = document.querySelector("#auth-notice");
     const slotList = document.querySelector("#slot-list");
+    const alternativeDates = document.querySelector("#alternative-dates");
     const submitButton = document.querySelector("#submit-order");
     const categoryNotice = document.querySelector("#category-notice");
     const serviceTypeSelect = document.querySelector("#service-type");
     const dateInput = document.querySelector("#service-date");
     const contactPhone = document.querySelector("#contact-phone");
     const contactConfirmed = document.querySelector("#contact-confirmed");
-    const serviceAddress = document.querySelector("#service-address");
+    const provinceSelect = document.querySelector("#service-province");
+    const districtSelect = document.querySelector("#service-district");
+    const corregimientoSelect = document.querySelector("#service-corregimiento");
     const orderSuccess = document.querySelector("#order-success");
     const products = cart?.products;
     let supabase;
@@ -101,6 +117,27 @@
     let availableSlots = [];
     let items = [];
     let category;
+    let availabilityRequestId = 0;
+
+    const corregimientosByDistrict = {
+      arraijan: [
+        "Arraiján", "Burunga", "Cerro Silvestre", "Juan Demóstenes Arosemena",
+        "Nuevo Arraiján", "Nuevo Emperador", "San Vicente de Bique", "Santa Clara",
+        "Veracruz", "Vista Alegre"
+      ],
+      chorrera: [
+        "Barrio Balboa", "Barrio Colón", "Amador", "Arosemena", "El Arado", "El Coco",
+        "Feuillet", "Guadalupe", "Herrera", "Hurtado", "Iturralde", "La Represa",
+        "Los Díaz", "Mendoza", "Obaldía", "Playa Leona", "Puerto Caimito", "Santa Rita"
+      ],
+      panama: [
+        "San Felipe", "El Chorrillo", "Santa Ana", "Calidonia", "Curundú", "Bella Vista",
+        "Betania", "San Francisco", "Pueblo Nuevo", "Río Abajo", "Parque Lefevre",
+        "Juan Díaz", "Don Bosco", "Las Mañanitas", "Tocumen", "Las Cumbres",
+        "Alcalde Díaz", "Ernesto Córdoba Campos", "Caimitillo", "Pedregal", "Las Garzas",
+        "Pacora", "24 de Diciembre", "Chilibre", "San Martín", "Ancón"
+      ]
+    };
 
     const formatCurrency = cents =>
       new Intl.NumberFormat("es-PA", { style: "currency", currency: "USD" }).format(cents / 100);
@@ -327,8 +364,95 @@
       return `${startText} – ${endText}`;
     }
 
+    function shiftDate(dateString, days) {
+      const date = new Date(`${dateString}T12:00:00Z`);
+      date.setUTCDate(date.getUTCDate() + days);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function formatAlternativeDate(dateString) {
+      return new Intl.DateTimeFormat("es-PA", {
+        timeZone: "America/Panama",
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      }).format(new Date(`${dateString}T12:00:00Z`));
+    }
+
+    async function getAvailableSlots(serviceType, serviceDate) {
+      const { data, error } = await supabase.rpc("checkout_available_slots", {
+        p_service_type: serviceType,
+        p_service_date: serviceDate
+      });
+      if (error) throw error;
+      return data ?? [];
+    }
+
+    async function findAlternativeDates(requestId, serviceType, selectedDate) {
+      alternativeDates.replaceChildren();
+      const heading = document.createElement("h3");
+      heading.textContent = "Fechas alternativas disponibles";
+      const list = document.createElement("div");
+      list.className = "alternative-date-list";
+      const searchStatus = document.createElement("p");
+      searchStatus.textContent = "Buscando fechas disponibles…";
+      const section = document.createElement("div");
+      section.className = "alternatives";
+      section.append(heading, searchStatus, list);
+      alternativeDates.append(section);
+
+      try {
+        for (let offset = 1; offset <= 28; offset += 7) {
+          const dates = Array.from({ length: Math.min(7, 29 - offset) }, (_, index) =>
+            shiftDate(selectedDate, offset + index));
+          const results = await Promise.all(dates.map(async serviceDate => ({
+            serviceDate,
+            slots: await getAvailableSlots(serviceType, serviceDate)
+          })));
+          if (requestId !== availabilityRequestId) return;
+
+          for (const result of results) {
+            if (!result.slots.length) continue;
+            const row = document.createElement("div");
+            row.className = "alternative-date";
+            const label = document.createElement("span");
+            const date = document.createElement("strong");
+            date.textContent = formatAlternativeDate(result.serviceDate);
+            label.append(date, document.createTextNode(formatSlot(result.slots[0].starts_at, result.slots[0].ends_at)));
+            const choose = document.createElement("button");
+            choose.type = "button";
+            choose.textContent = "Elegir fecha";
+            choose.addEventListener("click", () => {
+              dateInput.value = result.serviceDate;
+              loadAvailability();
+            });
+            row.append(label, choose);
+            list.append(row);
+            if (list.childElementCount === 4) {
+              searchStatus.remove();
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        if (requestId === availabilityRequestId) {
+          searchStatus.textContent = `No se pudieron buscar fechas alternativas: ${error.message}`;
+        }
+        return;
+      }
+
+      if (requestId === availabilityRequestId) {
+        searchStatus.textContent = list.childElementCount
+          ? ""
+          : "No encontramos fechas disponibles en las próximas 4 semanas. Prueba otra fecha o contáctanos.";
+        if (!searchStatus.textContent) searchStatus.remove();
+      }
+    }
+
     async function loadAvailability() {
+      const requestId = ++availabilityRequestId;
       slotList.replaceChildren();
+      alternativeDates.replaceChildren();
       availableSlots = [];
       const selectedDate = dateInput.value;
       if (!items.length || !selectedDate || !supabase || !session) {
@@ -337,19 +461,21 @@
       }
 
       slotList.textContent = "Consultando disponibilidad…";
-      const { data, error } = await supabase.rpc("checkout_available_slots", {
-        p_service_type: serviceTypeSelect.value,
-        p_service_date: selectedDate
-      });
-      if (error) {
-        slotList.textContent = `No se pudo consultar la disponibilidad: ${error.message}`;
+      try {
+        availableSlots = await getAvailableSlots(serviceTypeSelect.value, selectedDate);
+      } catch (error) {
+        if (requestId === availabilityRequestId) {
+          slotList.textContent = `No se pudo consultar la disponibilidad: ${error.message}`;
+        }
         return;
       }
 
-      availableSlots = data ?? [];
+      if (requestId !== availabilityRequestId) return;
       slotList.replaceChildren();
       if (!availableSlots.length) {
-        slotList.textContent = "No hay horarios disponibles para esa fecha. Prueba otro día.";
+        slotList.textContent = "No hay horarios disponibles para esa fecha.";
+        alternativeDates.textContent = "Buscando fechas alternativas…";
+        await findAlternativeDates(requestId, serviceTypeSelect.value, selectedDate);
         return;
       }
 
@@ -362,11 +488,69 @@
         radio.value = String(index);
         radio.required = true;
         radio.checked = index === 0;
+        const checkmark = document.createElement("span");
+        checkmark.className = "slot-checkmark";
+        checkmark.setAttribute("aria-hidden", "true");
+        checkmark.innerHTML = '<svg viewBox="0 0 20 20" fill="none"><path d="m4 10 4 4 8-8" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
         const text = document.createElement("span");
-        text.textContent = formatSlot(slot.starts_at, slot.ends_at);
-        label.append(radio, text);
+        text.className = "slot-copy";
+        const status = document.createElement("strong");
+        status.textContent = "Sí, este horario está disponible";
+        const time = document.createElement("span");
+        time.textContent = formatSlot(slot.starts_at, slot.ends_at);
+        text.append(status, time);
+        label.append(radio, checkmark, text);
         slotList.append(label);
       });
+    }
+
+    function updateSelect(select, options, placeholder) {
+      select.replaceChildren(new Option(placeholder, ""));
+      for (const option of options) {
+        select.add(new Option(option.label, option.value));
+      }
+      select.value = "";
+    }
+
+    function updateDistrictOptions() {
+      const options = provinceSelect.value === "Panamá Oeste"
+        ? [{ label: "Arraiján", value: "Arraiján" }, { label: "La Chorrera", value: "La Chorrera" }]
+        : provinceSelect.value === "Panamá"
+          ? [{ label: "Panamá (ciudad)", value: "Panamá" }]
+          : [];
+      updateSelect(districtSelect, options, "Selecciona un distrito");
+      updateSelect(corregimientoSelect, [], "Selecciona un corregimiento");
+      districtSelect.disabled = options.length === 0;
+      corregimientoSelect.disabled = true;
+    }
+
+    function updateCorregimientoOptions() {
+      const key = districtSelect.value === "Arraiján"
+        ? "arraijan"
+        : districtSelect.value === "La Chorrera"
+          ? "chorrera"
+          : districtSelect.value === "Panamá"
+            ? "panama"
+            : null;
+      updateSelect(
+        corregimientoSelect,
+        (corregimientosByDistrict[key] ?? []).map(name => ({ label: name, value: name })),
+        "Selecciona un corregimiento"
+      );
+      corregimientoSelect.disabled = !key;
+    }
+
+    function getServiceAddress() {
+      const lines = [
+        `Provincia: ${provinceSelect.value}`,
+        `Distrito: ${districtSelect.value}`,
+        `Corregimiento: ${corregimientoSelect.value}`,
+        `Vecindario: ${document.querySelector("#service-neighborhood").value.trim()}`,
+        `Calle y casa/apartamento: ${document.querySelector("#service-address-details").value.trim()}`
+      ];
+      const reference = document.querySelector("#service-reference").value.trim();
+      if (reference) lines.push(`Referencia: ${reference}`);
+      return lines.join("\n");
     }
 
     function setCheckoutAvailability() {
@@ -432,6 +616,8 @@
     dateInput.value = panamaDate();
     dateInput.addEventListener("change", loadAvailability);
     serviceTypeSelect.addEventListener("change", loadAvailability);
+    provinceSelect.addEventListener("change", updateDistrictOptions);
+    districtSelect.addEventListener("change", updateCorregimientoOptions);
     window.addEventListener("renovah2o-cart-changed", renderCart);
 
     checkoutForm.addEventListener("submit", async event => {
@@ -471,7 +657,7 @@
           p_service_type: serviceTypeSelect.value,
           p_service_date: dateInput.value,
           p_start_at: slot.starts_at,
-          p_service_address: serviceAddress.value.trim(),
+          p_service_address: getServiceAddress(),
           p_contact_phone: contactPhone.value.trim(),
           p_confirm_contact: contactConfirmed.checked
         });
@@ -565,10 +751,39 @@
           <div class="field full">
             <label>Horario disponible</label>
             <div id="slot-list" class="slot-list" aria-live="polite"></div>
+            <div id="alternative-dates" aria-live="polite"></div>
+          </div>
+          <div class="field">
+            <label for="service-province">Provincia</label>
+            <select id="service-province" autocomplete="address-level1" required>
+              <option value="">Selecciona una provincia</option>
+              <option value="Panamá">Panamá</option>
+              <option value="Panamá Oeste">Panamá Oeste</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="service-district">Distrito</label>
+            <select id="service-district" autocomplete="address-level2" required disabled>
+              <option value="">Selecciona un distrito</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="service-corregimiento">Corregimiento</label>
+            <select id="service-corregimiento" required disabled>
+              <option value="">Selecciona un corregimiento</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="service-neighborhood">Vecindario o barriada</label>
+            <input id="service-neighborhood" type="text" autocomplete="address-line1" maxlength="80" required placeholder="Nombre del vecindario">
           </div>
           <div class="field full">
-            <label for="service-address">Dirección del servicio o entrega</label>
-            <textarea id="service-address" autocomplete="street-address" maxlength="500" required placeholder="Provincia, distrito, corregimiento, barriada y referencias"></textarea>
+            <label for="service-address-details">Calle y número de casa o apartamento</label>
+            <input id="service-address-details" type="text" autocomplete="street-address" maxlength="100" required placeholder="Calle, número de casa, edificio y apartamento">
+          </div>
+          <div class="field full">
+            <label for="service-reference">Referencia adicional <span>(opcional)</span></label>
+            <textarea id="service-reference" maxlength="100" placeholder="Puntos de referencia para ubicar la dirección"></textarea>
           </div>
           <div class="field full">
             <label for="contact-phone">Teléfono de contacto</label>
