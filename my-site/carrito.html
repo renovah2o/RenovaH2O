@@ -63,7 +63,8 @@
     .field legend{margin-bottom:3px}
     .field input,.field select,.field textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
     .field textarea{min-height:90px;resize:vertical}
-    .checkbox{display:flex;align-items:flex-start;justify-self:start;gap:9px;width:100%;text-align:left;font-size:13px;color:#4b4b52}
+    .field.full:has(>.checkbox){justify-items:stretch}
+    .checkbox{display:flex;align-items:flex-start;justify-self:stretch;gap:9px;width:100%;margin:0;text-align:left;font-size:13px;color:#4b4b52}
     .checkbox input{margin-top:4px;accent-color:#0071e3}
     .choice-list{display:grid;gap:10px}
     .choice-option{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #e2e2e7;border-radius:10px;text-align:left;cursor:pointer}
@@ -95,7 +96,7 @@
     .contact-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
     .fine{font-size:12px}
     @media(max-width:850px){.layout{grid-template-columns:1fr}.summary-card{order:-1}}
-    @media(max-width:620px){.nav-inner{width:calc(100% - 24px)}.logo{width:120px}.nav-actions{gap:6px}.account-link{padding:7px 11px}.cart-link,.hamb{width:34px;height:34px}.hamb{display:grid}main{width:calc(100% - 24px);padding-top:86px}.card{padding:19px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.cart-item{grid-template-columns:1fr}.cart-item-main{grid-template-columns:56px minmax(0,1fr);gap:11px}.cart-item-image{width:56px;height:56px}.item-price{text-align:left}.mobile.open{display:flex;position:fixed;z-index:999;inset:58px 0 0;overflow-y:auto;justify-content:center;align-items:flex-start;padding:20px 0 max(24px,env(safe-area-inset-bottom));background:#08090bf7;backdrop-filter:blur(20px)}.mobile-inner{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{margin:12px 0;color:#fff;font-size:22px;font-weight:700}}
+    @media(max-width:620px){.nav-inner{width:calc(100% - 24px)}.logo{width:120px}.nav-actions{gap:6px}.account-link{padding:7px 11px}.cart-link,.hamb{width:34px;height:34px}.hamb{display:grid}main{width:calc(100% - 24px);padding-top:86px}.card{padding:19px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.cart-item{grid-template-columns:1fr}.cart-item-main{grid-template-columns:56px minmax(0,1fr);gap:11px}.cart-item-image{width:56px;height:56px}.item-price{text-align:left}.checkbox{justify-self:stretch;align-items:flex-start;width:100%;text-align:left}.mobile.open{display:flex;position:fixed;z-index:999;inset:58px 0 0;overflow-y:auto;justify-content:center;align-items:flex-start;padding:20px 0 max(24px,env(safe-area-inset-bottom));background:#08090bf7;backdrop-filter:blur(20px)}.mobile-inner{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{margin:12px 0;color:#fff;font-size:22px;font-weight:700}}
   </style>
   <script src="/supabase-config.js"></script>
   <script src="/cart.js"></script>
@@ -209,10 +210,7 @@
 
     function lineDescription(product, item) {
       if (product.pricing === "promo") {
-        const total = priceFor(item);
-        const included = Math.min(item.quantity, product.includedMeters);
-        const added = Math.max(item.quantity - product.includedMeters, 0);
-        return `${item.quantity} m² · incluye hasta ${included} m² y ${added} m² adicionales`;
+        return "Precio fijo para superficies de 10 a 50 m²";
       }
       if (product.kind === "area") return `${item.quantity} m² · ${formatCurrency(product.unitAmount)} por m²`;
       return `${formatCurrency(product.unitAmount)} cada uno`;
@@ -328,39 +326,41 @@
         const description = document.createElement("p");
         description.textContent = lineDescription(product, item);
         const controls = document.createElement("div");
-        controls.className = "quantity-control";
-        const input = document.createElement("input");
-        input.type = "number";
-        input.min = String(product.minimum);
-        input.max = String(product.maximum);
-        input.step = "1";
-        input.value = String(item.quantity);
-        input.setAttribute("aria-label", product.kind === "area" ? `Metros cuadrados para ${product.name}` : `Cantidad de ${product.name}`);
-        input.addEventListener("change", () => {
-          const value = Number(input.value);
-          if (!Number.isInteger(value) || value < product.minimum || value > product.maximum) {
-            input.value = String(item.quantity);
-            setFeedback(`La cantidad debe estar entre ${product.minimum} y ${product.maximum}.`, "error");
-            return;
-          }
-          const updatedMachineCount = items.reduce((total, entry) => {
-            return total + (products[entry.sku].kind === "machine"
-              ? entry.sku === item.sku ? value : entry.quantity
-              : 0);
-          }, 0);
-          if (product.kind === "machine" && updatedMachineCount > 2) {
-            input.value = String(item.quantity);
-            setFeedback("Solo hay 2 hidrolavadoras disponibles por orden.", "error");
-            return;
-          }
-          item.quantity = value;
-          cart.saveItems(items);
-          renderCart();
-          loadAvailability();
-        });
-        const quantityLabel = document.createElement("span");
-        quantityLabel.textContent = product.kind === "area" ? "m²" : "unidades";
-        controls.append(input, quantityLabel);
+        if (product.pricing !== "promo") {
+          controls.className = "quantity-control";
+          const input = document.createElement("input");
+          input.type = "number";
+          input.min = String(product.minimum);
+          input.max = String(product.maximum);
+          input.step = "1";
+          input.value = String(item.quantity);
+          input.setAttribute("aria-label", product.kind === "area" ? `Metros cuadrados para ${product.name}` : `Cantidad de ${product.name}`);
+          input.addEventListener("change", () => {
+            const value = Number(input.value);
+            if (!Number.isInteger(value) || value < product.minimum || value > product.maximum) {
+              input.value = String(item.quantity);
+              setFeedback(`La cantidad debe estar entre ${product.minimum} y ${product.maximum}.`, "error");
+              return;
+            }
+            const updatedMachineCount = items.reduce((total, entry) => {
+              return total + (products[entry.sku].kind === "machine"
+                ? entry.sku === item.sku ? value : entry.quantity
+                : 0);
+            }, 0);
+            if (product.kind === "machine" && updatedMachineCount > 2) {
+              input.value = String(item.quantity);
+              setFeedback("Solo hay 2 hidrolavadoras disponibles por orden.", "error");
+              return;
+            }
+            item.quantity = value;
+            cart.saveItems(items);
+            renderCart();
+            loadAvailability();
+          });
+          const quantityLabel = document.createElement("span");
+          quantityLabel.textContent = product.kind === "area" ? "m²" : "unidades";
+          controls.append(input, quantityLabel);
+        }
 
         const remove = document.createElement("button");
         remove.className = "remove-item";
@@ -375,7 +375,9 @@
         const price = document.createElement("strong");
         price.className = "item-price";
         price.textContent = formatCurrency(priceFor(item));
-        information.append(title, description, controls, remove);
+        information.append(title, description);
+        if (product.pricing !== "promo") information.append(controls);
+        information.append(remove);
         main.append(image, information);
         card.append(main, price);
         cartItems.append(card);
@@ -486,10 +488,12 @@
       }
 
       if (requestId === availabilityRequestId) {
-        searchStatus.textContent = list.childElementCount
-          ? ""
-          : "No encontramos fechas disponibles en las próximas 4 semanas. Prueba otra fecha o contáctanos.";
-        if (!searchStatus.textContent) searchStatus.remove();
+        if (list.childElementCount) {
+          searchStatus.remove();
+        } else {
+          searchStatus.className = "notice error";
+          searchStatus.textContent = "No encontramos fechas disponibles en las próximas 4 semanas. Prueba otra fecha o contáctanos.";
+        }
       }
     }
 
@@ -520,9 +524,12 @@
       if (requestId !== availabilityRequestId) return;
       slotList.replaceChildren();
       if (!availableSlots.length) {
-        slotList.textContent = hasSlotsWithinMinimumNotice
+        const notice = document.createElement("p");
+        notice.className = "notice error";
+        notice.textContent = hasSlotsWithinMinimumNotice
           ? "Ese horario requiere al menos 48 horas de anticipación. Elige una de las fechas alternativas."
           : "No hay horarios disponibles para esa fecha.";
+        slotList.append(notice);
         alternativeDates.textContent = "Buscando fechas alternativas…";
         await findAlternativeDates(requestId, serviceTypeSelect.value, selectedDate);
         return;
@@ -829,7 +836,7 @@
         setStatus(`No se pudo crear la orden: ${error.message}`, "error");
       } finally {
         submitButton.disabled = false;
-        submitButton.textContent = "Enviar orden y retener horario por 1 hora";
+        submitButton.textContent = "Enviar orden y retener horario por 24 horas";
         setCheckoutAvailability();
       }
     });
@@ -885,7 +892,7 @@
 
     <section class="card" id="checkout-section" style="margin-top:22px" hidden>
       <h2>Fecha y datos de contacto</h2>
-      <p>Al enviar la orden, el horario se retiene durante una hora mientras un agente confirma el pago.</p>
+      <p>Al enviar la orden, el horario se retiene durante 24 horas mientras un agente confirma el pago.</p>
       <p id="auth-notice" class="notice warning" hidden>Para comprar necesitas iniciar sesión. <a id="sign-in-link" href="/cuenta?next=%2Fcarrito"><strong>Inicia sesión o crea una cuenta.</strong></a></p>
       <form id="checkout-form">
         <div class="form-grid">
@@ -977,10 +984,10 @@
             </div>
           </fieldset>
           <div class="field full">
-            <label class="checkbox"><input id="terms-confirmed" type="checkbox" required><span>Entiendo que no se realizará un cobro en línea; debo contactar a RenovaH2O y esperar a que un agente confirme el pago. Para servicios residenciales se verificará el metraje en el sitio y se notificará cualquier saldo adicional o devolución.</span></label>
+            <label class="checkbox"><input id="terms-confirmed" type="checkbox" required><span>Entiendo que no se realizará un cobro en línea; debo contactar a RenovaH2O y esperar a que un agente confirme el pago. El horario se retendrá por 24 horas. Para servicios residenciales se verificará el metraje en el sitio y se notificará cualquier saldo adicional o devolución.</span></label>
           </div>
         </div>
-        <button class="button" id="submit-order" type="submit">Enviar orden y retener horario por 1 hora</button>
+        <button class="button" id="submit-order" type="submit">Enviar orden y retener horario por 24 horas</button>
         <p id="checkout-status" class="form-status" role="status" aria-live="polite"></p>
       </form>
     </section>
@@ -988,7 +995,7 @@
     <section id="order-success" class="success" style="margin-top:22px" hidden>
       <h2>Recibimos tu orden</h2>
       <p>Orden <strong id="success-order-number"></strong> · Total para confirmar: <strong id="success-order-total"></strong>.</p>
-      <p>Contacta a un agente por llamada o WhatsApp para coordinar el pago. La fecha es provisional por una hora y aparecerá confirmada en Mi agenda después de que un agente registre el pago.</p>
+      <p>Contacta a un agente por llamada o WhatsApp para coordinar el pago. La fecha es provisional por 24 horas y aparecerá confirmada en Mi agenda después de que un agente registre el pago.</p>
       <div class="contact-actions">
         <a class="button" id="whatsapp-order" href="https://wa.me/50763518111" target="_blank" rel="noopener noreferrer">Confirmar por WhatsApp</a>
         <a class="button secondary" href="tel:+50763518111">Llamar al +507 6351-8111</a>

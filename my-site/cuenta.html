@@ -120,6 +120,14 @@
     .order-meta,.order-items{margin:6px 0 0;color:var(--gray);font-size:14px}
     .order-items{padding-left:20px}
     .empty-state{margin:0;padding:22px;border-radius:14px;background:#f5f5f7;color:var(--gray);font-size:14px}
+    .admin-customer-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-bottom:16px}
+    .admin-customer-search input{min-width:0;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px}
+    .admin-customer-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+    .report-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+    .report-metric{display:grid;align-content:start;gap:5px;min-height:100px;padding:16px;border:1px solid #e8e8ed;border-radius:14px;background:#fff}
+    .report-metric strong{font-size:26px;letter-spacing:-.04em}
+    .report-metric span{color:var(--gray);font-size:13px}
+    .birthday-list{display:grid;gap:10px}
     .agenda-list{display:grid;gap:12px}
     .agenda-card{padding:16px;border:1px solid #e8e8ed;border-radius:14px}
     .agenda-card h3{margin:0;font-size:16px}
@@ -161,8 +169,9 @@
     .support-links{display:flex;flex-wrap:wrap;gap:12px}
     .footer-note{margin-top:28px;color:var(--gray);font-size:12px}
     .footer-note a{color:var(--blue)}
+    @media(max-width:1000px){.report-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:850px){.account-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:560px){main{width:min(100% - 28px,1120px);padding-top:92px}.card{padding:23px}.account-grid{grid-template-columns:1fr}.account-tile{min-height:unset}.tile-icon{margin-bottom:12px}.account-top{align-items:flex-start;flex-direction:row}.account-top-actions{gap:8px}.profile-form{grid-template-columns:1fr}.profile-form .primary{grid-column:auto}.phone-field,.address-form{grid-template-columns:1fr}.address-form .field.full,.address-form .address-actions,.address-form .profile-status{grid-column:auto}.panel-heading{align-items:flex-start}.secondary{white-space:nowrap}.agenda-form,.admin-reservation-fields{grid-template-columns:1fr}.agenda-day-row{grid-template-columns:1fr 1fr}.agenda-day-row>span:first-child{grid-column:1/-1}.agenda-rule-row{grid-template-columns:1fr 1fr}.agenda-rule-row strong{grid-column:1/-1}.calendar-day{min-height:72px;padding:4px}.calendar-event{font-size:9px;padding:3px}.calendar-weekday{padding:5px 2px;font-size:10px}.calendar-month{min-width:100px}.saved-contact-card{flex-direction:column}.calendar-heading{align-items:flex-start}}
+    @media(max-width:560px){main{width:min(100% - 28px,1120px);padding-top:92px}.card{padding:23px}.account-grid{grid-template-columns:1fr}.account-tile{min-height:unset}.tile-icon{margin-bottom:12px}.account-top{align-items:flex-start;flex-direction:row}.account-top-actions{gap:8px}.profile-form{grid-template-columns:1fr}.profile-form .primary{grid-column:auto}.phone-field,.address-form{grid-template-columns:1fr}.address-form .field.full,.address-form .address-actions,.address-form .profile-status{grid-column:auto}.panel-heading{align-items:flex-start}.secondary{white-space:nowrap}.agenda-form,.admin-reservation-fields{grid-template-columns:1fr}.agenda-day-row{grid-template-columns:1fr 1fr}.agenda-day-row>span:first-child{grid-column:1/-1}.agenda-rule-row{grid-template-columns:1fr 1fr}.agenda-rule-row strong{grid-column:1/-1}.calendar-day{min-height:72px;padding:4px}.calendar-event{font-size:9px;padding:3px}.calendar-weekday{padding:5px 2px;font-size:10px}.calendar-month{min-width:100px}.saved-contact-card{flex-direction:column}.calendar-heading{align-items:flex-start}.report-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-customer-search{grid-template-columns:1fr}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
   </style>
   <script src="/share.js" defer></script>
@@ -206,6 +215,14 @@
     const adminOrdersList = document.querySelector("#admin-orders-list");
     const adminOrdersStatus = document.querySelector("#admin-orders-status");
     const refreshAdminOrdersButton = document.querySelector("#refresh-admin-orders");
+    const adminCustomersTile = document.querySelector("#admin-customers-tile");
+    const adminCustomersList = document.querySelector("#admin-customers-list");
+    const adminCustomersStatus = document.querySelector("#admin-customers-status");
+    const adminCustomerSearchForm = document.querySelector("#admin-customer-search");
+    const adminCustomerSearchInput = document.querySelector("#admin-customer-query");
+    const adminReportsTile = document.querySelector("#admin-reports-tile");
+    const adminReportsStatus = document.querySelector("#admin-reports-status");
+    const birthdayReportList = document.querySelector("#birthday-report-list");
     const saveProfileButton = document.querySelector("#save-profile");
     const savedAccountAvatar = document.querySelector("#account-avatar-image");
     const accountAvatarInitials = document.querySelector("#account-avatar-initials");
@@ -1396,6 +1413,149 @@
       }
     }
 
+    function formatDateOnly(value) {
+      if (!value) return "Sin fecha";
+      return new Intl.DateTimeFormat("es-PA", {
+        dateStyle: "long",
+        timeZone: agendaTimezone
+      }).format(new Date(`${value}T12:00:00-05:00`));
+    }
+
+    function appendCustomerContactActions(container, customer) {
+      const actions = document.createElement("div");
+      actions.className = "admin-customer-actions";
+      if (customer.email) {
+        const email = document.createElement("a");
+        email.className = "secondary";
+        email.href = `mailto:${customer.email}`;
+        email.textContent = "Enviar correo";
+        actions.append(email);
+      }
+      const phoneDigits = (customer.phone ?? "").replace(/\D/g, "");
+      if (phoneDigits) {
+        const whatsapp = document.createElement("a");
+        whatsapp.className = "secondary";
+        whatsapp.href = `https://wa.me/${phoneDigits}`;
+        whatsapp.target = "_blank";
+        whatsapp.rel = "noopener noreferrer";
+        whatsapp.textContent = "Contactar por WhatsApp";
+        actions.append(whatsapp);
+      }
+      if (actions.childElementCount) container.append(actions);
+    }
+
+    async function loadAdminCustomers(userId = activeUserId) {
+      adminCustomersList.replaceChildren();
+      adminCustomersStatus.textContent = "Cargando clientes…";
+      if (!isAgendaAdmin || !userId) return;
+      let data;
+      try {
+        const result = await supabase.rpc("checkout_admin_list_customers", {
+          p_search: adminCustomerSearchInput.value.trim() || null,
+          p_limit: 100
+        });
+        if (result.error) throw result.error;
+        data = result.data;
+      } catch (error) {
+        if (activeUserId === userId && isAgendaAdmin) {
+          adminCustomersStatus.textContent = `No se pudieron cargar los clientes: ${error.message}`;
+        }
+        return;
+      }
+      if (activeUserId !== userId || !isAgendaAdmin) return;
+      const customers = data ?? [];
+      adminCustomersStatus.textContent = customers.length > 99
+        ? "Se muestran hasta 100 clientes. Escribe un nombre, correo o teléfono para filtrar."
+        : "";
+      if (!customers.length) {
+        appendEmptyState(adminCustomersList, "No encontramos clientes con esos datos.");
+        return;
+      }
+
+      for (const customer of customers) {
+        const card = document.createElement("article");
+        card.className = "order-card";
+        const heading = document.createElement("h3");
+        heading.textContent = customer.full_name || customer.email || "Cliente";
+        const detail = document.createElement("p");
+        detail.className = "order-meta";
+        detail.textContent = [
+          customer.email || "Sin correo",
+          customer.phone || "Sin teléfono",
+          customer.birthday ? `Cumpleaños: ${formatDateOnly(customer.birthday)}` : "Cumpleaños no registrado"
+        ].join(" · ");
+        const activity = document.createElement("p");
+        activity.className = "order-meta";
+        activity.textContent = `${customer.order_count} órdenes · Última orden: ${customer.last_order_at ? formatAgendaDateTime(customer.last_order_at) : "ninguna"}`;
+        const services = document.createElement("p");
+        services.className = "order-meta";
+        const labels = {
+          residencial: "Residencial",
+          comercial: "Comercial",
+          alquileres: "Alquileres"
+        };
+        services.textContent = `Preferencias: ${(customer.preferred_services ?? []).map(service => labels[service] ?? service).join(", ") || "No indicadas"}`;
+        card.append(heading, detail, activity, services);
+        appendCustomerContactActions(card, customer);
+        adminCustomersList.append(card);
+      }
+    }
+
+    async function loadAdminReports(userId = activeUserId) {
+      adminReportsStatus.textContent = "Preparando informes…";
+      birthdayReportList.replaceChildren();
+      if (!isAgendaAdmin || !userId) return;
+      let metricsResult;
+      let birthdaysResult;
+      try {
+        [metricsResult, birthdaysResult] = await Promise.all([
+          supabase.rpc("checkout_admin_customer_metrics"),
+          supabase.rpc("checkout_admin_upcoming_birthdays")
+        ]);
+      } catch (error) {
+        if (activeUserId === userId && isAgendaAdmin) {
+          adminReportsStatus.textContent = `No se pudieron cargar los informes: ${error.message}`;
+        }
+        return;
+      }
+      if (activeUserId !== userId || !isAgendaAdmin) return;
+      const errors = [];
+      if (metricsResult.error) {
+        errors.push(`No se pudieron cargar los indicadores: ${metricsResult.error.message}`);
+      } else {
+        const metrics = metricsResult.data?.[0];
+        if (metrics) {
+          document.querySelector("#report-total-customers").textContent = String(metrics.total_customers);
+          document.querySelector("#report-paid-customers").textContent = String(metrics.customers_with_paid_orders);
+          document.querySelector("#report-repeat-customers").textContent = String(metrics.repeat_customers);
+          document.querySelector("#report-inactive-customers").textContent = String(metrics.inactive_customers_90d);
+          document.querySelector("#report-never-ordered").textContent = String(metrics.customers_without_paid_orders);
+        }
+      }
+      if (birthdaysResult.error) {
+        errors.push(`No se pudieron cargar los cumpleaños: ${birthdaysResult.error.message}`);
+      } else if (!birthdaysResult.data?.length) {
+        appendEmptyState(birthdayReportList, "No hay cumpleaños próximos registrados para el resto de este mes.");
+      } else {
+        for (const customer of birthdaysResult.data) {
+          const card = document.createElement("article");
+          card.className = "order-card";
+          const heading = document.createElement("h3");
+          heading.textContent = `${formatDateOnly(customer.upcoming_birthday)} · ${customer.full_name || customer.email || "Cliente"}`;
+          const details = document.createElement("p");
+          details.className = "order-meta";
+          details.textContent = [
+            customer.email || "Sin correo",
+            customer.phone || "Sin teléfono"
+          ].join(" · ");
+          card.append(heading, details);
+          appendCustomerContactActions(card, customer);
+          birthdayReportList.append(card);
+        }
+      }
+      adminReportsStatus.textContent = errors.join(" ");
+    }
+
     async function updateOrderStatus(orderId, status, button, userId) {
       if (status === "cancelled" && !window.confirm("¿Cancelar esta orden y liberar el horario retenido?")) return;
       if (status === "paid" && !window.confirm("Confirma que verificaste el pago antes de confirmar la orden y la fecha.")) return;
@@ -1502,6 +1662,8 @@
       isAgendaAdmin = false;
       adminAgendaTile.hidden = true;
       adminOrdersTile.hidden = true;
+      adminCustomersTile.hidden = true;
+      adminReportsTile.hidden = true;
       adminAgendaList.replaceChildren();
       adminAgendaStatus.textContent = "";
       adminOrdersList.replaceChildren();
@@ -1642,6 +1804,8 @@
           isAgendaAdmin = adminResult.data === true;
           adminAgendaTile.hidden = !isAgendaAdmin;
           adminOrdersTile.hidden = !isAgendaAdmin;
+          adminCustomersTile.hidden = !isAgendaAdmin;
+          adminReportsTile.hidden = !isAgendaAdmin;
           if (isAgendaAdmin) {
             await Promise.all([loadAdminAgenda(user.id), loadAdminOrders(user.id)]);
           }
@@ -1674,6 +1838,8 @@
         isAgendaAdmin = false;
         adminAgendaTile.hidden = true;
         adminOrdersTile.hidden = true;
+        adminCustomersTile.hidden = true;
+        adminReportsTile.hidden = true;
         activeAvatarPath = null;
         selectedAvatarFile = undefined;
         if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
@@ -1690,6 +1856,8 @@
       agenda: "panel-agenda",
       "administrar-agenda": "panel-admin-agenda",
       "administrar-ordenes": "panel-admin-orders",
+      "administrar-clientes": "panel-admin-customers",
+      "informes-clientes": "panel-admin-reports",
       direcciones: "panel-addresses",
       pagos: "panel-payments",
       regalos: "panel-giftcards",
@@ -1701,7 +1869,8 @@
     function showRoute() {
       const route = window.location.hash.slice(1);
       const requestedPanelId = routes[route];
-      const panelId = (route === "administrar-agenda" || route === "administrar-ordenes") && !isAgendaAdmin
+      const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-clientes", "informes-clientes"];
+      const panelId = adminRoutes.includes(route) && !isAgendaAdmin
         ? null
         : requestedPanelId;
       document.querySelector("#dashboard-home").hidden = Boolean(panelId);
@@ -1712,6 +1881,8 @@
         const panel = document.getElementById(panelId);
         const breadcrumb = document.querySelector("#breadcrumb-current");
         if (breadcrumb) breadcrumb.textContent = panel.dataset.title;
+        if (panelId === "panel-admin-customers") loadAdminCustomers();
+        if (panelId === "panel-admin-reports") loadAdminReports();
       } else {
         const breadcrumb = document.querySelector("#breadcrumb-current");
         if (breadcrumb) breadcrumb.textContent = "Mi cuenta";
@@ -2222,6 +2393,10 @@
 
     window.addEventListener("hashchange", showRoute);
     refreshAdminOrdersButton.addEventListener("click", () => loadAdminOrders());
+    adminCustomerSearchForm.addEventListener("submit", event => {
+      event.preventDefault();
+      loadAdminCustomers();
+    });
     updateAuthMode();
     showRoute();
 
@@ -2450,6 +2625,8 @@
           <a class="account-tile" href="#agenda"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Mi agenda</strong><span>Consulta las fechas y horarios confirmados de tus servicios.</span></a>
           <a class="account-tile" id="admin-agenda-tile" href="#administrar-agenda" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Administrar agenda</strong><span>Configura horarios, registra citas y bloquea espacios.</span></a>
           <a class="account-tile" id="admin-orders-tile" href="#administrar-ordenes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Confirmar órdenes</strong><span>Revisa pedidos pendientes, confirma pagos y actualiza la agenda.</span></a>
+          <a class="account-tile" id="admin-customers-tile" href="#administrar-clientes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-profile"></use></svg></span><strong>Gestionar clientes</strong><span>Busca clientes, consulta sus datos de contacto y revisa su actividad.</span></a>
+          <a class="account-tile" id="admin-reports-tile" href="#informes-clientes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-gift"></use></svg></span><strong>Informes de clientes</strong><span>Identifica cumpleaños próximos y oportunidades de seguimiento.</span></a>
           <a class="account-tile" href="#direcciones"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-address"></use></svg></span><strong>Mis direcciones</strong><span>Guarda direcciones para tus servicios.</span></a>
           <a class="account-tile" href="#pagos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-payment"></use></svg></span><strong>Mis métodos de pago</strong><span>Consulta opciones de pago y seguridad.</span></a>
           <a class="account-tile" href="#regalos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-gift"></use></svg></span><strong>Mis tarjetas de regalo</strong><span>Consulta tarjetas y códigos asociados a tu cuenta.</span></a>
@@ -2585,6 +2762,33 @@
         <button class="secondary" id="refresh-admin-orders" type="button">Actualizar órdenes</button>
         <div class="orders-list" id="admin-orders-list" aria-live="polite"></div>
         <p class="agenda-status" id="admin-orders-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="account-panel card" id="panel-admin-customers" data-title="Gestionar clientes" hidden>
+        <div class="panel-heading"><div><h2>Gestionar clientes</h2><p>Busca por nombre, correo o teléfono. Revisa preferencias y actividad para dar seguimiento.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <form class="admin-customer-search" id="admin-customer-search">
+          <input id="admin-customer-query" type="search" maxlength="120" placeholder="Nombre, correo o teléfono" aria-label="Buscar clientes por nombre, correo o teléfono">
+          <button class="secondary" type="submit">Buscar clientes</button>
+        </form>
+        <div class="orders-list" id="admin-customers-list" aria-live="polite"></div>
+        <p class="agenda-status" id="admin-customers-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="account-panel card" id="panel-admin-reports" data-title="Informes de clientes" hidden>
+        <div class="panel-heading"><div><h2>Informes de clientes</h2><p>Indicadores sencillos para planificar seguimiento, promociones y detalles de cumpleaños.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <div class="report-metrics" aria-live="polite">
+          <article class="report-metric"><strong id="report-total-customers">—</strong><span>Clientes registrados</span></article>
+          <article class="report-metric"><strong id="report-paid-customers">—</strong><span>Con compras pagadas</span></article>
+          <article class="report-metric"><strong id="report-repeat-customers">—</strong><span>Clientes recurrentes</span></article>
+          <article class="report-metric"><strong id="report-inactive-customers">—</strong><span>Sin compra pagada en 90 días</span></article>
+          <article class="report-metric"><strong id="report-never-ordered">—</strong><span>Sin órdenes pagadas</span></article>
+        </div>
+        <section class="admin-agenda-section">
+          <h3>Cumpleaños próximos este mes</h3>
+          <p>Usa estos datos para planificar una tarjeta de regalo o un mensaje personal.</p>
+          <div class="birthday-list" id="birthday-report-list" aria-live="polite"></div>
+        </section>
+        <p class="agenda-status" id="admin-reports-status" role="status" aria-live="polite"></p>
       </section>
 
       <section class="account-panel card" id="panel-addresses" data-title="Mis direcciones" hidden>
