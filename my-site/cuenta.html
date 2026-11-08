@@ -88,11 +88,31 @@
     .order-meta,.order-items{margin:6px 0 0;color:var(--gray);font-size:14px}
     .order-items{padding-left:20px}
     .empty-state{margin:0;padding:22px;border-radius:14px;background:#f5f5f7;color:var(--gray);font-size:14px}
+    .agenda-list{display:grid;gap:12px}
+    .agenda-card{padding:16px;border:1px solid #e8e8ed;border-radius:14px}
+    .agenda-card h3{margin:0;font-size:16px}
+    .agenda-card p{margin:6px 0 0;color:var(--gray);font-size:14px}
+    .agenda-status{min-height:22px;margin:12px 0 0;color:var(--gray);font-size:13px}
+    .admin-agenda-section{margin-top:24px;padding-top:20px;border-top:1px solid #e8e8ed}
+    .admin-agenda-section h3{margin:0 0 12px;font-size:18px}
+    .agenda-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
+    .agenda-form .primary,.agenda-form .agenda-status{grid-column:1/-1}
+    .agenda-form input,.agenda-form select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
+    .agenda-day-row,.agenda-rule-row{display:grid;grid-template-columns:minmax(95px,1fr) auto minmax(100px,.7fr) minmax(100px,.7fr);gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #eee}
+    .agenda-day-row label{display:flex;align-items:center;gap:8px}
+    .agenda-day-row input[type=time],.agenda-rule-row input{width:100%;min-height:40px;padding:8px;border:1px solid #d2d2d7;border-radius:8px}
+    .agenda-rule-row{grid-template-columns:minmax(130px,1fr) minmax(90px,.7fr) minmax(100px,.7fr)}
+    .admin-reservation{display:grid;gap:12px}
+    .admin-reservation-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .admin-reservation-fields label{display:grid;gap:6px}
+    .admin-reservation-fields input{width:100%;min-height:40px;padding:8px;border:1px solid #d2d2d7;border-radius:8px}
+    .agenda-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .agenda-actions .secondary{min-height:38px}
     .support-links{display:flex;flex-wrap:wrap;gap:12px}
     .footer-note{margin-top:28px;color:var(--gray);font-size:12px}
     .footer-note a{color:var(--blue)}
     @media(max-width:850px){.account-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:560px){main{width:min(100% - 28px,1120px);padding-top:92px}.card{padding:23px}.account-grid{grid-template-columns:1fr}.account-tile{min-height:unset}.tile-icon{margin-bottom:12px}.account-top{align-items:flex-start;flex-direction:column}.profile-form{grid-template-columns:1fr}.profile-form .primary{grid-column:auto}.panel-heading{align-items:flex-start}.secondary{white-space:nowrap}}
+    @media(max-width:560px){main{width:min(100% - 28px,1120px);padding-top:92px}.card{padding:23px}.account-grid{grid-template-columns:1fr}.account-tile{min-height:unset}.tile-icon{margin-bottom:12px}.account-top{align-items:flex-start;flex-direction:column}.profile-form{grid-template-columns:1fr}.profile-form .primary{grid-column:auto}.panel-heading{align-items:flex-start}.secondary{white-space:nowrap}.agenda-form,.admin-reservation-fields{grid-template-columns:1fr}.agenda-day-row{grid-template-columns:1fr 1fr}.agenda-day-row>span:first-child{grid-column:1/-1}.agenda-rule-row{grid-template-columns:1fr 1fr}.agenda-rule-row strong{grid-column:1/-1}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
   </style>
   <script src="/share.js" defer></script>
@@ -124,17 +144,31 @@
     const avatarStatus = document.querySelector("#avatar-status");
     const profileStatus = document.querySelector("#profile-status");
     const ordersList = document.querySelector("#orders-list");
+    const customerAgendaList = document.querySelector("#customer-agenda-list");
+    const customerAgendaStatus = document.querySelector("#customer-agenda-status");
+    const adminAgendaTile = document.querySelector("#admin-agenda-tile");
+    const adminAgendaList = document.querySelector("#admin-agenda-list");
+    const adminAgendaStatus = document.querySelector("#admin-agenda-status");
     const saveProfileButton = document.querySelector("#save-profile");
     const passwordResetForm = document.querySelector("#password-reset-form");
     let supabase;
     let authMode = "signin";
     let activeUserId;
+    let isAgendaAdmin = false;
     let activeAvatarPath;
     let selectedAvatarFile;
     let removeAvatarRequested = false;
     let avatarPreviewUrl;
 
     const today = new Date();
+    const agendaTimezone = "America/Panama";
+    const serviceLabels = {
+      residencial_am: "Residencial · AM",
+      residencial_pm: "Residencial · PM",
+      comercial: "Comercial · día completo",
+      alquileres: "Alquiler · 24 horas"
+    };
+    const dayLabels = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     profileBirthday.max = [
       today.getFullYear(),
       String(today.getMonth() + 1).padStart(2, "0"),
@@ -199,6 +233,279 @@
         .map(input => input.value);
     }
 
+    function formatAgendaDateTime(value, includeDate = true) {
+      return new Intl.DateTimeFormat("es-PA", {
+        ...(includeDate ? { dateStyle: "full" } : {}),
+        timeStyle: "short",
+        timeZone: agendaTimezone
+      }).format(new Date(value));
+    }
+
+    function toPanamaIso(value) {
+      if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+        throw new Error("Indica una fecha y hora válidas.");
+      }
+      const date = new Date(`${value}:00-05:00`);
+      if (Number.isNaN(date.getTime())) throw new Error("Indica una fecha y hora válidas.");
+      return date.toISOString();
+    }
+
+    function toPanamaDateTimeInput(value) {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: agendaTimezone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).formatToParts(new Date(value));
+      const fields = Object.fromEntries(parts.map(part => [part.type, part.value]));
+      return `${fields.year}-${fields.month}-${fields.day}T${fields.hour}:${fields.minute}`;
+    }
+
+    function appendEmptyState(container, message) {
+      const empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = message;
+      container.append(empty);
+    }
+
+    function renderCustomerAgenda(reservations) {
+      customerAgendaList.replaceChildren();
+      if (!reservations.length) {
+        appendEmptyState(customerAgendaList, "Todavía no hay servicios confirmados en tu agenda. Cuando se confirme una cita para tu cuenta, aparecerá aquí.");
+        return;
+      }
+
+      for (const reservation of reservations) {
+        const card = document.createElement("article");
+        card.className = "agenda-card";
+        const title = document.createElement("h3");
+        title.textContent = serviceLabels[reservation.service_type] ?? "Servicio RenovaH2O";
+        const date = document.createElement("p");
+        date.textContent = `${formatAgendaDateTime(reservation.starts_at)} – ${formatAgendaDateTime(reservation.ends_at, false)}`;
+        const status = document.createElement("p");
+        status.textContent = reservation.status === "cancelled" ? "Estado: cancelada" : "Estado: confirmada";
+        card.append(title, date, status);
+        customerAgendaList.append(card);
+      }
+    }
+
+    function setWeeklyHoursInputs(hours) {
+      for (const row of hours) {
+        const day = String(row.day_of_week);
+        const open = document.querySelector(`[data-day-open="${day}"]`);
+        const start = document.querySelector(`[data-day-start="${day}"]`);
+        const end = document.querySelector(`[data-day-end="${day}"]`);
+        open.checked = row.is_open;
+        start.value = row.opens_at?.slice(0, 5) ?? "";
+        end.value = row.closes_at?.slice(0, 5) ?? "";
+        start.disabled = !row.is_open;
+        end.disabled = !row.is_open;
+      }
+    }
+
+    function renderServiceRules(rules) {
+      const container = document.querySelector("#service-rules-list");
+      container.replaceChildren();
+      for (const rule of rules) {
+        const row = document.createElement("div");
+        row.className = "agenda-rule-row";
+        row.dataset.serviceType = rule.service_type;
+        const title = document.createElement("strong");
+        title.textContent = serviceLabels[rule.service_type] ?? rule.display_name;
+
+        const startLabel = document.createElement("label");
+        startLabel.textContent = "Hora inicial";
+        const startInput = document.createElement("input");
+        startInput.type = "time";
+        startInput.dataset.ruleStart = "";
+        startInput.value = rule.starts_at?.slice(0, 5) ?? "";
+        startInput.disabled = rule.uses_full_business_day;
+        startLabel.append(startInput);
+
+        const durationLabel = document.createElement("label");
+        durationLabel.textContent = "Duración (minutos)";
+        const durationInput = document.createElement("input");
+        durationInput.type = "number";
+        durationInput.min = "15";
+        durationInput.max = "2880";
+        durationInput.step = "15";
+        durationInput.required = true;
+        durationInput.dataset.ruleDuration = "";
+        durationInput.value = String(rule.duration_minutes);
+        durationLabel.append(durationInput);
+        row.append(title, startLabel, durationLabel);
+        container.append(row);
+      }
+    }
+
+    async function loadAdminReservations(userId = activeUserId) {
+      adminAgendaList.replaceChildren();
+      adminAgendaStatus.textContent = "Cargando citas y bloqueos…";
+      const { data, error } = await supabase.rpc("agenda_list_admin_reservations");
+      if (activeUserId !== userId || !isAgendaAdmin) return;
+      if (error) {
+        adminAgendaStatus.textContent = `No se pudieron cargar las citas: ${error.message}`;
+        return;
+      }
+      adminAgendaStatus.textContent = "";
+      if (!data.length) {
+        appendEmptyState(adminAgendaList, "No hay citas ni bloqueos registrados.");
+        return;
+      }
+
+      for (const reservation of data) {
+        const card = document.createElement("article");
+        card.className = "agenda-card";
+        const title = document.createElement("h3");
+        title.textContent = reservation.kind === "block"
+          ? "Bloqueo de disponibilidad"
+          : serviceLabels[reservation.service_type] ?? "Servicio RenovaH2O";
+        const customer = document.createElement("p");
+        customer.textContent = reservation.kind === "block"
+          ? "No disponible para reservas"
+          : `${reservation.customer_name ? `${reservation.customer_name} · ` : ""}${reservation.customer_email ?? "Cuenta no disponible"}`;
+        const state = document.createElement("p");
+        state.textContent = reservation.status === "cancelled" ? "Estado: cancelada" : "Estado: confirmada";
+        const form = document.createElement("form");
+        form.className = "admin-reservation";
+        const fields = document.createElement("div");
+        fields.className = "admin-reservation-fields";
+        const startLabel = document.createElement("label");
+        startLabel.textContent = "Inicio (hora Panamá)";
+        const startInput = document.createElement("input");
+        startInput.type = "datetime-local";
+        startInput.required = true;
+        startInput.dataset.reservationStart = "";
+        startInput.value = toPanamaDateTimeInput(reservation.starts_at);
+        startLabel.append(startInput);
+        const endLabel = document.createElement("label");
+        endLabel.textContent = "Fin (hora Panamá)";
+        const endInput = document.createElement("input");
+        endInput.type = "datetime-local";
+        endInput.required = true;
+        endInput.dataset.reservationEnd = "";
+        endInput.value = toPanamaDateTimeInput(reservation.ends_at);
+        endLabel.append(endInput);
+        fields.append(startLabel, endLabel);
+        const actions = document.createElement("div");
+        actions.className = "agenda-actions";
+        const saveButton = document.createElement("button");
+        saveButton.className = "secondary";
+        saveButton.type = "submit";
+        saveButton.textContent = "Guardar horario";
+        actions.append(saveButton);
+        if (reservation.status === "confirmed") {
+          const cancelButton = document.createElement("button");
+          cancelButton.className = "secondary";
+          cancelButton.type = "button";
+          cancelButton.textContent = "Cancelar";
+          cancelButton.addEventListener("click", async () => {
+            if (!window.confirm("¿Quieres cancelar esta cita o bloqueo?")) return;
+            cancelButton.disabled = true;
+            try {
+              const { error: cancelError } = await supabase.from("agenda_reservations")
+                .update({ status: "cancelled" })
+                .eq("id", reservation.id)
+                .eq("status", "confirmed")
+                .select("id")
+                .single();
+              if (cancelError) throw cancelError;
+              await loadAdminReservations();
+              await loadCustomerAgenda();
+            } catch (error) {
+              adminAgendaStatus.textContent = `No se pudo cancelar: ${error.message}`;
+              cancelButton.disabled = false;
+            }
+          });
+          actions.append(cancelButton);
+        } else {
+          saveButton.disabled = true;
+        }
+        const status = document.createElement("p");
+        status.className = "agenda-status";
+        status.setAttribute("role", "status");
+        form.append(fields, actions, status);
+        form.addEventListener("submit", async event => {
+          event.preventDefault();
+          status.textContent = "";
+          saveButton.disabled = true;
+          try {
+            const startsAt = toPanamaIso(startInput.value);
+            const endsAt = toPanamaIso(endInput.value);
+            if (new Date(endsAt) <= new Date(startsAt)) {
+              throw new Error("La hora final debe ser posterior a la inicial.");
+            }
+            const { error: updateError } = await supabase.from("agenda_reservations")
+              .update({ starts_at: startsAt, ends_at: endsAt })
+              .eq("id", reservation.id)
+              .eq("status", "confirmed")
+              .select("id")
+              .single();
+            if (updateError) throw updateError;
+            status.textContent = "Horario actualizado.";
+            await loadAdminReservations();
+            await loadCustomerAgenda();
+          } catch (error) {
+            status.textContent = `No se pudo actualizar: ${error.message}`;
+            saveButton.disabled = false;
+          }
+        });
+        card.append(title, customer, dateRangeParagraph(reservation.starts_at, reservation.ends_at), state, form);
+        adminAgendaList.append(card);
+      }
+    }
+
+    function dateRangeParagraph(startsAt, endsAt) {
+      const range = document.createElement("p");
+      range.textContent = `${formatAgendaDateTime(startsAt)} – ${formatAgendaDateTime(endsAt, false)}`;
+      return range;
+    }
+
+    async function loadCustomerAgenda(userId = activeUserId) {
+      customerAgendaList.replaceChildren();
+      customerAgendaStatus.textContent = "Cargando tu agenda…";
+      const { data, error } = await supabase.from("agenda_reservations")
+        .select("id, service_type, starts_at, ends_at, status")
+        .eq("kind", "service")
+        .order("starts_at", { ascending: true })
+        .limit(100);
+      if (activeUserId !== userId) return;
+      if (error) {
+        customerAgendaStatus.textContent = `No se pudo cargar tu agenda: ${error.message}`;
+        return;
+      }
+      customerAgendaStatus.textContent = "";
+      renderCustomerAgenda(data);
+    }
+
+    async function loadAdminAgenda(userId = activeUserId) {
+      const [hoursResult, rulesResult] = await Promise.all([
+        supabase.from("agenda_weekly_hours")
+          .select("day_of_week, is_open, opens_at, closes_at")
+          .order("day_of_week"),
+        supabase.from("agenda_service_rules")
+          .select("service_type, display_name, starts_at, duration_minutes, uses_full_business_day")
+          .order("service_type")
+      ]);
+      if (activeUserId !== userId || !isAgendaAdmin) return;
+      if (hoursResult.error) {
+        document.querySelector("#weekly-hours-status").textContent =
+          `No se pudieron cargar los horarios: ${hoursResult.error.message}`;
+      } else {
+        setWeeklyHoursInputs(hoursResult.data);
+      }
+      if (rulesResult.error) {
+        document.querySelector("#service-rules-status").textContent =
+          `No se pudieron cargar las reglas: ${rulesResult.error.message}`;
+      } else {
+        renderServiceRules(rulesResult.data);
+      }
+      await loadAdminReservations(userId);
+    }
+
     function renderOrders(orders) {
       ordersList.replaceChildren();
       if (!orders.length) {
@@ -249,6 +556,11 @@
     }
 
     async function loadAccountData(user) {
+      isAgendaAdmin = false;
+      adminAgendaTile.hidden = true;
+      adminAgendaList.replaceChildren();
+      adminAgendaStatus.textContent = "";
+      showRoute();
       accountEmail.textContent = user.email ?? "";
       accessEmail.value = user.email ?? "";
       profileName.value = "";
@@ -267,13 +579,16 @@
       avatarStatus.textContent = "";
       profileStatus.textContent = "Cargando perfil…";
       ordersList.replaceChildren();
+      customerAgendaList.replaceChildren();
+      customerAgendaStatus.textContent = "Cargando tu agenda…";
+      adminAgendaTile.hidden = true;
       const loading = document.createElement("p");
       loading.className = "empty-state";
       loading.textContent = "Cargando historial…";
       ordersList.append(loading);
 
       try {
-        const [profileResult, ordersResult] = await Promise.all([
+        const [profileResult, ordersResult, reservationsResult, adminResult] = await Promise.all([
           supabase.from("profiles")
             .select("full_name, phone, birthday, preferred_services, profile_avatar_path")
             .eq("id", user.id)
@@ -281,7 +596,13 @@
           supabase.from("orders")
             .select("id, status, total_amount, currency, created_at, order_items(id, product_name, quantity)")
             .eq("user_id", user.id)
-            .order("created_at", { ascending: false })
+            .order("created_at", { ascending: false }),
+          supabase.from("agenda_reservations")
+            .select("id, kind, service_type, starts_at, ends_at, status")
+            .eq("kind", "service")
+            .order("starts_at", { ascending: true })
+            .limit(100),
+          supabase.rpc("is_agenda_admin")
         ]);
         if (activeUserId !== user.id) return;
 
@@ -318,6 +639,24 @@
         } else {
           renderOrders(ordersResult.data);
         }
+
+        if (reservationsResult.error) {
+          customerAgendaStatus.textContent = `No se pudo cargar tu agenda: ${reservationsResult.error.message}`;
+        } else {
+          customerAgendaStatus.textContent = "";
+          renderCustomerAgenda(reservationsResult.data);
+        }
+
+        if (adminResult.error) {
+          isAgendaAdmin = false;
+          customerAgendaStatus.textContent ||= `No se pudieron comprobar los permisos de agenda: ${adminResult.error.message}`;
+        } else {
+          isAgendaAdmin = adminResult.data === true;
+          adminAgendaTile.hidden = !isAgendaAdmin;
+          if (isAgendaAdmin) await loadAdminAgenda(user.id);
+        }
+        if (activeUserId !== user.id) return;
+        showRoute();
       } catch (error) {
         if (activeUserId !== user.id) return;
         profileStatus.textContent = `No se pudieron cargar los datos: ${error.message}`;
@@ -325,6 +664,7 @@
         errorMessage.className = "empty-state";
         errorMessage.textContent = `No se pudo cargar el historial: ${error.message}`;
         ordersList.replaceChildren(errorMessage);
+        customerAgendaStatus.textContent = `No se pudieron cargar los datos de agenda: ${error.message}`;
       }
     }
 
@@ -335,6 +675,8 @@
       activeUserId = signedIn ? session.user.id : undefined;
       if (signedIn) loadAccountData(session.user);
       else {
+        isAgendaAdmin = false;
+        adminAgendaTile.hidden = true;
         activeAvatarPath = null;
         selectedAvatarFile = undefined;
         if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
@@ -348,6 +690,8 @@
       perfil: "panel-profile",
       acceso: "panel-access",
       ordenes: "panel-orders",
+      agenda: "panel-agenda",
+      "administrar-agenda": "panel-admin-agenda",
       direcciones: "panel-addresses",
       pagos: "panel-payments",
       regalos: "panel-giftcards",
@@ -358,7 +702,8 @@
 
     function showRoute() {
       const route = window.location.hash.slice(1);
-      const panelId = routes[route];
+      const requestedPanelId = routes[route];
+      const panelId = route === "administrar-agenda" && !isAgendaAdmin ? null : requestedPanelId;
       document.querySelector("#dashboard-home").hidden = Boolean(panelId);
       for (const panel of document.querySelectorAll(".account-panel")) {
         panel.hidden = panel.id !== panelId;
@@ -372,6 +717,140 @@
         if (breadcrumb) breadcrumb.textContent = "Mi cuenta";
       }
     }
+
+    document.querySelectorAll("[data-day-open]").forEach(toggle => {
+      toggle.addEventListener("change", () => {
+        const day = toggle.dataset.dayOpen;
+        document.querySelector(`[data-day-start="${day}"]`).disabled = !toggle.checked;
+        document.querySelector(`[data-day-end="${day}"]`).disabled = !toggle.checked;
+      });
+    });
+
+    document.querySelector("#weekly-hours-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const status = document.querySelector("#weekly-hours-status");
+      button.disabled = true;
+      status.textContent = "Guardando horarios…";
+      try {
+        const hours = [];
+        for (let day = 0; day < 7; day += 1) {
+          const isOpen = document.querySelector(`[data-day-open="${day}"]`).checked;
+          const opensAt = document.querySelector(`[data-day-start="${day}"]`).value;
+          const closesAt = document.querySelector(`[data-day-end="${day}"]`).value;
+          if (isOpen && (!opensAt || !closesAt || opensAt >= closesAt)) {
+            throw new Error(`Revisa la hora de apertura y cierre de ${dayLabels[day]}.`);
+          }
+          hours.push({
+            day_of_week: day,
+            is_open: isOpen,
+            opens_at: isOpen ? opensAt : null,
+            closes_at: isOpen ? closesAt : null
+          });
+        }
+        const { error } = await supabase.rpc("agenda_save_weekly_hours", { p_hours: hours });
+        if (error) throw error;
+        status.textContent = "Horario semanal actualizado.";
+      } catch (error) {
+        status.textContent = `No se pudieron guardar los horarios: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.querySelector("#service-rules-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const status = document.querySelector("#service-rules-status");
+      button.disabled = true;
+      status.textContent = "Guardando reglas…";
+      try {
+        const rules = [];
+        for (const row of document.querySelectorAll(".agenda-rule-row")) {
+          const startInput = row.querySelector("[data-rule-start]");
+          const durationInput = row.querySelector("[data-rule-duration]");
+          const duration = Number(durationInput.value);
+          if (!Number.isInteger(duration) || duration < 15 || duration > 2880) {
+            throw new Error(`La duración de ${serviceLabels[row.dataset.serviceType]} debe estar entre 15 y 2880 minutos.`);
+          }
+          if (!startInput.disabled && !startInput.value) {
+            throw new Error(`Indica la hora inicial para ${serviceLabels[row.dataset.serviceType]}.`);
+          }
+          rules.push({
+            service_type: row.dataset.serviceType,
+            starts_at: startInput.disabled ? null : startInput.value,
+            duration_minutes: duration
+          });
+        }
+        const { error } = await supabase.rpc("agenda_save_service_rules", { p_rules: rules });
+        if (error) throw error;
+        status.textContent = "Reglas actualizadas. Las citas ya registradas no cambian.";
+      } catch (error) {
+        status.textContent = `No se pudieron guardar las reglas: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.querySelector("#admin-reservation-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const status = document.querySelector("#reservation-form-status");
+      button.disabled = true;
+      status.textContent = "Registrando cita…";
+      try {
+        const startsAt = toPanamaIso(document.querySelector("#reservation-start").value);
+        const endsAt = toPanamaIso(document.querySelector("#reservation-end").value);
+        if (new Date(endsAt) <= new Date(startsAt)) {
+          throw new Error("La hora final debe ser posterior a la inicial.");
+        }
+        const { error } = await supabase.rpc("agenda_create_reservation", {
+          p_customer_email: document.querySelector("#reservation-email").value.trim(),
+          p_service_type: document.querySelector("#reservation-service").value,
+          p_starts_at: startsAt,
+          p_ends_at: endsAt
+        });
+        if (error) throw error;
+        form.reset();
+        status.textContent = "Cita confirmada y agregada a la agenda del cliente.";
+        await Promise.all([loadAdminReservations(), loadCustomerAgenda()]);
+      } catch (error) {
+        status.textContent = `No se pudo registrar la cita: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.querySelector("#admin-block-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const status = document.querySelector("#block-form-status");
+      button.disabled = true;
+      status.textContent = "Bloqueando horario…";
+      try {
+        const startsAt = toPanamaIso(document.querySelector("#block-start").value);
+        const endsAt = toPanamaIso(document.querySelector("#block-end").value);
+        if (new Date(endsAt) <= new Date(startsAt)) {
+          throw new Error("La hora final debe ser posterior a la inicial.");
+        }
+        const { error } = await supabase.rpc("agenda_create_block", {
+          p_starts_at: startsAt,
+          p_ends_at: endsAt
+        });
+        if (error) throw error;
+        form.reset();
+        status.textContent = "Horario bloqueado.";
+        await loadAdminReservations();
+      } catch (error) {
+        status.textContent = `No se pudo bloquear el horario: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
 
     switchButton.addEventListener("click", () => {
       authMode = authMode === "signin" ? "signup" : "signin";
@@ -630,6 +1109,7 @@
     <symbol id="icon-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
     <symbol id="icon-access" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0v3m-4 5v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
     <symbol id="icon-orders" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4v10l-9 4-9-4V7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3.5 7.5 8.5 4 8.5-4M12 12v9m-4-16 9 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-agenda" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 3v4m10-4v4M3 10h18m-13 4h3m-3 3h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
     <symbol id="icon-address" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
     <symbol id="icon-payment" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18m-14 6h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
     <symbol id="icon-gift" viewBox="0 0 24 24"><path d="M3 10h18v11H3zM2 6h20v4H2zm10 0v15m0-15H7.5a2.5 2.5 0 1 1 2.5-2.5C10 5 12 6 12 6Zm0 0h4.5A2.5 2.5 0 1 0 14 3.5C14 5 12 6 12 6Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
@@ -688,6 +1168,8 @@
           <a class="account-tile" href="#perfil"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-profile"></use></svg></span><strong>Mi perfil</strong><span>Actualiza tu nombre y teléfono de contacto.</span></a>
           <a class="account-tile" href="#acceso"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-access"></use></svg></span><strong>Login y acceso</strong><span>Consulta tu correo y solicita restablecer tu contraseña.</span></a>
           <a class="account-tile" href="#ordenes"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Mis órdenes</strong><span>Consulta el historial de tus compras.</span></a>
+          <a class="account-tile" href="#agenda"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Mi agenda</strong><span>Consulta las fechas y horarios confirmados de tus servicios.</span></a>
+          <a class="account-tile" id="admin-agenda-tile" href="#administrar-agenda" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Administrar agenda</strong><span>Configura horarios, registra citas y bloquea espacios.</span></a>
           <a class="account-tile" href="#direcciones"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-address"></use></svg></span><strong>Mis direcciones</strong><span>Guarda direcciones para tus servicios.</span></a>
           <a class="account-tile" href="#pagos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-payment"></use></svg></span><strong>Mis métodos de pago</strong><span>Consulta opciones de pago y seguridad.</span></a>
           <a class="account-tile" href="#regalos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-gift"></use></svg></span><strong>Mis tarjetas de regalo</strong><span>Consulta tarjetas y códigos asociados a tu cuenta.</span></a>
@@ -745,6 +1227,64 @@
       <section class="account-panel card" id="panel-orders" data-title="Mis órdenes" hidden>
         <div class="panel-heading"><div><h2>Mis órdenes</h2><p>Historial de compras asociadas a tu cuenta.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <div class="orders-list" id="orders-list" aria-live="polite"></div>
+      </section>
+
+      <section class="account-panel card" id="panel-agenda" data-title="Mi agenda" hidden>
+        <div class="panel-heading"><div><h2>Mi agenda</h2><p>Aquí verás únicamente las citas confirmadas para tu cuenta.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <div class="agenda-list" id="customer-agenda-list" aria-live="polite"></div>
+        <p class="agenda-status" id="customer-agenda-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="account-panel card" id="panel-admin-agenda" data-title="Administrar agenda" hidden>
+        <div class="panel-heading"><div><h2>Administrar agenda</h2><p>Los horarios se guardan en hora de Panamá. Registra aquí las compras verificadas manualmente hasta conectar pagos en línea.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <section class="admin-agenda-section">
+          <h3>Horario semanal</h3>
+          <form id="weekly-hours-form">
+            <div class="agenda-day-row"><strong>Domingo</strong><label><input type="checkbox" data-day-open="0"> Abierto</label><input type="time" data-day-start="0" aria-label="Apertura domingo"><input type="time" data-day-end="0" aria-label="Cierre domingo"></div>
+            <div class="agenda-day-row"><strong>Lunes</strong><label><input type="checkbox" data-day-open="1"> Abierto</label><input type="time" data-day-start="1" aria-label="Apertura lunes"><input type="time" data-day-end="1" aria-label="Cierre lunes"></div>
+            <div class="agenda-day-row"><strong>Martes</strong><label><input type="checkbox" data-day-open="2"> Abierto</label><input type="time" data-day-start="2" aria-label="Apertura martes"><input type="time" data-day-end="2" aria-label="Cierre martes"></div>
+            <div class="agenda-day-row"><strong>Miércoles</strong><label><input type="checkbox" data-day-open="3"> Abierto</label><input type="time" data-day-start="3" aria-label="Apertura miércoles"><input type="time" data-day-end="3" aria-label="Cierre miércoles"></div>
+            <div class="agenda-day-row"><strong>Jueves</strong><label><input type="checkbox" data-day-open="4"> Abierto</label><input type="time" data-day-start="4" aria-label="Apertura jueves"><input type="time" data-day-end="4" aria-label="Cierre jueves"></div>
+            <div class="agenda-day-row"><strong>Viernes</strong><label><input type="checkbox" data-day-open="5"> Abierto</label><input type="time" data-day-start="5" aria-label="Apertura viernes"><input type="time" data-day-end="5" aria-label="Cierre viernes"></div>
+            <div class="agenda-day-row"><strong>Sábado</strong><label><input type="checkbox" data-day-open="6"> Abierto</label><input type="time" data-day-start="6" aria-label="Apertura sábado"><input type="time" data-day-end="6" aria-label="Cierre sábado"></div>
+            <button class="primary" type="submit">Guardar horario semanal</button>
+            <p class="agenda-status" id="weekly-hours-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+        <section class="admin-agenda-section">
+          <h3>Duración y hora de inicio por servicio</h3>
+          <p>Estas reglas sirven como referencia; cada cita puede tener un horario distinto después de evaluar el trabajo.</p>
+          <form id="service-rules-form">
+            <div id="service-rules-list"></div>
+            <button class="primary" type="submit">Guardar reglas de servicios</button>
+            <p class="agenda-status" id="service-rules-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+        <section class="admin-agenda-section">
+          <h3>Registrar cita confirmada</h3>
+          <form class="agenda-form" id="admin-reservation-form">
+            <div class="field"><label for="reservation-email">Correo de la cuenta del cliente</label><input id="reservation-email" type="email" autocomplete="email" required></div>
+            <div class="field"><label for="reservation-service">Servicio comprado</label><select id="reservation-service" required><option value="residencial_am">Residencial · AM</option><option value="residencial_pm">Residencial · PM</option><option value="comercial">Comercial · día completo</option><option value="alquileres">Alquiler · 24 horas</option></select></div>
+            <div class="field"><label for="reservation-start">Inicio (hora Panamá)</label><input id="reservation-start" type="datetime-local" required></div>
+            <div class="field"><label for="reservation-end">Fin (hora Panamá)</label><input id="reservation-end" type="datetime-local" required></div>
+            <button class="primary" type="submit">Guardar cita confirmada</button>
+            <p class="agenda-status" id="reservation-form-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+        <section class="admin-agenda-section">
+          <h3>Bloquear horario</h3>
+          <form class="agenda-form" id="admin-block-form">
+            <div class="field"><label for="block-start">Inicio (hora Panamá)</label><input id="block-start" type="datetime-local" required></div>
+            <div class="field"><label for="block-end">Fin (hora Panamá)</label><input id="block-end" type="datetime-local" required></div>
+            <button class="primary" type="submit">Bloquear disponibilidad</button>
+            <p class="agenda-status" id="block-form-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+        <section class="admin-agenda-section">
+          <h3>Citas y bloqueos</h3>
+          <div class="agenda-list" id="admin-agenda-list" aria-live="polite"></div>
+          <p class="agenda-status" id="admin-agenda-status" role="status" aria-live="polite"></p>
+        </section>
       </section>
 
       <section class="account-panel card" id="panel-addresses" data-title="Mis direcciones" hidden>
