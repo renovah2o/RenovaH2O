@@ -157,44 +157,46 @@ function addShareOptions(section) {
   grid.after(shareOptions);
 }
 
-fetch("/social.html")
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`No se pudo cargar social.html: ${response.status}`);
-    }
-
-    return response.text();
-  })
-  .then(markup => {
-    const template = document.createElement("template");
-    template.innerHTML = markup;
-    const styles = template.content.querySelector("style");
-    const socialSection = template.content.querySelector("#site-socials");
-
-    if (!socialSection) {
-      throw new Error("social.html no contiene la sección #site-socials.");
-    }
-
-    if (styles) {
-      document.head.append(styles);
-    }
-
-    const existingSection = document.querySelector(".socials");
-
-    if (existingSection) {
-      existingSection.replaceWith(socialSection);
-    } else {
-      const footer = document.querySelector("footer");
-
-      if (footer) {
-        footer.before(socialSection);
-      } else {
-        document.body.append(socialSection);
+if (!document.body.hasAttribute("data-no-social")) {
+  fetch("/social.html")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`No se pudo cargar social.html: ${response.status}`);
       }
-    }
 
-    addShareOptions(socialSection);
-  })
-  .catch(error => {
-    console.error("Error al cargar la sección social compartida.", error);
-  });
+      return response.text();
+    })
+    .then(markup => {
+      const template = document.createElement("template");
+      template.innerHTML = markup;
+      const styles = template.content.querySelector("style");
+      const socialSection = template.content.querySelector("#site-socials");
+
+      if (!socialSection) {
+        throw new Error("social.html no contiene la sección #site-socials.");
+      }
+
+      if (styles) {
+        document.head.append(styles);
+      }
+
+      const existingSection = document.querySelector(".socials");
+
+      if (existingSection) {
+        existingSection.replaceWith(socialSection);
+      } else {
+        const footer = document.querySelector("footer");
+
+        if (footer) {
+          footer.before(socialSection);
+        } else {
+          document.body.append(socialSection);
+        }
+      }
+
+      addShareOptions(socialSection);
+    })
+    .catch(error => {
+      console.error("Error al cargar la sección social compartida.", error);
+    });
+}
