@@ -1,25 +1,41 @@
-<!-- Footer Optimizado -->
+<style>
+  .footer{background:#000;color:#a1a1a6;padding:65px 0 30px;text-align:left;border:0}
+  .footer .wrap{width:min(1200px,calc(100% - 44px));margin:auto}
+  .footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:50px;padding-bottom:50px}
+  .footer h4{font-size:12px;color:#fff;margin-bottom:18px;text-transform:uppercase;letter-spacing:.08em}
+  .footer a,.footer p{display:block;color:#a1a1a6;font-size:13px;margin:9px 0}
+  .footer a:hover{color:#fff}
+  .footer-logo{height:38px}
+  .bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;color:#7a7a7f;font-size:12px;display:flex;justify-content:space-between;gap:20px}
+  @media(max-width:900px){.footer-grid{grid-template-columns:1.5fr 1fr 1fr}}
+  @media(max-width:620px){
+    .footer .wrap{width:min(100% - 28px,1200px)}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:35px}
+    .footer-grid>div:first-child{grid-column:1/-1}
+    .bottom{display:block}
+    .bottom div+div{margin-top:10px}
+  }
+</style>
 <footer class="footer">
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <a href="/#inicio" aria-label="Ir al inicio"><img class="footer-logo" src="Images/Logo Silver LL.png" alt="RenovaH2O Logo" width="150" height="38"></a>
-        <p style="max-width:330px;margin-top:18px">Hidrolavado comercial y residencial premium en Panamá. Limpieza exterior especializada para elevar la imagen de tu propiedad.</p>
+        <a href="/" aria-label="Ir al inicio"><img class="footer-logo" src="/Images/Logo Silver LL.png" alt="RenovaH2O Logo" width="150" height="38"></a>
+        <p style="max-width:330px;margin-top:18px">Especialistas en hidrolavado residencial y comercial en Ciudad de Panamá y Panamá Oeste. Renovación y conservación de superficies exteriores.</p>
       </div>
       <div>
         <h4>Servicios</h4>
-        <a href="limpieza-de-estacionamientos-panama">Limpieza Comercial</a>
-        <a href="limpieza-de-pisos-panama">Hidrolavado Residencial</a>
-        <a href="/#servicios">Mantenimiento Programado</a>
+        <a href="/limpieza-de-estacionamientos-panama">Hidrolavado Comercial</a>
+        <a href="/limpieza-de-pisos-panama">Hidrolavado Residencial</a>
+        <a href="/#proceso">Nuestro Proceso</a>
+        <a href="/#promocion">Promociones</a>
         <a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a>
       </div>
       <div>
-        <h4>Navegación</h4>
+        <h4>Empresa</h4>
+        <a href="/nosotros">Sobre Nosotros</a>
+        <a href="/blog">Blog & Consejos</a>
         <a href="/#resultados">Galería de Resultados</a>
-        <a href="/#proceso">Nuestro Proceso</a>
-        <a href="nosotros">Sobre Nosotros</a>
-        <a href="blog">Blog & Consejos</a>
-        <a href="/#faq">Preguntas Frecuentes</a>
       </div>
       <div>
         <h4>Contacto Directo</h4>
@@ -31,7 +47,7 @@
     </div>
     <div class="bottom">
       <div>© <span id="year"></span> RenovaH2O. Todos los derechos reservados.</div>
-      <div>Ciudad de Panamá · Panamá Oeste (Arraiján y La Chorrera) · <a class="footer-credit" href="https://www.vecteezy.com/free-videos/pressure-washing" target="_blank" rel="noopener noreferrer">Video: Vecteezy</a></div>
+      <div>Servicio de Hidrolavado en Ciudad de Panamá · Panamá Oeste (Arraiján y La Chorrera)</div>
     </div>
   </div>
 </footer>

@@ -1,3 +1,27 @@
+const siteFooter = document.querySelector("footer");
+
+if (siteFooter) {
+  fetch("/footer.html")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`No se pudo cargar footer.html: ${response.status}`);
+      }
+
+      return response.text();
+    })
+    .then(markup => {
+      siteFooter.outerHTML = markup;
+      const year = document.querySelector(".footer #year");
+
+      if (year) {
+        year.textContent = String(new Date().getFullYear());
+      }
+    })
+    .catch(error => {
+      console.error("Error al cargar el footer compartido.", error);
+    });
+}
+
 (() => {
   const section = document.querySelector('.socials');
   const grid = section?.querySelector('.socials-grid');
