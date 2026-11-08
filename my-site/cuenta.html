@@ -15,13 +15,17 @@
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;line-height:1.5}
     main{min-height:100vh;padding:108px 20px 56px;display:grid;place-items:center}
-    .account-card{width:min(100%,460px);padding:38px;border:1px solid #e3e3e8;border-radius:24px;background:#fff;box-shadow:0 18px 60px rgba(0,0,0,.07)}
+    .account-card{width:min(100%,780px);padding:38px;border:1px solid #e3e3e8;border-radius:24px;background:#fff;box-shadow:0 18px 60px rgba(0,0,0,.07)}
     h1{margin:0;font-size:32px;letter-spacing:-.05em}
     .intro{margin:8px 0 26px;color:#6e6e73}
     .field{display:grid;gap:7px;margin:16px 0}
     label{font-size:14px;font-weight:600}
     input{width:100%;padding:12px 14px;border:1px solid #d2d2d7;border-radius:10px;font:inherit}
     input:focus{outline:3px solid rgba(0,113,227,.2);border-color:#0071e3}
+    #accept-terms{width:auto;margin:0}
+    .legal-consent{margin:16px 0}
+    .legal-consent label{display:flex;align-items:flex-start;gap:9px;font-size:13px;font-weight:400;color:#6e6e73}
+    .legal-consent a,.legal-note a{color:#006edb}
     button{width:100%;min-height:46px;padding:10px 16px;border:0;border-radius:999px;background:#0071e3;color:#fff;font:inherit;font-weight:600;cursor:pointer}
     button:hover{background:#0064c8}
     button:disabled{opacity:.6;cursor:wait}
@@ -31,9 +35,23 @@
     .switch button{width:auto;min-height:0;padding:0;background:none;color:#0071e3;font-size:inherit}
     .message{margin:16px 0 0;padding:12px 14px;border-radius:10px;background:#f2f7ff;color:#174e85;font-size:14px}
     .message[hidden],.auth-form[hidden],.signed-in[hidden]{display:none}
-    .signed-in{display:grid;gap:16px}
+    .signed-in{display:grid;gap:28px}
     .signed-in p{margin:0;color:#6e6e73;overflow-wrap:anywhere}
-    @media(max-width:520px){.account-card{padding:28px 22px}}
+    .account-email{margin:6px 0 0;color:#6e6e73}
+    .dashboard-section{padding-top:22px;border-top:1px solid #e8e8ed}
+    .dashboard-section h2{margin:0 0 12px;font-size:20px;letter-spacing:-.03em}
+    .profile-form{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+    .profile-form button{grid-column:1/-1}
+    .orders-list{display:grid;gap:12px}
+    .order-card{padding:16px;border:1px solid #e8e8ed;border-radius:14px}
+    .order-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+    .order-head strong{font-size:15px}
+    .order-meta,.order-items{margin:6px 0 0;color:#6e6e73;font-size:14px}
+    .order-items{padding-left:20px}
+    .empty-orders{margin:0;color:#6e6e73}
+    .legal-note{margin:16px 0 0;color:#6e6e73;font-size:12px;text-align:center}
+    .legal-note a{color:#006edb}
+    @media(max-width:620px){.account-card{padding:28px 22px}.profile-form{grid-template-columns:1fr}}
   </style>
   <script src="/share.js" defer></script>
   <script src="/supabase-config.js"></script>
@@ -48,11 +66,20 @@
     const googleButton = document.querySelector("#google");
     const switchButton = document.querySelector("#switch-mode");
     const switchText = document.querySelector("#switch-text");
+    const legalConsent = document.querySelector("#legal-consent");
+    const acceptTerms = document.querySelector("#accept-terms");
     const message = document.querySelector("#message");
     const signedIn = document.querySelector("#signed-in");
     const accountEmail = document.querySelector("#account-email");
+    const profileForm = document.querySelector("#profile-form");
+    const profileName = document.querySelector("#profile-name");
+    const profilePhone = document.querySelector("#profile-phone");
+    const profileSave = document.querySelector("#profile-save");
+    const profileStatus = document.querySelector("#profile-status");
+    const ordersList = document.querySelector("#orders-list");
     let mode = "signin";
     let supabase;
+    let activeUserId;
 
     function showMessage(text) {
       message.textContent = text;
@@ -74,12 +101,118 @@
       submit.textContent = isSignup ? "Crear cuenta" : "Iniciar sesión";
       switchText.textContent = isSignup ? "¿Ya tienes cuenta?" : "¿Aún no tienes cuenta?";
       switchButton.textContent = isSignup ? "Inicia sesión" : "Regístrate";
+      legalConsent.hidden = false;
+      acceptTerms.required = isSignup;
+      if (!isSignup) acceptTerms.checked = false;
     }
 
     function showSession(session) {
       form.hidden = Boolean(session);
       signedIn.hidden = !session;
-      if (session) accountEmail.textContent = session.user.email ?? "Sesión iniciada";
+      if (session) {
+        activeUserId = session.user.id;
+        accountEmail.textContent = session.user.email ?? "Sesión iniciada";
+        loadAccountData(session.user);
+      } else {
+        activeUserId = undefined;
+      }
+    }
+
+    function setOrderMessage(text) {
+      ordersList.replaceChildren();
+      const paragraph = document.createElement("p");
+      paragraph.className = "empty-orders";
+      paragraph.textContent = text;
+      ordersList.append(paragraph);
+    }
+
+    function renderOrders(orders) {
+      ordersList.replaceChildren();
+      if (orders.length === 0) {
+        setOrderMessage("Aún no tienes compras.");
+        return;
+      }
+
+      const statusLabels = {
+        pending: "Pendiente",
+        paid: "Pagada",
+        cancelled: "Cancelada",
+        refunded: "Reembolsada"
+      };
+
+      for (const order of orders) {
+        const card = document.createElement("article");
+        card.className = "order-card";
+        const header = document.createElement("div");
+        header.className = "order-head";
+        const title = document.createElement("strong");
+        title.textContent = `Orden ${order.id.slice(0, 8).toUpperCase()}`;
+        const total = document.createElement("strong");
+        total.textContent = new Intl.NumberFormat("es-PA", {
+          style: "currency",
+          currency: order.currency
+        }).format(order.total_amount / 100);
+        header.append(title, total);
+
+        const details = document.createElement("p");
+        details.className = "order-meta";
+        const date = new Intl.DateTimeFormat("es-PA", { dateStyle: "medium" })
+          .format(new Date(order.created_at));
+        details.textContent = `${date} · ${statusLabels[order.status] ?? "En proceso"}`;
+        card.append(header, details);
+
+        if (order.order_items?.length) {
+          const items = document.createElement("ul");
+          items.className = "order-items";
+          for (const item of order.order_items) {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${item.product_name} × ${item.quantity}`;
+            items.append(listItem);
+          }
+          card.append(items);
+        }
+
+        ordersList.append(card);
+      }
+    }
+
+    async function loadAccountData(user) {
+      profileStatus.textContent = "Cargando perfil…";
+      setOrderMessage("Cargando historial…");
+      let profileResult;
+      let ordersResult;
+      try {
+        [profileResult, ordersResult] = await Promise.all([
+          supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle(),
+          supabase.from("orders")
+            .select("id, status, total_amount, currency, created_at, order_items(id, product_name, quantity, unit_amount)")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+        ]);
+      } catch (error) {
+        if (activeUserId !== user.id) return;
+        profileStatus.textContent = `No se pudieron cargar los datos de tu cuenta: ${error.message}`;
+        setOrderMessage(`No se pudo cargar el historial: ${error.message}`);
+        return;
+      }
+
+      if (activeUserId !== user.id) return;
+
+      if (profileResult.error) {
+        profileStatus.textContent = `No se pudo cargar tu perfil: ${profileResult.error.message}`;
+      } else if (!profileResult.data) {
+        profileStatus.textContent = "No encontramos tu perfil. Contacta a soporte para revisarlo.";
+      } else {
+        profileName.value = profileResult.data.full_name ?? "";
+        profilePhone.value = profileResult.data.phone ?? "";
+        profileStatus.textContent = "";
+      }
+
+      if (ordersResult.error) {
+        setOrderMessage(`No se pudo cargar el historial: ${ordersResult.error.message}`);
+      } else {
+        renderOrders(ordersResult.data);
+      }
     }
 
     switchButton.addEventListener("click", () => {
@@ -103,6 +236,34 @@
 
       supabase.auth.onAuthStateChange((_event, session) => showSession(session));
 
+      profileForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        const userId = activeUserId;
+        if (!userId) return;
+        profileSave.disabled = true;
+        profileStatus.textContent = "Guardando…";
+        try {
+          const { error } = await supabase.from("profiles")
+            .update({
+              full_name: profileName.value.trim() || null,
+              phone: profilePhone.value.trim() || null
+            })
+            .eq("id", userId)
+            .select("id")
+            .single();
+
+          if (error) {
+            profileStatus.textContent = `No se pudo guardar: ${error.message}`;
+          } else if (activeUserId === userId) {
+            profileStatus.textContent = "Perfil actualizado.";
+          }
+        } catch (error) {
+          profileStatus.textContent = `No se pudo guardar: ${error.message}`;
+        } finally {
+          profileSave.disabled = false;
+        }
+      });
+
       form.addEventListener("submit", async event => {
         event.preventDefault();
         message.hidden = true;
@@ -115,7 +276,7 @@
             ? await supabase.auth.signUp({
                 email,
                 password,
-                options: { emailRedirectTo: `${window.location.origin}/cuenta` }
+                  options: { emailRedirectTo: `${window.location.origin}/cuenta` }
               })
             : await supabase.auth.signInWithPassword({ email, password });
 
@@ -135,6 +296,10 @@
 
       googleButton.addEventListener("click", async () => {
         message.hidden = true;
+        if (!acceptTerms.checked) {
+          showMessage("Acepta los Términos del Servicio y la Política de Privacidad para continuar con Google.");
+          return;
+        }
         setBusy(true);
         try {
           const { error } = await supabase.auth.signInWithOAuth({
@@ -179,9 +344,37 @@
         <button id="submit" type="submit">Iniciar sesión</button>
         <button class="google" id="google" type="button">Continuar con Google</button>
         <p class="switch"><span id="switch-text">¿Aún no tienes cuenta?</span> <button id="switch-mode" type="button">Regístrate</button></p>
+        <div class="legal-consent" id="legal-consent">
+          <label for="accept-terms">
+            <input id="accept-terms" type="checkbox" required>
+            <span>Acepto los <a href="/terminos">Términos del Servicio</a> y reconozco la <a href="/privacidad">Política de Privacidad</a>.</span>
+          </label>
+        </div>
       </form>
       <div class="signed-in" id="signed-in" hidden>
-        <p>Sesión iniciada como <strong id="account-email"></strong></p>
+        <div>
+          <h1>Mi cuenta</h1>
+          <p class="account-email">Sesión iniciada como <strong id="account-email"></strong></p>
+        </div>
+        <section class="dashboard-section" aria-labelledby="profile-heading">
+          <h2 id="profile-heading">Mis datos</h2>
+          <form class="profile-form" id="profile-form">
+            <div class="field">
+              <label for="profile-name">Nombre</label>
+              <input id="profile-name" name="full_name" type="text" autocomplete="name" maxlength="120">
+            </div>
+            <div class="field">
+              <label for="profile-phone">Teléfono</label>
+              <input id="profile-phone" name="phone" type="tel" autocomplete="tel" maxlength="32">
+            </div>
+            <button id="profile-save" type="submit">Guardar datos</button>
+          </form>
+          <p class="account-email" id="profile-status" role="status" aria-live="polite"></p>
+        </section>
+        <section class="dashboard-section" aria-labelledby="orders-heading">
+          <h2 id="orders-heading">Historial de compras</h2>
+          <div class="orders-list" id="orders-list" aria-live="polite"></div>
+        </section>
         <button id="sign-out" type="button">Cerrar sesión</button>
       </div>
       <p class="message" id="message" role="status" aria-live="polite" hidden></p>
