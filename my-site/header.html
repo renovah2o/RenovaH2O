@@ -22,7 +22,7 @@
   #site-header .hamb{display:none;width:38px;height:38px;border:0;background:none;cursor:pointer}
   #site-header .hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}
   #site-mobile.mobile{display:none}
-  #site-mobile.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:center;justify-content:center;padding-top:20px;overflow-y:auto}
+  #site-mobile.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding:20px 0 max(24px,env(safe-area-inset-bottom));overflow-y:auto}
   #site-mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
   #site-mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center;text-decoration:none}
   #site-mobile .has-sub{width:100%;display:flex;flex-direction:column;align-items:center;position:relative}
@@ -97,6 +97,7 @@
     </div>
     <a href="/nosotros">Nosotros</a>
     <a href="/blog">Blog</a>
+    <a href="/cuenta">Mi cuenta</a>
     <a href="/#cotizar">Cotizar</a>
     <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
   </div>
