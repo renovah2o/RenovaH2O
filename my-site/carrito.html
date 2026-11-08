@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <title>Carrito y checkout | RenovaH2O</title>
+  <meta name="description" content="Revisa tu orden de RenovaH2O, selecciona una fecha disponible y solicita confirmación manual de pago.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1d1d1f;background:#f5f5f7;font-synthesis:none}
+    *{box-sizing:border-box}
+    body{margin:0;line-height:1.55}
+    a{color:inherit;text-decoration:none}
+    button,input,select,textarea{font:inherit}
+    button,a{ -webkit-tap-highlight-color:transparent }
+    .nav{position:fixed;z-index:1000;inset:0 0 auto;height:58px;background:rgba(7,9,12,.94);backdrop-filter:blur(20px);border-bottom:1px solid #ffffff20}
+    .nav-inner{height:100%;width:min(1200px,calc(100% - 32px));margin:auto;display:flex;align-items:center;justify-content:space-between}
+    .logo{width:150px;height:auto;max-height:40px;object-fit:contain}
+    .nav-actions{display:flex;align-items:center;gap:10px}
+    .account-link{padding:8px 16px;border-radius:999px;background:#0071e3;color:#fff;font-size:13px;font-weight:600}
+    .cart-link,.hamb{width:38px;height:38px;display:grid;place-items:center;border:1px solid #ffffff40;border-radius:50%;color:#fff;background:transparent}
+    .cart-link svg{width:19px;height:19px}
+    .hamb{display:none;border:0}
+    .hamb span{display:block;width:18px;height:1.5px;margin:2px;background:#fff}
+    .mobile{display:none}
+    main{width:min(1050px,calc(100% - 32px));margin:0 auto;padding:96px 0 70px}
+    h1{margin:0;font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:-.05em}
+    h2{margin:0 0 14px;font-size:23px;letter-spacing:-.03em}
+    p{margin:8px 0;color:#62626a}
+    .eyebrow{margin-bottom:10px;color:#0071e3;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+    .layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.7fr);gap:22px;align-items:start;margin-top:28px}
+    .card{padding:24px;border:1px solid #e4e4e8;border-radius:20px;background:#fff;box-shadow:0 12px 40px #00000008}
+    .cart-items{display:grid;gap:12px}
+    .cart-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:16px;border:1px solid #e9e9ed;border-radius:14px}
+    .cart-item h3{margin:0;font-size:16px}
+    .cart-item p{margin:5px 0 0;font-size:13px}
+    .item-price{font-weight:700;text-align:right;white-space:nowrap}
+    .quantity-control{display:flex;align-items:center;gap:8px;margin-top:12px}
+    .quantity-control button,.remove-item,.secondary{min-height:36px;padding:6px 12px;border:1px solid #d5d5db;border-radius:9px;background:#fff;color:#25252a;cursor:pointer}
+    .quantity-control input{width:84px;min-height:38px;padding:6px 8px;border:1px solid #d5d5db;border-radius:9px}
+    .remove-item{margin-top:10px;border:0;color:#b42318;padding-left:0}
+    .summary-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;color:#54545b;font-size:14px}
+    .summary-row strong{color:#1d1d1f}
+    .summary-total{margin-top:10px;padding-top:14px;border-top:1px solid #e6e6ea;font-size:18px}
+    .deposit-note,.notice{margin-top:14px;padding:13px 14px;border-radius:12px;background:#f1f7ff;color:#174e85;font-size:13px}
+    .notice.warning{background:#fff8e6;color:#745600}
+    .notice.error{background:#fff0ef;color:#a3262e}
+    .empty{padding:26px;border-radius:14px;background:#f5f5f7;text-align:center}
+    .button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border:0;border-radius:999px;background:#0071e3;color:#fff;font-weight:700;cursor:pointer}
+    .button:disabled{opacity:.55;cursor:not-allowed}
+    .button.secondary{border:1px solid #d5d5db;background:#fff;color:#1d1d1f}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+    .field{display:grid;gap:6px;margin:14px 0}
+    .field.full{grid-column:1/-1}
+    .field label,.field legend{font-size:13px;font-weight:600}
+    .field input,.field select,.field textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
+    .field textarea{min-height:90px;resize:vertical}
+    .checkbox{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#4b4b52}
+    .checkbox input{margin-top:4px;accent-color:#0071e3}
+    .slot-list{display:grid;gap:8px}
+    .slot-option{display:flex;align-items:center;gap:9px;padding:12px;border:1px solid #e2e2e7;border-radius:10px;font-size:14px}
+    .slot-option input{accent-color:#0071e3}
+    .form-status{min-height:22px;font-size:13px}
+    .success{padding:18px;border:1px solid #b8dfc7;border-radius:14px;background:#f0fff4}
+    .success h2{color:#176b36}
+    .contact-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .fine{font-size:12px}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}.summary-card{order:-1}}
+    @media(max-width:620px){.nav-inner{width:calc(100% - 24px)}.logo{width:120px}.nav-actions{gap:6px}.account-link{padding:7px 11px}.cart-link,.hamb{width:34px;height:34px}.hamb{display:grid}main{width:calc(100% - 24px);padding-top:86px}.card{padding:19px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.cart-item{grid-template-columns:1fr}.item-price{text-align:left}.mobile.open{display:flex;position:fixed;z-index:999;inset:58px 0 0;overflow-y:auto;justify-content:center;align-items:flex-start;padding:20px 0 max(24px,env(safe-area-inset-bottom));background:#08090bf7;backdrop-filter:blur(20px)}.mobile-inner{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{margin:12px 0;color:#fff;font-size:22px;font-weight:700}}
+  </style>
+  <script src="/supabase-config.js"></script>
+  <script src="/cart.js" defer></script>
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    const config = window.RENOVA_SUPABASE_CONFIG;
+    const cart = window.RenovaCart;
+    const cartItems = document.querySelector("#cart-items");
+    const cartFeedback = document.querySelector("#cart-page-feedback");
+    const summary = document.querySelector("#order-summary");
+    const checkoutForm = document.querySelector("#checkout-form");
+    const checkoutSection = document.querySelector("#checkout-section");
+    const checkoutStatus = document.querySelector("#checkout-status");
+    const authNotice = document.querySelector("#auth-notice");
+    const slotList = document.querySelector("#slot-list");
+    const submitButton = document.querySelector("#submit-order");
+    const categoryNotice = document.querySelector("#category-notice");
+    const serviceTypeSelect = document.querySelector("#service-type");
+    const dateInput = document.querySelector("#service-date");
+    const contactPhone = document.querySelector("#contact-phone");
+    const contactConfirmed = document.querySelector("#contact-confirmed");
+    const serviceAddress = document.querySelector("#service-address");
+    const orderSuccess = document.querySelector("#order-success");
+    const products = cart.products;
+    let supabase;
+    let session;
+    let availableSlots = [];
+    let items = [];
+    let category;
+
+    const formatCurrency = cents =>
+      new Intl.NumberFormat("es-PA", { style: "currency", currency: "USD" }).format(cents / 100);
+
+    function panamaDate(date = new Date()) {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Panama",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(date);
+      const part = name => parts.find(entry => entry.type === name).value;
+      return `${part("year")}-${part("month")}-${part("day")}`;
+    }
+
+    function priceFor(item) {
+      const product = products[item.sku];
+      if (product.pricing === "promo") {
+        return product.baseAmount + Math.max(item.quantity - product.includedMeters, 0) * product.additionalMeterAmount;
+      }
+      return product.unitAmount * item.quantity;
+    }
+
+    function rentalMachineCount() {
+      return items.reduce((count, item) =>
+        count + (products[item.sku].kind === "machine" ? item.quantity : 0), 0);
+    }
+
+    function totalAmount() {
+      const subtotal = items.reduce((total, item) => total + priceFor(item), 0);
+      return subtotal + (category === "alquileres" ? rentalMachineCount() * 25000 : 0);
+    }
+
+    function setStatus(message, kind = "") {
+      checkoutStatus.textContent = message;
+      checkoutStatus.className = `form-status${kind ? ` notice ${kind}` : ""}`;
+    }
+
+    function setFeedback(message, kind = "") {
+      cartFeedback.textContent = message;
+      cartFeedback.className = kind ? `notice ${kind}` : "form-status";
+      cartFeedback.hidden = !message;
+    }
+
+    function lineDescription(product, item) {
+      if (product.pricing === "promo") {
+        const total = priceFor(item);
+        const included = Math.min(item.quantity, product.includedMeters);
+        const added = Math.max(item.quantity - product.includedMeters, 0);
+        return `${item.quantity} m² · incluye hasta ${included} m² y ${added} m² adicionales`;
+      }
+      if (product.kind === "area") return `${item.quantity} m² · ${formatCurrency(product.unitAmount)} por m²`;
+      return `${formatCurrency(product.unitAmount)} cada uno`;
+    }
+
+    function updateSummary() {
+      summary.replaceChildren();
+      const subtotal = items.reduce((total, item) => total + priceFor(item), 0);
+      const row = document.createElement("div");
+      row.className = "summary-row";
+      const label = document.createElement("span");
+      label.textContent = "Productos y servicios";
+      const amount = document.createElement("strong");
+      amount.textContent = formatCurrency(subtotal);
+      row.append(label, amount);
+      summary.append(row);
+
+      if (category === "alquileres" && rentalMachineCount()) {
+        const deposit = document.createElement("div");
+        deposit.className = "summary-row";
+        const depositLabel = document.createElement("span");
+        depositLabel.textContent = `Depósito reembolsable · ${rentalMachineCount()} hidrolavadora(s)`;
+        const depositAmount = document.createElement("strong");
+        depositAmount.textContent = formatCurrency(rentalMachineCount() * 25000);
+        deposit.append(depositLabel, depositAmount);
+        summary.append(deposit);
+      }
+
+      const total = document.createElement("div");
+      total.className = "summary-row summary-total";
+      const totalLabel = document.createElement("strong");
+      totalLabel.textContent = "Total para confirmar";
+      const totalValue = document.createElement("strong");
+      totalValue.textContent = formatCurrency(totalAmount());
+      total.append(totalLabel, totalValue);
+      summary.append(total);
+
+      const note = document.createElement("p");
+      note.className = "fine";
+      note.textContent = category === "alquileres"
+        ? "El transporte se cotiza según la ubicación. Cada hidrolavadora incluye hasta 24 horas; cada hora adicional cuesta $10."
+        : "En el sitio se medirán las áreas. Si la medida real cambia el total, te notificaremos si hay un saldo adicional o una devolución.";
+      summary.append(note);
+    }
+
+    function renderCart() {
+      try {
+        items = cart.readItems();
+      } catch (error) {
+        setFeedback(error.message, "error");
+        items = [];
+      }
+
+      cartItems.replaceChildren();
+      orderSuccess.hidden = true;
+      checkoutSection.hidden = items.length === 0;
+      if (!items.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        const message = document.createElement("p");
+        message.textContent = "Tu carrito está vacío.";
+        const link = document.createElement("a");
+        link.className = "button";
+        link.href = "/alquiler-de-hidrolavadoras-panama";
+        link.textContent = "Ver alquileres";
+        empty.append(message, link);
+        cartItems.append(empty);
+        summary.replaceChildren();
+        setCheckoutAvailability();
+        return;
+      }
+
+      category = products[items[0].sku].category;
+      const machines = rentalMachineCount();
+      const residentialItems = items.filter(item => products[item.sku].kind === "area");
+      const invalid = items.some(item => products[item.sku].category !== category) ||
+        (category === "alquileres" && machines === 0) ||
+        (category === "residencial" && residentialItems.length !== 1);
+      categoryNotice.hidden = !invalid;
+      if (invalid) {
+        categoryNotice.textContent = category === "alquileres"
+          ? "Agrega al menos una hidrolavadora antes de continuar. Los accesorios se alquilan únicamente junto con un equipo."
+          : "Para iniciar, selecciona un solo paquete residencial en cada orden.";
+      }
+
+      for (const item of items) {
+        const product = products[item.sku];
+        const card = document.createElement("article");
+        card.className = "cart-item";
+        const information = document.createElement("div");
+        const title = document.createElement("h3");
+        title.textContent = product.name;
+        const description = document.createElement("p");
+        description.textContent = lineDescription(product, item);
+        const controls = document.createElement("div");
+        controls.className = "quantity-control";
+        const input = document.createElement("input");
+        input.type = "number";
+        input.min = String(product.minimum);
+        input.max = String(product.maximum);
+        input.step = "1";
+        input.value = String(item.quantity);
+        input.setAttribute("aria-label", product.kind === "area" ? `Metros cuadrados para ${product.name}` : `Cantidad de ${product.name}`);
+        input.addEventListener("change", () => {
+          const value = Number(input.value);
+          if (!Number.isInteger(value) || value < product.minimum || value > product.maximum) {
+            input.value = String(item.quantity);
+            setFeedback(`La cantidad debe estar entre ${product.minimum} y ${product.maximum}.`, "error");
+            return;
+          }
+          item.quantity = value;
+          cart.saveItems(items);
+          renderCart();
+          loadAvailability();
+        });
+        const quantityLabel = document.createElement("span");
+        quantityLabel.textContent = product.kind === "area" ? "m²" : "unidades";
+        controls.append(input, quantityLabel);
+
+        const remove = document.createElement("button");
+        remove.className = "remove-item";
+        remove.type = "button";
+        remove.textContent = "Quitar";
+        remove.addEventListener("click", () => {
+          cart.saveItems(items.filter(entry => entry.sku !== item.sku));
+          renderCart();
+          loadAvailability();
+        });
+
+        const price = document.createElement("strong");
+        price.className = "item-price";
+        price.textContent = formatCurrency(priceFor(item));
+        information.append(title, description, controls, remove);
+        card.append(information, price);
+        cartItems.append(card);
+      }
+
+      updateSummary();
+      serviceTypeSelect.value = category === "alquileres" ? "alquileres" : "residencial_am";
+      serviceTypeSelect.disabled = category === "alquileres";
+      if (category === "alquileres") {
+        serviceTypeSelect.closest(".field").querySelector("label").textContent = "Horario de alquiler";
+      } else {
+        serviceTypeSelect.closest(".field").querySelector("label").textContent = "Turno residencial";
+      }
+      setCheckoutAvailability();
+      loadAvailability();
+    }
+
+    function formatSlot(dateString, endString) {
+      const start = new Date(dateString);
+      const end = new Date(endString);
+      const startText = new Intl.DateTimeFormat("es-PA", {
+        timeZone: "America/Panama",
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(start);
+      const endText = new Intl.DateTimeFormat("es-PA", {
+        timeZone: "America/Panama",
+        timeStyle: "short"
+      }).format(end);
+      return `${startText} – ${endText}`;
+    }
+
+    async function loadAvailability() {
+      slotList.replaceChildren();
+      availableSlots = [];
+      const selectedDate = dateInput.value;
+      if (!items.length || !selectedDate || !supabase || !session) {
+        if (items.length && !session) slotList.textContent = "Inicia sesión para consultar fechas disponibles.";
+        return;
+      }
+
+      slotList.textContent = "Consultando disponibilidad…";
+      const { data, error } = await supabase.rpc("checkout_available_slots", {
+        p_service_type: serviceTypeSelect.value,
+        p_service_date: selectedDate
+      });
+      if (error) {
+        slotList.textContent = `No se pudo consultar la disponibilidad: ${error.message}`;
+        return;
+      }
+
+      availableSlots = data ?? [];
+      slotList.replaceChildren();
+      if (!availableSlots.length) {
+        slotList.textContent = "No hay horarios disponibles para esa fecha. Prueba otro día.";
+        return;
+      }
+
+      availableSlots.forEach((slot, index) => {
+        const label = document.createElement("label");
+        label.className = "slot-option";
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "available-slot";
+        radio.value = String(index);
+        radio.required = true;
+        radio.checked = index === 0;
+        const text = document.createElement("span");
+        text.textContent = formatSlot(slot.starts_at, slot.ends_at);
+        label.append(radio, text);
+        slotList.append(label);
+      });
+    }
+
+    function setCheckoutAvailability() {
+      const categoriesMatch = items.every(item => products[item.sku].category === category);
+      const areaCount = items.filter(item => products[item.sku].kind === "area").length;
+      const disabled = !session || !items.length ||
+        !categoriesMatch ||
+        (category === "alquileres" && rentalMachineCount() === 0) ||
+        (category === "residencial" && areaCount !== 1);
+      submitButton.disabled = disabled;
+      authNotice.hidden = Boolean(session);
+    }
+
+    async function loadProfile() {
+      if (!session) return;
+      const { data, error } = await supabase.from("profiles")
+        .select("phone")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      if (error) {
+        setStatus(`No se pudo cargar tu teléfono guardado: ${error.message}`, "error");
+        return;
+      }
+      if (data?.phone) contactPhone.value = data.phone;
+    }
+
+    async function initialize() {
+      if (!cart) {
+        setFeedback("No se pudo iniciar el carrito. Recarga la página para intentarlo otra vez.", "error");
+        return;
+      }
+      if (!config?.url || !config.publishableKey) {
+        setStatus("Falta configurar Supabase. No se puede iniciar el checkout todavía.", "error");
+        renderCart();
+        return;
+      }
+      supabase = createClient(config.url, config.publishableKey);
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        setStatus(`No se pudo comprobar la sesión: ${error.message}`, "error");
+        return;
+      }
+      session = data.session;
+      if (!session) {
+        authNotice.hidden = false;
+        document.querySelector("#sign-in-link").href = "/cuenta?next=%2Fcarrito";
+      } else {
+        authNotice.hidden = true;
+        await loadProfile();
+      }
+      renderCart();
+      setCheckoutAvailability();
+      supabase.auth.onAuthStateChange((_event, nextSession) => {
+        session = nextSession;
+        authNotice.hidden = Boolean(session);
+        if (session) loadProfile();
+        setCheckoutAvailability();
+        loadAvailability();
+      });
+    }
+
+    dateInput.min = panamaDate();
+    dateInput.value = panamaDate();
+    dateInput.addEventListener("change", loadAvailability);
+    serviceTypeSelect.addEventListener("change", loadAvailability);
+    window.addEventListener("renovah2o-cart-changed", renderCart);
+
+    checkoutForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      setStatus("");
+      if (!session) {
+        authNotice.hidden = false;
+        return;
+      }
+
+      const slotInput = checkoutForm.querySelector('input[name="available-slot"]:checked');
+      if (!slotInput) {
+        setStatus("Selecciona una fecha y horario disponibles.", "error");
+        return;
+      }
+      if (!contactConfirmed.checked) {
+        setStatus("Confirma el teléfono de contacto para continuar.", "error");
+        return;
+      }
+      if (items.some(item => products[item.sku].category !== category) ||
+        (category === "alquileres" && rentalMachineCount() === 0)) {
+        setStatus("Revisa los productos: los accesorios requieren una hidrolavadora en el carrito.", "error");
+        return;
+      }
+
+      const slot = availableSlots[Number(slotInput.value)];
+      if (!slot) {
+        setStatus("Vuelve a consultar la disponibilidad y selecciona otro horario.", "error");
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando orden…";
+      try {
+        const { data: orderId, error } = await supabase.rpc("checkout_place_order", {
+          p_items: items.map(item => ({ sku: item.sku, quantity: item.quantity })),
+          p_service_type: serviceTypeSelect.value,
+          p_service_date: dateInput.value,
+          p_start_at: slot.starts_at,
+          p_service_address: serviceAddress.value.trim(),
+          p_contact_phone: contactPhone.value.trim(),
+          p_confirm_contact: contactConfirmed.checked
+        });
+        if (error) throw error;
+
+        const total = totalAmount();
+        cart.saveItems([]);
+        checkoutSection.hidden = true;
+        orderSuccess.hidden = false;
+        document.querySelector("#success-order-number").textContent = orderId.slice(0, 8).toUpperCase();
+        document.querySelector("#success-order-total").textContent = formatCurrency(total);
+        const message = encodeURIComponent(`Hola RenovaH2O, acabo de crear la orden ${orderId.slice(0, 8).toUpperCase()} por ${formatCurrency(total)}. Quiero coordinar la confirmación del pago.`);
+        document.querySelector("#whatsapp-order").href = `https://wa.me/50763518111?text=${message}`;
+        setStatus("");
+      } catch (error) {
+        setStatus(`No se pudo crear la orden: ${error.message}`, "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Enviar orden y retener horario por 1 hora";
+        setCheckoutAvailability();
+      }
+    });
+
+    initialize().catch(error => {
+      setStatus(`No se pudo iniciar el checkout: ${error.message}`, "error");
+    });
+  </script>
+</head>
+<body data-no-social>
+  <header class="nav" id="site-header">
+    <div class="nav-inner">
+      <a href="/" aria-label="Ir al inicio de RenovaH2O"><img class="logo" src="/Images/Logo Silver LL.png" alt="RenovaH2O"></a>
+      <div class="nav-actions">
+        <a class="account-link" href="/cuenta">Mi cuenta</a>
+        <a class="cart-link" href="/carrito" aria-label="Carrito de compras" title="Carrito">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        </a>
+        <button class="hamb" id="hamb" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="site-mobile"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+  <nav class="mobile" id="site-mobile" aria-label="Menú móvil">
+    <div class="mobile-inner">
+      <a href="/">Inicio</a>
+      <a href="/limpieza-de-pisos-panama">Residencial</a>
+      <a href="/limpieza-de-estacionamientos-panama">Comercial</a>
+      <a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a>
+      <a href="/cuenta">Mi cuenta</a>
+      <a href="/carrito">Carrito</a>
+    </div>
+  </nav>
+
+  <main>
+    <p class="eyebrow">Compra segura · Confirmación manual</p>
+    <h1>Tu carrito</h1>
+    <p>Revisa los productos, elige una fecha disponible y envía la orden. El sitio no cobra en línea todavía.</p>
+
+    <div class="layout">
+      <section class="card">
+        <h2>Productos seleccionados</h2>
+        <div id="cart-page-feedback" class="form-status" role="status" aria-live="polite" hidden></div>
+        <div id="category-notice" class="notice warning" role="status" hidden></div>
+        <div id="cart-items" class="cart-items" aria-live="polite"></div>
+      </section>
+
+      <aside class="card summary-card">
+        <h2>Resumen de la orden</h2>
+        <div id="order-summary"></div>
+        <p class="deposit-note">El depósito de alquiler es reembolsable. El costo de transporte, las horas adicionales y cualquier ajuste por medidas reales se confirmarán por separado antes de la coordinación final.</p>
+      </aside>
+    </div>
+
+    <section class="card" id="checkout-section" style="margin-top:22px" hidden>
+      <h2>Fecha y datos de contacto</h2>
+      <p>Al enviar la orden, el horario se retiene durante una hora mientras un agente confirma el pago.</p>
+      <p id="auth-notice" class="notice warning" hidden>Para comprar necesitas iniciar sesión. <a id="sign-in-link" href="/cuenta?next=%2Fcarrito"><strong>Inicia sesión o crea una cuenta.</strong></a></p>
+      <form id="checkout-form">
+        <div class="form-grid">
+          <div class="field">
+            <label for="service-type">Turno residencial</label>
+            <select id="service-type" required>
+              <option value="alquileres">Alquiler · 24 horas</option>
+              <option value="residencial_am">Residencial · AM</option>
+              <option value="residencial_pm">Residencial · PM</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="service-date">Fecha solicitada</label>
+            <input id="service-date" type="date" required>
+          </div>
+          <div class="field full">
+            <label>Horario disponible</label>
+            <div id="slot-list" class="slot-list" aria-live="polite"></div>
+          </div>
+          <div class="field full">
+            <label for="service-address">Dirección del servicio o entrega</label>
+            <textarea id="service-address" autocomplete="street-address" maxlength="500" required placeholder="Provincia, distrito, corregimiento, barriada y referencias"></textarea>
+          </div>
+          <div class="field full">
+            <label for="contact-phone">Teléfono de contacto</label>
+            <input id="contact-phone" type="tel" autocomplete="tel" minlength="7" maxlength="32" required placeholder="+507 6000-0000">
+          </div>
+          <div class="field full">
+            <label class="checkbox"><input id="contact-confirmed" type="checkbox" required><span>Confirmo que este número es correcto y autorizo guardarlo en el teléfono de mi perfil para coordinar esta orden.</span></label>
+          </div>
+          <div class="field full">
+            <label class="checkbox"><input id="terms-confirmed" type="checkbox" required><span>Entiendo que no se realizará un cobro en línea; debo contactar a RenovaH2O y esperar a que un agente confirme el pago. Para servicios residenciales se verificará el metraje en el sitio y se notificará cualquier saldo adicional o devolución.</span></label>
+          </div>
+        </div>
+        <button class="button" id="submit-order" type="submit">Enviar orden y retener horario por 1 hora</button>
+        <p id="checkout-status" class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="order-success" class="success" style="margin-top:22px" hidden>
+      <h2>Recibimos tu orden</h2>
+      <p>Orden <strong id="success-order-number"></strong> · Total para confirmar: <strong id="success-order-total"></strong>.</p>
+      <p>Contacta a un agente por llamada o WhatsApp para coordinar el pago. La fecha es provisional por una hora y aparecerá confirmada en Mi agenda después de que un agente registre el pago.</p>
+      <div class="contact-actions">
+        <a class="button" id="whatsapp-order" href="https://wa.me/50763518111" target="_blank" rel="noopener noreferrer">Confirmar por WhatsApp</a>
+        <a class="button secondary" href="tel:+50763518111">Llamar al +507 6351-8111</a>
+        <a class="button secondary" href="/cuenta#ordenes">Ver mis órdenes</a>
+      </div>
+      <p class="fine">Los avisos de esta primera versión se guardan en Mis mensajes. El envío automático de correo requiere configurar un proveedor de correo transaccional.</p>
+    </section>
+  </main>
+  <script>
+    const menuButton = document.querySelector("#hamb");
+    const mobileMenu = document.querySelector("#site-mobile");
+    menuButton.addEventListener("click", () => {
+      const isOpen = mobileMenu.classList.toggle("open");
+      menuButton.setAttribute("aria-expanded", String(isOpen));
+    });
+    mobileMenu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+      mobileMenu.classList.remove("open");
+      menuButton.setAttribute("aria-expanded", "false");
+    }));
+  </script>
+</body>
+</html>

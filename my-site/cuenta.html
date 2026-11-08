@@ -83,6 +83,12 @@
     .service-choice input{accent-color:var(--blue)}
     .orders-list{display:grid;gap:12px}
     .order-card{padding:16px;border:1px solid #e8e8ed;border-radius:14px}
+    .notification-card{padding:16px;border:1px solid #e8e8ed;border-radius:14px}
+    .notification-card.unread{border-color:#b8d7fb;background:#f8fbff}
+    .notification-card h3{margin:0;font-size:16px}
+    .notification-card p{margin:6px 0;color:var(--gray);font-size:14px}
+    .notification-card button{margin-top:8px}
+    .admin-order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     .order-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
     .order-head strong{font-size:15px}
     .order-meta,.order-items{margin:6px 0 0;color:var(--gray);font-size:14px}
@@ -144,13 +150,27 @@
     const avatarStatus = document.querySelector("#avatar-status");
     const profileStatus = document.querySelector("#profile-status");
     const ordersList = document.querySelector("#orders-list");
+    const notificationsList = document.querySelector("#notifications-list");
+    const notificationsStatus = document.querySelector("#notifications-status");
     const customerAgendaList = document.querySelector("#customer-agenda-list");
     const customerAgendaStatus = document.querySelector("#customer-agenda-status");
     const adminAgendaTile = document.querySelector("#admin-agenda-tile");
     const adminAgendaList = document.querySelector("#admin-agenda-list");
     const adminAgendaStatus = document.querySelector("#admin-agenda-status");
+    const adminOrdersTile = document.querySelector("#admin-orders-tile");
+    const adminOrdersList = document.querySelector("#admin-orders-list");
+    const adminOrdersStatus = document.querySelector("#admin-orders-status");
     const saveProfileButton = document.querySelector("#save-profile");
     const passwordResetForm = document.querySelector("#password-reset-form");
+    const returnTo = new URLSearchParams(window.location.search).get("next")
+      || window.sessionStorage.getItem("renovah2o-auth-next");
+    const safeReturnUrl = returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")
+      ? new URL(returnTo, window.location.origin)
+      : null;
+
+    function authCallbackUrl() {
+      return `${window.location.origin}/cuenta`;
+    }
     let supabase;
     let authMode = "signin";
     let activeUserId;
@@ -368,7 +388,11 @@
           ? "No disponible para reservas"
           : `${reservation.customer_name ? `${reservation.customer_name} · ` : ""}${reservation.customer_email ?? "Cuenta no disponible"}`;
         const state = document.createElement("p");
-        state.textContent = reservation.status === "cancelled" ? "Estado: cancelada" : "Estado: confirmada";
+        state.textContent = reservation.status === "cancelled"
+          ? "Estado: cancelada"
+          : reservation.status === "pending"
+            ? "Estado: pendiente de pago"
+            : "Estado: confirmada";
         const form = document.createElement("form");
         form.className = "admin-reservation";
         const fields = document.createElement("div");
@@ -470,6 +494,7 @@
       const { data, error } = await supabase.from("agenda_reservations")
         .select("id, service_type, starts_at, ends_at, status")
         .eq("kind", "service")
+        .eq("status", "confirmed")
         .order("starts_at", { ascending: true })
         .limit(100);
       if (activeUserId !== userId) return;
@@ -506,6 +531,187 @@
       await loadAdminReservations(userId);
     }
 
+    async function loadNotifications(userId = activeUserId) {
+      notificationsList.replaceChildren();
+      notificationsStatus.textContent = "Cargando mensajes…";
+      const { data, error } = await supabase.from("account_notifications")
+        .select("id, order_id, title, message, created_at, read_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (activeUserId !== userId) return;
+      if (error) {
+        notificationsStatus.textContent = `No se pudieron cargar tus mensajes: ${error.message}`;
+        return;
+      }
+
+      notificationsStatus.textContent = "";
+      if (!data.length) {
+        appendEmptyState(notificationsList, "Todavía no tienes notificaciones.");
+        return;
+      }
+
+      for (const notification of data) {
+        const card = document.createElement("article");
+        card.className = `notification-card${notification.read_at ? "" : " unread"}`;
+        const title = document.createElement("h3");
+        title.textContent = notification.title;
+        const message = document.createElement("p");
+        message.textContent = notification.message;
+        const timestamp = document.createElement("p");
+        timestamp.textContent = new Intl.DateTimeFormat("es-PA", {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone: agendaTimezone
+        }).format(new Date(notification.created_at));
+        card.append(title, message, timestamp);
+
+        if (!notification.read_at) {
+          const markRead = document.createElement("button");
+          markRead.className = "secondary";
+          markRead.type = "button";
+          markRead.textContent = "Marcar como leído";
+          markRead.addEventListener("click", async () => {
+            markRead.disabled = true;
+            try {
+              const { error: updateError } = await supabase.from("account_notifications")
+                .update({ read_at: new Date().toISOString() })
+                .eq("id", notification.id)
+                .eq("user_id", userId)
+                .is("read_at", null);
+              if (updateError) throw updateError;
+              await loadNotifications(userId);
+            } catch (error) {
+              notificationsStatus.textContent = `No se pudo actualizar el mensaje: ${error.message}`;
+              markRead.disabled = false;
+            }
+          });
+          card.append(markRead);
+        }
+        notificationsList.append(card);
+      }
+    }
+
+    async function loadAdminOrders(userId = activeUserId) {
+      adminOrdersList.replaceChildren();
+      adminOrdersStatus.textContent = "Cargando órdenes…";
+      const { data, error } = await supabase.rpc("checkout_admin_list_orders");
+      if (activeUserId !== userId || !isAgendaAdmin) return;
+      if (error) {
+        adminOrdersStatus.textContent = `No se pudieron cargar las órdenes: ${error.message}`;
+        return;
+      }
+
+      adminOrdersStatus.textContent = "";
+      if (!data.length) {
+        appendEmptyState(adminOrdersList, "Todavía no hay órdenes registradas.");
+        return;
+      }
+
+      for (const order of data) {
+        const card = document.createElement("article");
+        card.className = "order-card";
+        const heading = document.createElement("div");
+        heading.className = "order-head";
+        const number = document.createElement("strong");
+        number.textContent = `Orden ${order.order_id.slice(0, 8).toUpperCase()} · ${order.status === "pending" ? "Pendiente" : order.status === "paid" ? "Pagada" : "Cancelada"}`;
+        const total = document.createElement("strong");
+        total.textContent = formatCurrency(order.total_amount, order.currency);
+        heading.append(number, total);
+
+        const detail = document.createElement("p");
+        detail.className = "order-meta";
+        detail.textContent = `${order.customer_name || order.user_email || "Cliente"} · ${order.contact_phone || "Sin teléfono"} · ${serviceLabels[order.service_type] ?? "Servicio"}`;
+        const address = document.createElement("p");
+        address.className = "order-meta";
+        address.textContent = order.service_address || "Sin dirección";
+        card.append(heading, detail, address);
+
+        const range = dateRangeParagraph(order.starts_at, order.ends_at);
+        card.append(range);
+        if (order.hold_expires_at && order.status === "pending") {
+          const hold = document.createElement("p");
+          hold.className = "order-meta";
+          hold.textContent = `Retención hasta ${formatAgendaDateTime(order.hold_expires_at)}`;
+          card.append(hold);
+        }
+
+        const itemList = document.createElement("ul");
+        itemList.className = "order-items";
+        for (const item of order.items ?? []) {
+          const line = document.createElement("li");
+          line.textContent = `${item.product_name} × ${item.quantity} · ${formatCurrency(item.unit_amount * item.quantity, order.currency)}`;
+          itemList.append(line);
+        }
+        card.append(itemList);
+
+        if (order.status === "pending") {
+          const actions = document.createElement("div");
+          actions.className = "admin-order-actions";
+          const confirmButton = document.createElement("button");
+          confirmButton.className = "secondary";
+          confirmButton.type = "button";
+          confirmButton.textContent = "Confirmar pago y agenda";
+          const holdExpired = !order.hold_expires_at || new Date(order.hold_expires_at) <= new Date();
+          confirmButton.disabled = holdExpired;
+          if (holdExpired) {
+            const expired = document.createElement("p");
+            expired.className = "order-meta";
+            expired.textContent = "La retención venció; no confirmes el pago hasta volver a verificar la disponibilidad.";
+            card.append(expired);
+          }
+          confirmButton.addEventListener("click", () => updateOrderStatus(order.order_id, "paid", confirmButton, userId));
+          const cancelButton = document.createElement("button");
+          cancelButton.className = "secondary";
+          cancelButton.type = "button";
+          cancelButton.textContent = "Cancelar orden";
+          cancelButton.addEventListener("click", () => updateOrderStatus(order.order_id, "cancelled", cancelButton, userId));
+          actions.append(confirmButton, cancelButton);
+          card.append(actions);
+        }
+
+        adminOrdersList.append(card);
+      }
+    }
+
+    async function updateOrderStatus(orderId, status, button, userId) {
+      if (status === "cancelled" && !window.confirm("¿Cancelar esta orden y liberar el horario retenido?")) return;
+      if (status === "paid" && !window.confirm("Confirma que verificaste el pago antes de confirmar la orden y la fecha.")) return;
+      button.disabled = true;
+      adminOrdersStatus.textContent = "";
+      try {
+        const { error } = await supabase.rpc("checkout_admin_set_order_status", {
+          p_order_id: orderId,
+          p_status: status
+        });
+        if (error) throw error;
+      } catch (error) {
+        adminOrdersStatus.textContent = `No se pudo actualizar la orden: ${error.message}`;
+        button.disabled = false;
+        return;
+      }
+      await Promise.all([
+        loadAdminOrders(userId),
+        loadCustomerAgenda(userId),
+        loadNotifications(userId),
+        loadCustomerOrders(userId)
+      ]);
+    }
+
+    async function loadCustomerOrders(userId = activeUserId) {
+      const { data, error } = await supabase.from("orders")
+        .select("id, status, total_amount, currency, created_at, order_items(id, product_name, quantity)")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      if (activeUserId !== userId) return;
+      if (error) {
+        ordersList.replaceChildren();
+        appendEmptyState(ordersList, `No se pudo cargar el historial: ${error.message}`);
+        return;
+      }
+      renderOrders(data ?? []);
+    }
+
     function renderOrders(orders) {
       ordersList.replaceChildren();
       if (!orders.length) {
@@ -517,7 +723,7 @@
       }
 
       const statusLabels = {
-        pending: "Pendiente",
+        pending: "Pago por confirmar",
         paid: "Pagada",
         cancelled: "Cancelada",
         refunded: "Reembolsada"
@@ -558,8 +764,13 @@
     async function loadAccountData(user) {
       isAgendaAdmin = false;
       adminAgendaTile.hidden = true;
+      adminOrdersTile.hidden = true;
       adminAgendaList.replaceChildren();
       adminAgendaStatus.textContent = "";
+      adminOrdersList.replaceChildren();
+      adminOrdersStatus.textContent = "";
+      notificationsList.replaceChildren();
+      notificationsStatus.textContent = "Cargando mensajes…";
       showRoute();
       accountEmail.textContent = user.email ?? "";
       accessEmail.value = user.email ?? "";
@@ -588,6 +799,8 @@
       ordersList.append(loading);
 
       try {
+        const { error: holdsError } = await supabase.rpc("checkout_release_expired_holds");
+
         const [profileResult, ordersResult, reservationsResult, adminResult] = await Promise.all([
           supabase.from("profiles")
             .select("full_name, phone, birthday, preferred_services, profile_avatar_path")
@@ -600,6 +813,7 @@
           supabase.from("agenda_reservations")
             .select("id, kind, service_type, starts_at, ends_at, status")
             .eq("kind", "service")
+            .eq("status", "confirmed")
             .order("starts_at", { ascending: true })
             .limit(100),
           supabase.rpc("is_agenda_admin")
@@ -647,13 +861,21 @@
           renderCustomerAgenda(reservationsResult.data);
         }
 
+        await loadNotifications(user.id);
+        if (holdsError) {
+          notificationsStatus.textContent = `No se pudieron actualizar las retenciones vencidas: ${holdsError.message}`;
+        }
+
         if (adminResult.error) {
           isAgendaAdmin = false;
           customerAgendaStatus.textContent ||= `No se pudieron comprobar los permisos de agenda: ${adminResult.error.message}`;
         } else {
           isAgendaAdmin = adminResult.data === true;
           adminAgendaTile.hidden = !isAgendaAdmin;
-          if (isAgendaAdmin) await loadAdminAgenda(user.id);
+          adminOrdersTile.hidden = !isAgendaAdmin;
+          if (isAgendaAdmin) {
+            await Promise.all([loadAdminAgenda(user.id), loadAdminOrders(user.id)]);
+          }
         }
         if (activeUserId !== user.id) return;
         showRoute();
@@ -670,6 +892,11 @@
 
     function showSession(session) {
       const signedIn = Boolean(session);
+      if (signedIn && safeReturnUrl) {
+        window.sessionStorage.removeItem("renovah2o-auth-next");
+        window.location.replace(safeReturnUrl.href);
+        return;
+      }
       authSection.hidden = signedIn;
       accountApp.hidden = !signedIn;
       activeUserId = signedIn ? session.user.id : undefined;
@@ -677,6 +904,7 @@
       else {
         isAgendaAdmin = false;
         adminAgendaTile.hidden = true;
+        adminOrdersTile.hidden = true;
         activeAvatarPath = null;
         selectedAvatarFile = undefined;
         if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
@@ -692,6 +920,7 @@
       ordenes: "panel-orders",
       agenda: "panel-agenda",
       "administrar-agenda": "panel-admin-agenda",
+      "administrar-ordenes": "panel-admin-orders",
       direcciones: "panel-addresses",
       pagos: "panel-payments",
       regalos: "panel-giftcards",
@@ -703,7 +932,9 @@
     function showRoute() {
       const route = window.location.hash.slice(1);
       const requestedPanelId = routes[route];
-      const panelId = route === "administrar-agenda" && !isAgendaAdmin ? null : requestedPanelId;
+      const panelId = (route === "administrar-agenda" || route === "administrar-ordenes") && !isAgendaAdmin
+        ? null
+        : requestedPanelId;
       document.querySelector("#dashboard-home").hidden = Boolean(panelId);
       for (const panel of document.querySelectorAll(".account-panel")) {
         panel.hidden = panel.id !== panelId;
@@ -866,11 +1097,12 @@
       const email = formData.get("email").toString().trim();
       const password = formData.get("password").toString();
       try {
+        if (safeReturnUrl) window.sessionStorage.setItem("renovah2o-auth-next", `${safeReturnUrl.pathname}${safeReturnUrl.search}${safeReturnUrl.hash}`);
         const result = authMode === "signup"
           ? await supabase.auth.signUp({
               email,
               password,
-              options: { emailRedirectTo: `${window.location.origin}/cuenta` }
+              options: { emailRedirectTo: authCallbackUrl() }
             })
           : await supabase.auth.signInWithPassword({ email, password });
         if (result.error) showAuthMessage(result.error.message);
@@ -893,9 +1125,10 @@
       }
       setAuthBusy(true);
       try {
+        if (safeReturnUrl) window.sessionStorage.setItem("renovah2o-auth-next", `${safeReturnUrl.pathname}${safeReturnUrl.search}${safeReturnUrl.hash}`);
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
-          options: { redirectTo: `${window.location.origin}/cuenta` }
+          options: { redirectTo: authCallbackUrl() }
         });
         if (error) showAuthMessage(error.message);
       } catch (error) {
@@ -1123,7 +1356,7 @@
   #site-header .nav-cta{font-size:13px;color:#fff;background:#0071e3;border-radius:980px;padding:7px 15px;text-decoration:none;white-space:nowrap}
   #site-header .cart-button{width:38px;height:38px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);border-radius:50%;color:#fff;background:transparent}
   #site-header .cart-button svg{width:19px;height:19px}
-  #site-header .cart-button:disabled{opacity:.55;cursor:not-allowed}
+  #site-header .cart-button{cursor:pointer}
   #site-header .hamb{display:none;width:38px;height:38px;border:0;background:none;cursor:pointer}
   #site-header .hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}
   #site-mobile.mobile{display:none}
@@ -1173,13 +1406,13 @@
     </nav>
     <div class="nav-actions">
       <a class="nav-cta" href="/cuenta">Mi cuenta</a>
-      <button class="cart-button" type="button" aria-label="Carrito de compras, próximamente" title="Carrito próximamente" disabled>
+      <a class="cart-button" href="/carrito" aria-label="Abrir carrito de compras" title="Carrito de compras">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="9" cy="21" r="1"></circle>
           <circle cx="20" cy="21" r="1"></circle>
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
         </svg>
-      </button>
+      </a>
       <button class="hamb" id="hamb" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="site-mobile">
         <span></span><span></span><span></span>
       </button>
@@ -1300,12 +1533,13 @@
           <a class="account-tile" href="#ordenes"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Mis órdenes</strong><span>Consulta el historial de tus compras.</span></a>
           <a class="account-tile" href="#agenda"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Mi agenda</strong><span>Consulta las fechas y horarios confirmados de tus servicios.</span></a>
           <a class="account-tile" id="admin-agenda-tile" href="#administrar-agenda" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Administrar agenda</strong><span>Configura horarios, registra citas y bloquea espacios.</span></a>
+          <a class="account-tile" id="admin-orders-tile" href="#administrar-ordenes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Confirmar órdenes</strong><span>Revisa pedidos pendientes, confirma pagos y actualiza la agenda.</span></a>
           <a class="account-tile" href="#direcciones"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-address"></use></svg></span><strong>Mis direcciones</strong><span>Guarda direcciones para tus servicios.</span></a>
           <a class="account-tile" href="#pagos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-payment"></use></svg></span><strong>Mis métodos de pago</strong><span>Consulta opciones de pago y seguridad.</span></a>
           <a class="account-tile" href="#regalos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-gift"></use></svg></span><strong>Mis tarjetas de regalo</strong><span>Consulta tarjetas y códigos asociados a tu cuenta.</span></a>
-          <a class="account-tile" href="#mensajes"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-message"></use></svg></span><strong>Mis mensajes</strong><span>Próximamente: avisos y mensajes de servicio.</span></a>
+          <a class="account-tile" href="#mensajes"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-message"></use></svg></span><strong>Mis mensajes</strong><span>Consulta avisos sobre tus órdenes, pagos y agenda.</span></a>
           <a class="account-tile" href="#soporte"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-support"></use></svg></span><strong>Servicio al cliente</strong><span>Contáctanos para recibir ayuda.</span></a>
-          <a class="account-tile" href="#carrito"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-cart"></use></svg></span><strong>Mi carrito</strong><span>El carrito estará disponible próximamente.</span></a>
+          <a class="account-tile" href="/carrito"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-cart"></use></svg></span><strong>Mi carrito</strong><span>Revisa tus productos y crea una orden.</span></a>
         </div>
       </nav>
 
@@ -1417,6 +1651,12 @@
         </section>
       </section>
 
+      <section class="account-panel card" id="panel-admin-orders" data-title="Confirmar órdenes" hidden>
+        <div class="panel-heading"><div><h2>Confirmar órdenes</h2><p>Verifica el pago con el cliente antes de confirmarlo. Al confirmar, la orden cambia a pagada y su fecha pasa a Mi agenda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <div class="orders-list" id="admin-orders-list" aria-live="polite"></div>
+        <p class="agenda-status" id="admin-orders-status" role="status" aria-live="polite"></p>
+      </section>
+
       <section class="account-panel card" id="panel-addresses" data-title="Mis direcciones" hidden>
         <div class="panel-heading"><div><h2>Mis direcciones</h2><p>Guarda ubicaciones donde realizaremos tus servicios.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <p class="empty-state">La gestión de direcciones estará disponible cuando conectemos esta sección a la base de datos.</p>
@@ -1433,8 +1673,10 @@
       </section>
 
       <section class="account-panel card" id="panel-messages" data-title="Mis mensajes" hidden>
-        <div class="panel-heading"><div><h2>Mis mensajes</h2><p>Avisos sobre tus consultas y servicios.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
-        <p class="empty-state">El centro de mensajes estará disponible próximamente.</p>
+        <div class="panel-heading"><div><h2>Mis mensajes</h2><p>Avisos sobre tus órdenes, pagos y agenda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <p>Los avisos se guardan en tu cuenta. El correo automático requiere configurar un proveedor de correo transaccional.</p>
+        <div class="orders-list" id="notifications-list" aria-live="polite"></div>
+        <p class="agenda-status" id="notifications-status" role="status" aria-live="polite"></p>
       </section>
 
       <section class="account-panel card" id="panel-support" data-title="Servicio al cliente" hidden>
@@ -1444,7 +1686,7 @@
 
       <section class="account-panel card" id="panel-cart" data-title="Mi carrito" hidden>
         <div class="panel-heading"><div><h2>Mi carrito</h2><p>Revisa los productos o servicios que deseas comprar.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
-        <p class="empty-state">El carrito de compras estará disponible próximamente.</p>
+        <p class="empty-state">El carrito se guarda en este navegador. <a href="/carrito">Ir al carrito y checkout</a>.</p>
       </section>
 
       <p class="footer-note">Al usar tu cuenta, aplican nuestros <a href="/terminos">Términos del Servicio</a> y <a href="/privacidad">Política de Privacidad</a>.</p>

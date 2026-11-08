@@ -241,7 +241,7 @@
 
 /* Navegación móvil alineada con la página de cuenta */
 .nav-actions{display:flex;align-items:center;gap:8px}
-.nav .cart-button{width:38px;height:38px;display:grid;place-items:center;margin-left:4px;border:1px solid rgba(255,255,255,.25);border-radius:50%;color:#fff;background:transparent;opacity:.55;cursor:not-allowed}
+.nav .cart-button{width:38px;height:38px;display:grid;place-items:center;margin-left:4px;border:1px solid rgba(255,255,255,.25);border-radius:50%;color:#fff;background:transparent;cursor:pointer}
 .nav .cart-button svg{width:19px;height:19px}
 .mobile.open{align-items:flex-start;justify-content:center;padding:20px 0 max(24px,env(safe-area-inset-bottom));overflow-y:auto}
 @media(max-width:620px){.nav .nav-inner{width:min(100% - 28px,1200px)}.nav .logo{width:120px;height:auto}.nav .cart-button,.nav .hamb{width:34px;height:34px}}
@@ -270,9 +270,9 @@
           <li><a href="/blog">Blog</a></li>
         </ul>
       </nav>
-      <div class="nav-actions"><a class="nav-cta" href="/cuenta">Mi cuenta</a><button class="cart-button" type="button" aria-label="Carrito de compras, próximamente" title="Carrito próximamente" disabled>
+      <div class="nav-actions"><a class="nav-cta" href="/cuenta">Mi cuenta</a><a class="cart-button" href="/carrito" aria-label="Abrir carrito de compras" title="Carrito de compras">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-</button><button class="hamb" id="hamb" aria-label="Abrir menú de navegación" aria-expanded="false"><span></span><span></span><span></span></button></div>
+</a><button class="hamb" id="hamb" aria-label="Abrir menú de navegación" aria-expanded="false"><span></span><span></span><span></span></button></div>
     </div>
   </header>
   <div class="mobile" id="mobile" role="navigation" aria-label="Menú móvil">
@@ -342,7 +342,8 @@
                 <li>Manguera doble capa non-marking de 50 pies</li>
                 <li>Tanque lleno de gasolina de 91 octanos</li>
               </ul>
-              <a class="btn btn-blue" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20me%20interesa%20alquilar%20la%20hidrolavadora%204000%20PSI%20%2F%203.5%20GPM." target="_blank" rel="noopener">Consultar este equipo</a>
+              <button class="btn btn-blue add-to-cart" type="button" data-sku="rental-35">Agregar al carrito</button>
+              <a class="btn btn-outline" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20tengo%20una%20consulta%20sobre%20la%20hidrolavadora%204000%20PSI%20%2F%203.5%20GPM." target="_blank" rel="noopener">Consultar este equipo</a>
             </div>
           </article>
           <article class="machine">
@@ -361,7 +362,8 @@
                 <li>Manguera doble capa non-marking de 50 pies</li>
                 <li>Tanque lleno de gasolina de 91 octanos</li>
               </ul>
-              <a class="btn btn-blue" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20me%20interesa%20alquilar%20la%20hidrolavadora%202700%20PSI%20%2F%202.3%20GPM." target="_blank" rel="noopener">Consultar este equipo</a>
+              <button class="btn btn-blue add-to-cart" type="button" data-sku="rental-23">Agregar al carrito</button>
+              <a class="btn btn-outline" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20tengo%20una%20consulta%20sobre%20la%20hidrolavadora%202700%20PSI%20%2F%202.3%20GPM." target="_blank" rel="noopener">Consultar este equipo</a>
             </div>
           </article>
         </div>
@@ -377,10 +379,10 @@
           <p class="sub">Agrega accesorios para adaptar el equipo al tipo de superficie y al trabajo que deseas realizar.</p>
         </div>
         <div class="accessory-grid">
-          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-disco.jpg" alt="Disco limpiador de superficies de 20 pulgadas" loading="lazy"></div><span class="tag">Superficies planas</span><h3>Disco de hidrolavado de 20"</h3><p>Accesorio para limpiar superficies planas con un recorrido uniforme. Se alquila junto con una hidrolavadora.</p><div class="price">$50</div></article>
-          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-turbo.jpg" alt="Boquilla turbo para hidrolavadora" loading="lazy"></div><span class="tag">Suciedad adherida</span><h3>Turbo nozzle</h3><p>Boquilla rotativa para aplicaciones compatibles que requieren un chorro concentrado. Se alquila junto con una hidrolavadora.</p><div class="price">$10</div></article>
-          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-broom.jpg" alt="Accesorio tipo broom para hidrolavadora" loading="lazy"></div><span class="tag">Áreas amplias</span><h3>Broom de 24"</h3><p>Accesorio tipo escoba de agua para cubrir franjas amplias de superficie. Se alquila junto con una hidrolavadora.</p><div class="price">$30</div></article>
-          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-Manguera.jpg" alt="Manguera adicional de alta presión de 50 pies" loading="lazy"></div><span class="tag">Alcance adicional</span><h3>Manguera adicional</h3><p>Manguera doble capa non-marking para ampliar el alcance de trabajo.</p><div class="price">$30 <small style="font-size:13px;font-weight:500;letter-spacing:0">/ 50 pies</small></div></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-disco.jpg" alt="Disco limpiador de superficies de 20 pulgadas" loading="lazy"></div><span class="tag">Superficies planas</span><h3>Disco de hidrolavado de 20"</h3><p>Accesorio para limpiar superficies planas con un recorrido uniforme. Se alquila junto con una hidrolavadora.</p><div class="price">$50</div><button class="btn btn-blue add-to-cart" type="button" data-sku="rental-surface-cleaner">Agregar al carrito</button></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-turbo.jpg" alt="Boquilla turbo para hidrolavadora" loading="lazy"></div><span class="tag">Suciedad adherida</span><h3>Turbo nozzle</h3><p>Boquilla rotativa para aplicaciones compatibles que requieren un chorro concentrado. Se alquila junto con una hidrolavadora.</p><div class="price">$10</div><button class="btn btn-blue add-to-cart" type="button" data-sku="rental-turbo-nozzle">Agregar al carrito</button></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-broom.jpg" alt="Accesorio tipo broom para hidrolavadora" loading="lazy"></div><span class="tag">Áreas amplias</span><h3>Broom de 24"</h3><p>Accesorio tipo escoba de agua para cubrir franjas amplias de superficie. Se alquila junto con una hidrolavadora.</p><div class="price">$30</div><button class="btn btn-blue add-to-cart" type="button" data-sku="rental-broom">Agregar al carrito</button></article>
+          <article class="accessory"><div class="accessory-visual"><img src="/Images/alq-Manguera.jpg" alt="Manguera adicional de alta presión de 50 pies" loading="lazy"></div><span class="tag">Alcance adicional</span><h3>Manguera adicional</h3><p>Manguera doble capa non-marking para ampliar el alcance de trabajo.</p><div class="price">$30 <small style="font-size:13px;font-weight:500;letter-spacing:0">/ 50 pies</small></div><button class="btn btn-blue add-to-cart" type="button" data-sku="rental-extra-hose">Agregar al carrito</button></article>
         </div>
         <p class="note"><strong>Importante:</strong> los accesorios no se alquilan por separado. Deben contratarse junto con una de las hidrolavadoras disponibles. Cada hidrolavadora incluye una manguera de 50 pies.</p>
       </div>
@@ -595,6 +597,7 @@
       });
     });
   </script>
+  <script src="/cart.js" defer></script>
   <script src="/share.js" defer></script>
 </body>
 </html>
