@@ -44,12 +44,12 @@ insert into public.checkout_products (
   pricing_mode, included_quantity, additional_unit_amount, sale_ends_on, sort_order
 )
 values
-  ('rental-35', 'Hidrolavadora 4000 PSI · 3.5 GPM (hasta 24 horas)', 'alquileres', 'machine', 5000, 1, 25, 'unit', null, null, null, 10),
-  ('rental-23', 'Hidrolavadora 2700 PSI · 2.3 GPM (hasta 24 horas)', 'alquileres', 'machine', 4000, 1, 25, 'unit', null, null, null, 20),
-  ('rental-surface-cleaner', 'Disco de hidrolavado de 20 pulgadas', 'alquileres', 'accessory', 5000, 1, 25, 'unit', null, null, null, 30),
-  ('rental-turbo-nozzle', 'Turbo nozzle', 'alquileres', 'accessory', 1000, 1, 25, 'unit', null, null, null, 40),
-  ('rental-broom', 'Broom de 24 pulgadas', 'alquileres', 'accessory', 3000, 1, 25, 'unit', null, null, null, 50),
-  ('rental-extra-hose', 'Manguera adicional de 50 pies', 'alquileres', 'accessory', 3000, 1, 25, 'unit', null, null, null, 60),
+  ('rental-35', 'Hidrolavadora 4000 PSI · 3.5 GPM (hasta 24 horas)', 'alquileres', 'machine', 5000, 1, 2, 'unit', null, null, null, 10),
+  ('rental-23', 'Hidrolavadora 2700 PSI · 2.3 GPM (hasta 24 horas)', 'alquileres', 'machine', 4000, 1, 2, 'unit', null, null, null, 20),
+  ('rental-surface-cleaner', 'Disco de hidrolavado de 20 pulgadas', 'alquileres', 'accessory', 5000, 1, 2, 'unit', null, null, null, 30),
+  ('rental-turbo-nozzle', 'Turbo nozzle', 'alquileres', 'accessory', 1000, 1, 2, 'unit', null, null, null, 40),
+  ('rental-broom', 'Broom de 24 pulgadas', 'alquileres', 'accessory', 3000, 1, 2, 'unit', null, null, null, 50),
+  ('rental-extra-hose', 'Manguera adicional de 50 pies', 'alquileres', 'accessory', 3000, 1, 2, 'unit', null, null, null, 60),
   ('residential-holiday-promo', 'Promoción navideña de hidrolavado residencial', 'residencial', 'area', 7425, 10, 64, 'residential_promo', 50, 150, date '2026-12-31', 10),
   ('residential-65-100', 'Hidrolavado residencial · 65 a 100 m²', 'residencial', 'area', 200, 65, 100, 'unit', null, null, null, 20),
   ('residential-115-500', 'Hidrolavado residencial · 115 a 500 m²', 'residencial', 'area', 175, 115, 500, 'unit', null, null, null, 30)
@@ -472,6 +472,10 @@ begin
 
   if v_category = 'alquileres' and v_machine_count = 0 then
     raise exception 'Agrega al menos una hidrolavadora para alquilar accesorios.';
+  end if;
+
+  if v_machine_count > 2 then
+    raise exception 'Solo hay 2 hidrolavadoras disponibles para alquiler por orden.';
   end if;
 
   if v_category = 'residencial'

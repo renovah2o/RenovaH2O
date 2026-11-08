@@ -227,12 +227,14 @@
       const machines = rentalMachineCount();
       const residentialItems = items.filter(item => products[item.sku].kind === "area");
       const invalid = items.some(item => products[item.sku].category !== category) ||
-        (category === "alquileres" && machines === 0) ||
+        (category === "alquileres" && (machines === 0 || machines > 2)) ||
         (category === "residencial" && residentialItems.length !== 1);
       categoryNotice.hidden = !invalid;
       if (invalid) {
         categoryNotice.textContent = category === "alquileres"
-          ? "Agrega al menos una hidrolavadora antes de continuar. Los accesorios se alquilan únicamente junto con un equipo."
+          ? machines > 2
+            ? "Solo hay 2 hidrolavadoras disponibles por orden. Ajusta las cantidades del carrito."
+            : "Agrega al menos una hidrolavadora antes de continuar. Los accesorios se alquilan únicamente junto con un equipo."
           : "Para iniciar, selecciona un solo paquete residencial en cada orden.";
       }
 
@@ -259,6 +261,16 @@
           if (!Number.isInteger(value) || value < product.minimum || value > product.maximum) {
             input.value = String(item.quantity);
             setFeedback(`La cantidad debe estar entre ${product.minimum} y ${product.maximum}.`, "error");
+            return;
+          }
+          const updatedMachineCount = items.reduce((total, entry) => {
+            return total + (products[entry.sku].kind === "machine"
+              ? entry.sku === item.sku ? value : entry.quantity
+              : 0);
+          }, 0);
+          if (product.kind === "machine" && updatedMachineCount > 2) {
+            input.value = String(item.quantity);
+            setFeedback("Solo hay 2 hidrolavadoras disponibles por orden.", "error");
             return;
           }
           item.quantity = value;

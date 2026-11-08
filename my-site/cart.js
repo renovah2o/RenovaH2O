@@ -7,7 +7,7 @@
       kind: "machine",
       unitAmount: 5000,
       minimum: 1,
-      maximum: 25
+      maximum: 2
     },
     "rental-23": {
       name: "Hidrolavadora 2700 PSI · 2.3 GPM (hasta 24 horas)",
@@ -15,7 +15,7 @@
       kind: "machine",
       unitAmount: 4000,
       minimum: 1,
-      maximum: 25
+      maximum: 2
     },
     "rental-surface-cleaner": {
       name: "Disco de hidrolavado de 20 pulgadas",
@@ -23,7 +23,7 @@
       kind: "accessory",
       unitAmount: 5000,
       minimum: 1,
-      maximum: 25
+      maximum: 2
     },
     "rental-turbo-nozzle": {
       name: "Turbo nozzle",
@@ -31,7 +31,7 @@
       kind: "accessory",
       unitAmount: 1000,
       minimum: 1,
-      maximum: 25
+      maximum: 2
     },
     "rental-broom": {
       name: "Broom de 24 pulgadas",
@@ -39,7 +39,7 @@
       kind: "accessory",
       unitAmount: 3000,
       minimum: 1,
-      maximum: 25
+      maximum: 2
     },
     "rental-extra-hose": {
       name: "Manguera adicional de 50 pies",
@@ -47,7 +47,7 @@
       kind: "accessory",
       unitAmount: 3000,
       minimum: 1,
-      maximum: 25
+      maximum: 2
     },
     "residential-holiday-promo": {
       name: "Promoción navideña de hidrolavado residencial",
@@ -188,10 +188,22 @@
     }
 
     const existing = items.find(item => item.sku === sku);
+    const updatedQuantity = (existing?.quantity ?? 0) + quantity;
+    if (updatedQuantity > product.maximum) {
+      throw new Error(`Solo puedes agregar hasta ${product.maximum} unidad(es) de este producto por orden.`);
+    }
+
+    const machineCount = items.reduce((total, item) => {
+      return total + (products[item.sku].kind === "machine" ? item.quantity : 0);
+    }, 0) + (product.kind === "machine" ? quantity : 0);
+    if (product.kind === "machine" && machineCount > 2) {
+      throw new Error("Solo hay 2 hidrolavadoras disponibles para alquiler por orden.");
+    }
+
     if (existing && product.kind === "area") {
       existing.quantity = quantity;
     } else if (existing) {
-      existing.quantity += quantity;
+      existing.quantity = updatedQuantity;
     } else {
       items.push({ sku, quantity });
     }
