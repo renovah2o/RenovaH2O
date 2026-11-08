@@ -204,21 +204,23 @@
     }, 1800);
   }
 
-  document.querySelectorAll(".add-to-cart[data-sku]").forEach(button => {
-    button.dataset.originalText = button.textContent.trim();
-    button.addEventListener("click", () => {
-      try {
-        addProduct(button);
-      } catch (error) {
-        showFeedback(error.message);
-      }
+  function initializeProductButtons() {
+    document.querySelectorAll(".add-to-cart[data-sku]").forEach(button => {
+      button.dataset.originalText = button.textContent.trim();
+      button.addEventListener("click", () => {
+        try {
+          addProduct(button);
+        } catch (error) {
+          showFeedback(error.message);
+        }
+      });
     });
-  });
 
-  document.querySelectorAll("[data-price-quantity]").forEach(input => {
-    input.addEventListener("input", updatePriceDisplays);
-  });
-  updatePriceDisplays();
+    document.querySelectorAll("[data-price-quantity]").forEach(input => {
+      input.addEventListener("input", updatePriceDisplays);
+    });
+    updatePriceDisplays();
+  }
 
   window.RenovaCart = {
     products,
@@ -226,4 +228,10 @@
     saveItems,
     storageKey
   };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeProductButtons, { once: true });
+  } else {
+    initializeProductButtons();
+  }
 })();

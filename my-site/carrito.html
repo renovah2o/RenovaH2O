@@ -73,7 +73,7 @@
     @media(max-width:620px){.nav-inner{width:calc(100% - 24px)}.logo{width:120px}.nav-actions{gap:6px}.account-link{padding:7px 11px}.cart-link,.hamb{width:34px;height:34px}.hamb{display:grid}main{width:calc(100% - 24px);padding-top:86px}.card{padding:19px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.cart-item{grid-template-columns:1fr}.item-price{text-align:left}.mobile.open{display:flex;position:fixed;z-index:999;inset:58px 0 0;overflow-y:auto;justify-content:center;align-items:flex-start;padding:20px 0 max(24px,env(safe-area-inset-bottom));background:#08090bf7;backdrop-filter:blur(20px)}.mobile-inner{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{margin:12px 0;color:#fff;font-size:22px;font-weight:700}}
   </style>
   <script src="/supabase-config.js"></script>
-  <script src="/cart.js" defer></script>
+  <script src="/cart.js"></script>
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -95,7 +95,7 @@
     const contactConfirmed = document.querySelector("#contact-confirmed");
     const serviceAddress = document.querySelector("#service-address");
     const orderSuccess = document.querySelector("#order-success");
-    const products = cart.products;
+    const products = cart?.products;
     let supabase;
     let session;
     let availableSlots = [];

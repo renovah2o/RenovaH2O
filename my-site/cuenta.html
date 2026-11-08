@@ -29,7 +29,7 @@
     .field{display:grid;gap:7px;margin:16px 0}
     label{font-size:14px;font-weight:600}
     input[type=email],input[type=password],input[type=text],input[type=tel]{width:100%;padding:12px 14px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
-    input:focus{outline:3px solid rgba(0,113,227,.18);border-color:var(--blue)}
+    input:focus,textarea:focus{outline:3px solid rgba(0,113,227,.18);border-color:var(--blue)}
     .primary,.secondary,.text-button{min-height:44px;border-radius:999px;font-weight:600}
     .primary{width:100%;padding:10px 18px;border:0;background:var(--blue);color:#fff}
     .primary:hover{background:var(--blue-dark)}
@@ -89,6 +89,11 @@
     .notification-card p{margin:6px 0;color:var(--gray);font-size:14px}
     .notification-card button{margin-top:8px}
     .admin-order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .admin-adjustment{display:grid;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #e8e8ed}
+    .admin-adjustment label{display:grid;gap:7px}
+    .admin-adjustment input,.admin-adjustment textarea{width:100%;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
+    .admin-adjustment textarea{resize:vertical}
+    .admin-adjustment-status{min-height:20px;margin:0;color:var(--gray);font-size:13px}
     .order-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
     .order-head strong{font-size:15px}
     .order-meta,.order-items{margin:6px 0 0;color:var(--gray);font-size:14px}
@@ -160,6 +165,7 @@
     const adminOrdersTile = document.querySelector("#admin-orders-tile");
     const adminOrdersList = document.querySelector("#admin-orders-list");
     const adminOrdersStatus = document.querySelector("#admin-orders-status");
+    const refreshAdminOrdersButton = document.querySelector("#refresh-admin-orders");
     const saveProfileButton = document.querySelector("#save-profile");
     const passwordResetForm = document.querySelector("#password-reset-form");
     const returnTo = new URLSearchParams(window.location.search).get("next")
@@ -670,6 +676,68 @@
           card.append(actions);
         }
 
+        if (order.status === "paid") {
+          const adjustmentForm = document.createElement("form");
+          adjustmentForm.className = "admin-adjustment";
+          const adjustmentLabel = document.createElement("label");
+          adjustmentLabel.textContent = "Ajuste final en dólares (+ saldo pendiente / − devolución)";
+          const adjustmentInput = document.createElement("input");
+          adjustmentInput.type = "number";
+          adjustmentInput.min = "-1000000";
+          adjustmentInput.max = "1000000";
+          adjustmentInput.step = "0.01";
+          adjustmentInput.required = true;
+          adjustmentInput.value = ((order.adjustment_amount ?? 0) / 100).toFixed(2);
+          adjustmentLabel.append(adjustmentInput);
+          const messageLabel = document.createElement("label");
+          messageLabel.textContent = "Mensaje para el cliente";
+          const messageInput = document.createElement("textarea");
+          messageInput.rows = 3;
+          messageInput.maxLength = 350;
+          messageInput.required = true;
+          messageInput.value = order.adjustment_note ?? "";
+          messageLabel.append(messageInput);
+          const saveAdjustment = document.createElement("button");
+          saveAdjustment.className = "secondary";
+          saveAdjustment.type = "submit";
+          saveAdjustment.textContent = "Guardar y notificar";
+          const adjustmentStatus = document.createElement("p");
+          adjustmentStatus.className = "admin-adjustment-status";
+          adjustmentStatus.setAttribute("role", "status");
+          adjustmentForm.append(adjustmentLabel, messageLabel, saveAdjustment, adjustmentStatus);
+          adjustmentForm.addEventListener("submit", async event => {
+            event.preventDefault();
+            const amount = Number(adjustmentInput.value);
+            const message = messageInput.value.trim();
+            if (!Number.isFinite(amount) || !message) {
+              adjustmentStatus.textContent = "Ingresa un monto válido y un mensaje.";
+              return;
+            }
+            const amountInCents = Math.round(amount * 100);
+            if (amountInCents !== 0 && !window.confirm(
+              amountInCents > 0
+                ? `¿Registrar un saldo adicional de ${formatCurrency(amountInCents, order.currency)} y notificar al cliente?`
+                : `¿Registrar una devolución de ${formatCurrency(Math.abs(amountInCents), order.currency)} y notificar al cliente?`
+            )) return;
+            saveAdjustment.disabled = true;
+            adjustmentStatus.textContent = "Guardando ajuste…";
+            try {
+              const { error: adjustmentError } = await supabase.rpc("checkout_admin_record_adjustment", {
+                p_order_id: order.order_id,
+                p_adjustment_amount: amountInCents,
+                p_message: message
+              });
+              if (adjustmentError) throw adjustmentError;
+              await loadAdminOrders(userId);
+              adminOrdersStatus.textContent = "Ajuste guardado y notificación enviada a la cuenta del cliente.";
+            } catch (error) {
+              adjustmentStatus.textContent = `No se pudo guardar el ajuste: ${error.message}`;
+              saveAdjustment.disabled = false;
+            }
+          });
+          card.append(adjustmentForm);
+        }
+
         adminOrdersList.append(card);
       }
     }
@@ -700,7 +768,7 @@
 
     async function loadCustomerOrders(userId = activeUserId) {
       const { data, error } = await supabase.from("orders")
-        .select("id, status, total_amount, currency, created_at, order_items(id, product_name, quantity)")
+        .select("id, status, total_amount, adjustment_amount, adjustment_note, currency, created_at, order_items(id, product_name, quantity)")
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
       if (activeUserId !== userId) return;
@@ -746,6 +814,19 @@
           .format(new Date(order.created_at));
         details.textContent = `${date} · ${statusLabels[order.status] ?? "En proceso"}`;
         card.append(heading, details);
+
+        if (order.adjustment_amount) {
+          const adjustment = document.createElement("p");
+          adjustment.className = "order-meta";
+          const isDue = order.adjustment_amount > 0;
+          adjustment.textContent = `${isDue ? "Saldo adicional pendiente" : "Devolución por coordinar"}: ${formatCurrency(Math.abs(order.adjustment_amount), order.currency)}${order.adjustment_note ? ` · ${order.adjustment_note}` : ""}`;
+          card.append(adjustment);
+        } else if (order.adjustment_note) {
+          const adjustment = document.createElement("p");
+          adjustment.className = "order-meta";
+          adjustment.textContent = `Medición revisada: ${order.adjustment_note}`;
+          card.append(adjustment);
+        }
 
         if (order.order_items?.length) {
           const items = document.createElement("ul");
@@ -1312,6 +1393,7 @@
     });
 
     window.addEventListener("hashchange", showRoute);
+    refreshAdminOrdersButton.addEventListener("click", () => loadAdminOrders());
     updateAuthMode();
     showRoute();
 
@@ -1653,6 +1735,7 @@
 
       <section class="account-panel card" id="panel-admin-orders" data-title="Confirmar órdenes" hidden>
         <div class="panel-heading"><div><h2>Confirmar órdenes</h2><p>Verifica el pago con el cliente antes de confirmarlo. Al confirmar, la orden cambia a pagada y su fecha pasa a Mi agenda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <button class="secondary" id="refresh-admin-orders" type="button">Actualizar órdenes</button>
         <div class="orders-list" id="admin-orders-list" aria-live="polite"></div>
         <p class="agenda-status" id="admin-orders-status" role="status" aria-live="polite"></p>
       </section>

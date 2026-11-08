@@ -31,7 +31,13 @@ grant select on public.checkout_products to anon, authenticated;
 create policy "Active checkout products are publicly readable"
   on public.checkout_products for select
   to anon, authenticated
-  using (active and (sale_ends_on is null or sale_ends_on >= current_date));
+  using (
+    active
+    and (
+      sale_ends_on is null
+      or sale_ends_on >= (now() at time zone 'America/Panama')::date
+    )
+  );
 
 insert into public.checkout_products (
   sku, name, category, product_kind, unit_amount, min_quantity, max_quantity,
@@ -66,6 +72,10 @@ alter table public.orders
   add column service_type text,
   add column service_address text,
   add column contact_phone text,
+  add column payment_confirmed_by uuid references auth.users (id) on delete set null,
+  add column payment_confirmed_at timestamptz,
+  add column adjustment_amount integer not null default 0,
+  add column adjustment_note text,
   add constraint orders_service_type_valid check (
     service_type is null
     or service_type in ('residencial_am', 'residencial_pm', 'alquileres')
@@ -75,6 +85,9 @@ alter table public.orders
   ),
   add constraint orders_contact_phone_length check (
     contact_phone is null or char_length(contact_phone) between 7 and 32
+  ),
+  add constraint orders_adjustment_note_length check (
+    adjustment_note is null or char_length(adjustment_note) <= 500
   );
 
 alter table public.agenda_reservations
@@ -576,6 +589,8 @@ returns table (
   total_amount integer,
   currency text,
   status text,
+  adjustment_amount integer,
+  adjustment_note text,
   created_at timestamptz,
   hold_expires_at timestamptz,
   starts_at timestamptz,
@@ -603,6 +618,8 @@ begin
       customer_order.total_amount,
       customer_order.currency,
       customer_order.status,
+      customer_order.adjustment_amount,
+      customer_order.adjustment_note,
       customer_order.created_at,
       reservation.hold_expires_at,
       reservation.starts_at,
@@ -710,7 +727,10 @@ begin
   end if;
 
   update public.orders
-    set status = p_status
+    set
+      status = p_status,
+      payment_confirmed_by = case when p_status = 'paid' then (select auth.uid()) else payment_confirmed_by end,
+      payment_confirmed_at = case when p_status = 'paid' then now() else payment_confirmed_at end
     where id = p_order_id;
 
   if v_order.user_id is not null then
@@ -727,3 +747,72 @@ $$;
 
 revoke all on function public.checkout_admin_set_order_status(uuid, text) from public, anon;
 grant execute on function public.checkout_admin_set_order_status(uuid, text) to authenticated;
+
+create function public.checkout_admin_record_adjustment(
+  p_order_id uuid,
+  p_adjustment_amount integer,
+  p_message text
+)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_order public.orders%rowtype;
+  v_amount_label text;
+  v_title text;
+  v_message text;
+begin
+  if not (select public.is_agenda_admin()) then
+    raise exception 'Solo un administrador puede actualizar el ajuste de una orden.';
+  end if;
+
+  if p_adjustment_amount is null
+    or p_adjustment_amount not between -100000000 and 100000000
+    or p_message is null
+    or char_length(trim(p_message)) not between 1 and 350
+  then
+    raise exception 'Escribe un ajuste válido y un mensaje para el cliente.';
+  end if;
+
+  select *
+    into v_order
+    from public.orders
+    where id = p_order_id
+    for update;
+
+  if not found or v_order.status <> 'paid' then
+    raise exception 'Solo se pueden registrar ajustes en órdenes pagadas.';
+  end if;
+
+  if v_order.total_amount::bigint + p_adjustment_amount < 0 then
+    raise exception 'La devolución no puede superar el total original de la orden.';
+  end if;
+
+  update public.orders
+    set adjustment_amount = p_adjustment_amount,
+        adjustment_note = trim(p_message)
+    where id = p_order_id;
+
+  v_amount_label := '$' || to_char(abs(p_adjustment_amount)::numeric / 100, 'FM999999990.00');
+  if p_adjustment_amount > 0 then
+    v_title := 'Saldo adicional pendiente';
+    v_message := 'Saldo adicional: ' || v_amount_label || '. ' || trim(p_message)
+      || ' El pago se coordina manualmente con RenovaH2O.';
+  elsif p_adjustment_amount < 0 then
+    v_title := 'Devolución pendiente';
+    v_message := 'Devolución por coordinar: ' || v_amount_label || '. ' || trim(p_message)
+      || ' Un agente coordinará contigo la devolución manualmente.';
+  else
+    v_title := 'Medición revisada';
+    v_message := 'No hay saldo adicional ni devolución. ' || trim(p_message);
+  end if;
+
+  insert into public.account_notifications (user_id, order_id, title, message)
+  values (v_order.user_id, p_order_id, v_title, v_message);
+end;
+$$;
+
+revoke all on function public.checkout_admin_record_adjustment(uuid, integer, text) from public, anon;
+grant execute on function public.checkout_admin_record_adjustment(uuid, integer, text) to authenticated;
