@@ -33,7 +33,7 @@ begin
   end if;
   return new;
 end;
-$;
+$$;
 revoke all on function public.capture_order_status_change() from public,anon,authenticated;
 create trigger capture_order_status_change after update of status on public.orders
 for each row execute function public.capture_order_status_change();
