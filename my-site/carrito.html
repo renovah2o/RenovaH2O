@@ -343,14 +343,16 @@
       const residentialItems = items.filter(item => products[item.sku].kind === "area");
       const invalid = items.some(item => products[item.sku].category !== category) ||
         (category === "alquileres" && (machines === 0 || machines > 2)) ||
-        (category === "residencial" && residentialItems.length !== 1);
+        ((category === "residencial" || category === "comercial") && residentialItems.length !== 1);
       categoryNotice.hidden = !invalid;
       if (invalid) {
         categoryNotice.textContent = category === "alquileres"
           ? machines > 2
             ? "Solo hay 2 hidrolavadoras disponibles por orden. Ajusta las cantidades del carrito."
             : "Agrega al menos una hidrolavadora antes de continuar. Los accesorios se alquilan únicamente junto con un equipo."
-          : "Para iniciar, selecciona un solo paquete residencial en cada orden.";
+          : category === "comercial"
+            ? "Para iniciar, selecciona un solo paquete comercial en cada orden."
+            : "Para iniciar, selecciona un solo paquete residencial en cada orden.";
       }
 
       for (const item of items) {
@@ -362,6 +364,12 @@
         const image = document.createElement("img");
         image.className = "cart-item-image";
         image.src = product.image;
+        image.onerror = () => {
+          if (product.fallbackImage) {
+            image.onerror = null;
+            image.src = product.fallbackImage;
+          }
+        };
         image.alt = product.name;
         image.loading = "lazy";
         image.decoding = "async";
@@ -429,10 +437,14 @@
       }
 
       updateSummary();
-      serviceTypeSelect.value = category === "alquileres" ? "alquileres" : "residencial_am";
-      serviceTypeSelect.disabled = category === "alquileres";
+      serviceTypeSelect.value = category === "alquileres"
+        ? "alquileres"
+        : category === "comercial" ? "comercial" : "residencial_am";
+      serviceTypeSelect.disabled = category === "alquileres" || category === "comercial";
       if (category === "alquileres") {
         serviceTypeSelect.closest(".field").querySelector("label").textContent = "Horario de alquiler";
+      } else if (category === "comercial") {
+        serviceTypeSelect.closest(".field").querySelector("label").textContent = "Jornada comercial";
       } else {
         serviceTypeSelect.closest(".field").querySelector("label").textContent = "Turno residencial";
       }
@@ -741,7 +753,7 @@
       const disabled = !session || !items.length ||
         !categoriesMatch ||
         (category === "alquileres" && rentalMachineCount() === 0) ||
-        (category === "residencial" && areaCount !== 1);
+        ((category === "residencial" || category === "comercial") && areaCount !== 1);
       submitButton.disabled = disabled;
       authNotice.hidden = Boolean(session);
     }
@@ -946,6 +958,7 @@
               <option value="alquileres">Alquiler · 24 horas</option>
               <option value="residencial_am">Residencial · AM</option>
               <option value="residencial_pm">Residencial · PM</option>
+              <option value="comercial">Comercial · día completo</option>
             </select>
           </div>
           <div class="field">

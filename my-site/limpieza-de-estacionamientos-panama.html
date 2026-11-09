@@ -156,17 +156,25 @@
 .process{background:var(--soft)}.process-head{text-align:center}.process-head .sub{margin:20px auto 0}.process-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:60px;position:relative}.process-grid:before{content:'';position:absolute;left:8%;right:8%;top:35px;height:1px;background:var(--line)}.process-step{position:relative;z-index:1;background:#fff;border:1px solid #e5e5e9;border-radius:22px;padding:25px 20px 27px;min-height:275px;transition:transform .35s,box-shadow .35s}.process-step:hover{transform:translateY(-6px);box-shadow:0 16px 36px rgba(0,0,0,.08)}.process-number{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#050505;color:#fff;font-size:13px;font-weight:750;margin-bottom:28px;box-shadow:0 0 0 7px var(--soft)}.process-step h3{font-size:18px;line-height:1.15;letter-spacing:-.035em;margin-bottom:10px}.process-step p{font-size:13px;color:var(--gray);line-height:1.55}.process-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);font-weight:750;margin-bottom:8px}.included{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}.included-card{background:#fff;border-radius:22px;padding:30px}.included-card h3{font-size:19px;margin-bottom:12px}.included-card p{font-size:14px;color:var(--gray)}.included-card ul{list-style:none;margin-top:14px}.included-card li{font-size:13px;padding:8px 0;border-top:1px solid var(--line);color:var(--ink)}.included-card li:before{content:'✓';color:var(--blue);font-weight:800;margin-right:10px}.addon{border:1px solid #e3e3e8}.addon .addon-tag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:750;color:#805b18;background:#fff5df;border-radius:980px;padding:6px 10px;margin-bottom:13px}
 .surfaces{background:#fff}.surface-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:70px;align-items:center}.surface-photo{height:600px;border-radius:28px;overflow:hidden;background:#ddd}.surface-photo img{width:100%;height:100%;object-fit:cover}.surface-list{display:grid;grid-template-columns:1fr 1fr;gap:0 25px;margin-top:32px}.surface-item{padding:16px 0;border-top:1px solid var(--line);font-size:15px;font-weight:600}.surface-item span{color:var(--blue);margin-right:10px}.fine{font-size:11px;color:var(--gray);margin-top:14px;line-height:1.5}
 
-/* Sección de Precios por m² */
+/* Paquetes comerciales con compra directa */
 .pricing{background:var(--soft);padding:90px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.pricing-head{text-align:center;margin-bottom:50px}
+.pricing-head{text-align:center;margin-bottom:42px}
 .pricing-head .sub{margin:18px auto 0}
-.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-.pricing-card{background:#fff;border-radius:24px;padding:32px 24px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.04);border:1px solid var(--soft2);transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;justify-content:space-between}
-.pricing-card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,.08)}
-.pricing-range{font-size:14px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
-.pricing-val{font-size:42px;font-weight:800;letter-spacing:-.05em;color:var(--blue);line-height:1;margin-bottom:6px}
-.pricing-unit{font-size:13px;color:var(--gray);font-weight:500}
-.pricing-note{margin-top:40px;text-align:center;font-size:13px;color:var(--gray)}
+.checkout-packages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+.checkout-package{background:#fff;border:1px solid var(--soft2);border-radius:24px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.045);display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s}
+.checkout-package:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(0,0,0,.08)}
+.checkout-package-image{display:block;width:100%;height:205px;object-fit:cover;border-radius:16px;margin-bottom:20px;background:#e8e8ed}
+.checkout-package .package-label{font-size:11px;font-weight:750;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:9px}
+.checkout-package h3{font-size:21px;line-height:1.15;letter-spacing:-.035em;margin:0 0 10px}
+.checkout-package p{font-size:13px;color:var(--gray);line-height:1.6;margin:0 0 16px}
+.checkout-package label{font-size:12px;font-weight:700;margin-top:auto}
+.checkout-package input{width:100%;min-height:44px;margin:7px 0 10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit}
+.checkout-package .package-price{display:block;font-size:30px;letter-spacing:-.04em;margin:4px 0 14px}
+.checkout-package .price-unit{font-size:12px;color:var(--gray);margin-top:-10px;margin-bottom:16px}
+.checkout-package .add-to-cart{width:100%;border:0;cursor:pointer}
+.pricing-note{margin-top:28px;text-align:center;font-size:13px;color:var(--gray)}
+@media(max-width:1000px){.checkout-packages{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.checkout-packages{grid-template-columns:1fr}}
 
 /* CTA Final */
 .final{background:#000;color:#fff;text-align:center;padding:130px 0}.final .eyebrow{color:#a1a1a6}.final .sub{margin:25px auto 30px;color:#a1a1a6}
@@ -221,6 +229,7 @@
 @media(max-width:950px){.nav-actions .nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;font-size:12px;white-space:nowrap}}
   </style>
 <link rel="stylesheet" href="/share.css">
+<script src="/cart.js" defer></script>
 <script src="/share.js" defer></script>
 </head>
 <body itemscope itemtype="https://schema.org/WebPage">
@@ -427,29 +436,42 @@
             <h2 class="title">Aprovecha nuestros <span class="blue">mejores precios</span> por área.</h2>
             <p class="sub">Cuanto mayor sea el área a limpiar, mejor es la tarifa por metro cuadrado.</p>
         </div>
-        <div class="pricing-grid">
-            <div class="pricing-card reveal">
-                <div class="pricing-range">100 m² o menos</div>
-                <div class="pricing-val">$2.00</div>
-                <div class="pricing-unit">por metro cuadrado</div>
-            </div>
-            <div class="pricing-card reveal">
-                <div class="pricing-range">100 m² a 500 m²</div>
-                <div class="pricing-val">$1.75</div>
-                <div class="pricing-unit">por metro cuadrado</div>
-            </div>
-            <div class="pricing-card reveal">
-                <div class="pricing-range">500 m² a 1,000 m²</div>
-                <div class="pricing-val">$1.50</div>
-                <div class="pricing-unit">por metro cuadrado</div>
-            </div>
-            <div class="pricing-card reveal">
-                <div class="pricing-range">Más de 1,000 m²</div>
-                <div class="pricing-val">$1.25</div>
-                <div class="pricing-unit">por metro cuadrado</div>
-            </div>
+        <div class="checkout-packages" aria-label="Paquetes comerciales disponibles para agregar al carrito">
+            <article class="checkout-package reveal">
+                <img class="checkout-package-image" src="/Images/115m2.jpeg" onerror="this.onerror=null;this.src='/Images/500m2.jpeg'" alt="Área de hidrolavado comercial de referencia para instalaciones de 115 a 500 metros cuadrados" loading="lazy" decoding="async">
+                <span class="package-label">Institucional · Área pequeña</span>
+                <h3>Servicio de Hidrolavado · 115 a 500 m²</h3>
+                <p>Ideal para escuelas, iglesias, colegios, pequeños estacionamientos y otras instalaciones que necesitan renovar sus pisos exteriores y accesos.</p>
+                <label for="commercial-area-115-500">Metros cuadrados estimados</label>
+                <input id="commercial-area-115-500" type="number" min="115" max="500" step="1" value="115" data-price-quantity>
+                <strong class="package-price" data-price-for="commercial-area-115-500">$201.25</strong>
+                <span class="price-unit">$1.75 por m² · total calculado según el metraje</span>
+                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-115-500" data-quantity-input="#commercial-area-115-500">Agregar al carrito</button>
+            </article>
+            <article class="checkout-package reveal">
+                <img class="checkout-package-image" src="/Images/600m2.jpeg" onerror="this.onerror=null;this.src='/Images/Cleaning Parkings.png'" alt="Área de hidrolavado comercial de referencia para instalaciones de 600 a 1,000 metros cuadrados" loading="lazy" decoding="async">
+                <span class="package-label">Comercial · Área mediana</span>
+                <h3>Servicio de Hidrolavado · 600 a 1,000 m²</h3>
+                <p>Recomendado para comercios, locales, restaurantes, plazas pequeñas y establecimientos con superficies exteriores de tránsito frecuente.</p>
+                <label for="commercial-area-600-1000">Metros cuadrados estimados</label>
+                <input id="commercial-area-600-1000" type="number" min="600" max="1000" step="1" value="600" data-price-quantity>
+                <strong class="package-price" data-price-for="commercial-area-600-1000">$900.00</strong>
+                <span class="price-unit">$1.50 por m² · total calculado según el metraje</span>
+                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-600-1000" data-quantity-input="#commercial-area-600-1000">Agregar al carrito</button>
+            </article>
+            <article class="checkout-package reveal">
+                <img class="checkout-package-image" src="/Images/1250m2.jpeg" onerror="this.onerror=null;this.src='/Images/Cleaning Parkings.png'" alt="Área de hidrolavado comercial de referencia para PH y superficies de 1,250 a 5,000 metros cuadrados" loading="lazy" decoding="async">
+                <span class="package-label">PH · Gran superficie</span>
+                <h3>Servicio de Hidrolavado · 1,250 a 5,000 m²</h3>
+                <p>Diseñado para PHs, estacionamientos residenciales, áreas comunes, complejos habitacionales y propiedades de mayor extensión.</p>
+                <label for="commercial-area-1250-5000">Metros cuadrados estimados</label>
+                <input id="commercial-area-1250-5000" type="number" min="1250" max="5000" step="1" value="1250" data-price-quantity>
+                <strong class="package-price" data-price-for="commercial-area-1250-5000">$1,562.50</strong>
+                <span class="price-unit">$1.25 por m² · total calculado según el metraje</span>
+                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-1250-5000" data-quantity-input="#commercial-area-1250-5000">Agregar al carrito</button>
+            </article>
         </div>
-        <p class="pricing-note reveal">* Precios sujetos a evaluación inicial del estado de la superficie y nivel de suciedad.</p>
+        <p class="pricing-note reveal">* Selecciona el área aproximada para calcular el total. Las superficies fuera de estos rangos se cotizan por separado. El metraje y las condiciones del sitio se verifican antes de confirmar el servicio.</p>
     </div>
 </section>
 

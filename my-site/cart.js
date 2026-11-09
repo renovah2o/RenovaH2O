@@ -85,6 +85,36 @@
       unitAmount: 175,
       minimum: 115,
       maximum: 500
+    },
+    "commercial-115-500": {
+      name: "Servicio de Hidrolavado Comercial · 115 a 500 m²",
+      image: "/Images/115m2.jpeg",
+      fallbackImage: "/Images/500m2.jpeg",
+      category: "comercial",
+      kind: "area",
+      unitAmount: 175,
+      minimum: 115,
+      maximum: 500
+    },
+    "commercial-600-1000": {
+      name: "Servicio de Hidrolavado Comercial · 600 a 1,000 m²",
+      image: "/Images/600m2.jpeg",
+      fallbackImage: "/Images/Cleaning Parkings.png",
+      category: "comercial",
+      kind: "area",
+      unitAmount: 150,
+      minimum: 600,
+      maximum: 1000
+    },
+    "commercial-1250-5000": {
+      name: "Servicio de Hidrolavado Comercial · 1,250 a 5,000 m²",
+      image: "/Images/1250m2.jpeg",
+      fallbackImage: "/Images/Cleaning Parkings.png",
+      category: "comercial",
+      kind: "area",
+      unitAmount: 125,
+      minimum: 1250,
+      maximum: 5000
     }
   };
 
@@ -200,7 +230,7 @@
     }
 
     if (product.kind === "area" && items.some(item => item.sku !== sku && products[item.sku].kind === "area")) {
-      throw new Error("El carrito puede incluir un solo paquete de superficie residencial.");
+      throw new Error("El carrito puede incluir un solo paquete de superficie por orden.");
     }
 
     const existing = items.find(item => item.sku === sku);
