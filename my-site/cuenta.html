@@ -39,6 +39,16 @@
     .auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:#86868b;font-size:12px}
     .auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:#e8e8ed}
     .google-button{display:flex;align-items:center;justify-content:center;gap:10px}
+
+    /* Acceso exclusivo mediante Google: se conserva el flujo interno para compatibilidad,
+       pero no se muestran las opciones de correo y contraseña. */
+    .auth-section #auth-form>.field,
+    .auth-section #auth-submit,
+    .auth-section .auth-divider,
+    .auth-section .auth-switch,
+    .auth-section .legal-consent{display:none!important}
+    .google-only-note{margin:16px 0 0;color:var(--gray);font-size:12px;line-height:1.5;text-align:center}
+    .google-only-note a{color:var(--blue);text-decoration:underline}
     .google-button svg{width:18px;height:18px}
     .legal-consent{margin:16px 0;color:var(--gray);font-size:12px}
     .legal-consent label{display:flex;align-items:flex-start;gap:9px;font-weight:400}
@@ -2608,6 +2618,7 @@
           </label>
         </div>
       </form>
+      <p class="google-only-note">Al continuar con Google, podrás crear tu cuenta o acceder a una existente. Aplican nuestros <a href="/terminos">Términos del Servicio</a> y <a href="/privacidad">Política de Privacidad</a>.</p>
       <p class="auth-switch"><span id="switch-text">¿Aún no tienes cuenta?</span> <button class="text-button" id="switch-mode" type="button">Regístrate</button></p>
       <p class="notice" id="auth-message" role="status" aria-live="polite" hidden></p>
     </section>
