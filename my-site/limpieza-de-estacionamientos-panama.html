@@ -306,19 +306,51 @@
     </div>
 </section>
 
-<!-- 2. Claro: Promo / Soluciones -->
+<!-- 2. Paquetes de servicios comerciales -->
 <section class="promo" id="soluciones">
     <div class="wrap">
         <div class="promo-head reveal">
             <div class="eyebrow">Hidrolavado para instalaciones comerciales e institucionales</div>
             <h2 class="title">Un exterior limpio.<br><span class="blue">Una mejor impresión.</span></h2>
-            <p class="sub">La acumulación de polvo, limo, moho, derrames y residuos puede hacer que una instalación lucza descuidada. RenovaH2O ayuda a recuperar la apariencia de las áreas exteriores y mantenerlas presentables para clientes, visitantes, colaboradores y residentes.</p>
+            <p class="sub">La acumulación de polvo, limo, moho, derrames y residuos puede hacer que una instalación luzca descuidada. RenovaH2O ayuda a recuperar la apariencia de las áreas exteriores y mantenerlas presentables para clientes, visitantes, colaboradores y residentes.</p>
         </div>
-        <div class="benefit-grid">
-            <article class="benefit reveal"><div class="benefit-icon">01</div><h3>Estacionamientos y accesos</h3><p>Hidrolavado de pisos de concreto, adoquines, rampas, aceras y zonas de circulación peatonal o vehicular.</p></article>
-            <article class="benefit reveal"><div class="benefit-icon">02</div><h3>Fachadas y perímetros</h3><p>Limpieza exterior de paredes, muros y superficies perimetrales en plazas, colegios y estaciones de combustible.</p></article>
-            <article class="benefit reveal"><div class="benefit-icon">03</div><h3>Atención planificada</h3><p>Coordinamos el alcance del trabajo y la ejecución para adaptarnos a las características y operación de cada instalación.</p></article>
+        <span id="precios" aria-hidden="true"></span>
+        <div class="checkout-packages" aria-label="Paquetes comerciales disponibles para agregar al carrito">
+            <article class="checkout-package reveal">
+                <img class="checkout-package-image" src="/Images/115.jpg" alt="Área de hidrolavado comercial de referencia para instalaciones de 115 a 500 metros cuadrados" loading="lazy" decoding="async">
+                <span class="package-label">Institucional · Área pequeña</span>
+                <h3>Servicio de Hidrolavado · 115 a 500 m²</h3>
+                <p>Ideal para escuelas, iglesias, colegios, pequeños estacionamientos y otras instalaciones que necesitan renovar sus pisos exteriores y accesos.</p>
+                <label for="commercial-area-115-500">Metros cuadrados estimados</label>
+                <input id="commercial-area-115-500" type="number" min="115" max="500" step="1" value="115" data-price-quantity>
+                <strong class="package-price" data-price-for="commercial-area-115-500">$201.25</strong>
+                <span class="price-unit">$1.75 por m² · total calculado según el metraje</span>
+                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-115-500" data-quantity-input="#commercial-area-115-500">Agregar al carrito</button>
+            </article>
+            <article class="checkout-package reveal">
+                <img class="checkout-package-image" src="/Images/600.jpg" alt="Área de hidrolavado comercial de referencia para instalaciones de 600 a 1,000 metros cuadrados" loading="lazy" decoding="async">
+                <span class="package-label">Comercial · Área mediana</span>
+                <h3>Servicio de Hidrolavado · 600 a 1,000 m²</h3>
+                <p>Recomendado para comercios, locales, restaurantes, plazas pequeñas y establecimientos con superficies exteriores de tránsito frecuente.</p>
+                <label for="commercial-area-600-1000">Metros cuadrados estimados</label>
+                <input id="commercial-area-600-1000" type="number" min="600" max="1000" step="1" value="600" data-price-quantity>
+                <strong class="package-price" data-price-for="commercial-area-600-1000">$900.00</strong>
+                <span class="price-unit">$1.50 por m² · total calculado según el metraje</span>
+                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-600-1000" data-quantity-input="#commercial-area-600-1000">Agregar al carrito</button>
+            </article>
+            <article class="checkout-package reveal">
+                <img class="checkout-package-image" src="/Images/1250.jpg" alt="Área de hidrolavado comercial para PH y superficies de 1,250 a 5,000 metros cuadrados" loading="lazy" decoding="async">
+                <span class="package-label">PH · Gran superficie</span>
+                <h3>Servicio de Hidrolavado · 1,250 a 5,000 m²</h3>
+                <p>Diseñado para PHs, estacionamientos residenciales, áreas comunes, complejos habitacionales y propiedades de mayor extensión.</p>
+                <label for="commercial-area-1250-5000">Metros cuadrados estimados</label>
+                <input id="commercial-area-1250-5000" type="number" min="1250" max="5000" step="1" value="1250" data-price-quantity>
+                <strong class="package-price" data-price-for="commercial-area-1250-5000">$1,562.50</strong>
+                <span class="price-unit">$1.25 por m² · total calculado según el metraje</span>
+                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-1250-5000" data-quantity-input="#commercial-area-1250-5000">Agregar al carrito</button>
+            </article>
         </div>
+        <p class="pricing-note reveal">* Selecciona el área aproximada para calcular el total. Las superficies fuera de estos rangos se cotizan por separado. El metraje y las condiciones del sitio se verifican antes de confirmar el servicio.</p>
     </div>
 </section>
 
@@ -428,52 +460,7 @@
     </div>
 </section>
 
-<!-- 6. Claro: Precios por m² -->
-<section class="pricing" id="precios">
-    <div class="wrap">
-        <div class="pricing-head reveal">
-            <div class="eyebrow">Tarifas</div>
-            <h2 class="title">Aprovecha nuestros <span class="blue">mejores precios</span> por área.</h2>
-            <p class="sub">Cuanto mayor sea el área a limpiar, mejor es la tarifa por metro cuadrado.</p>
-        </div>
-        <div class="checkout-packages" aria-label="Paquetes comerciales disponibles para agregar al carrito">
-            <article class="checkout-package reveal">
-                <img class="checkout-package-image" src="/Images/115m2.jpeg" onerror="this.onerror=null;this.src='/Images/500m2.jpeg'" alt="Área de hidrolavado comercial de referencia para instalaciones de 115 a 500 metros cuadrados" loading="lazy" decoding="async">
-                <span class="package-label">Institucional · Área pequeña</span>
-                <h3>Servicio de Hidrolavado · 115 a 500 m²</h3>
-                <p>Ideal para escuelas, iglesias, colegios, pequeños estacionamientos y otras instalaciones que necesitan renovar sus pisos exteriores y accesos.</p>
-                <label for="commercial-area-115-500">Metros cuadrados estimados</label>
-                <input id="commercial-area-115-500" type="number" min="115" max="500" step="1" value="115" data-price-quantity>
-                <strong class="package-price" data-price-for="commercial-area-115-500">$201.25</strong>
-                <span class="price-unit">$1.75 por m² · total calculado según el metraje</span>
-                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-115-500" data-quantity-input="#commercial-area-115-500">Agregar al carrito</button>
-            </article>
-            <article class="checkout-package reveal">
-                <img class="checkout-package-image" src="/Images/600m2.jpeg" onerror="this.onerror=null;this.src='/Images/Cleaning Parkings.png'" alt="Área de hidrolavado comercial de referencia para instalaciones de 600 a 1,000 metros cuadrados" loading="lazy" decoding="async">
-                <span class="package-label">Comercial · Área mediana</span>
-                <h3>Servicio de Hidrolavado · 600 a 1,000 m²</h3>
-                <p>Recomendado para comercios, locales, restaurantes, plazas pequeñas y establecimientos con superficies exteriores de tránsito frecuente.</p>
-                <label for="commercial-area-600-1000">Metros cuadrados estimados</label>
-                <input id="commercial-area-600-1000" type="number" min="600" max="1000" step="1" value="600" data-price-quantity>
-                <strong class="package-price" data-price-for="commercial-area-600-1000">$900.00</strong>
-                <span class="price-unit">$1.50 por m² · total calculado según el metraje</span>
-                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-600-1000" data-quantity-input="#commercial-area-600-1000">Agregar al carrito</button>
-            </article>
-            <article class="checkout-package reveal">
-                <img class="checkout-package-image" src="/Images/1250m2.jpeg" onerror="this.onerror=null;this.src='/Images/Cleaning Parkings.png'" alt="Área de hidrolavado comercial de referencia para PH y superficies de 1,250 a 5,000 metros cuadrados" loading="lazy" decoding="async">
-                <span class="package-label">PH · Gran superficie</span>
-                <h3>Servicio de Hidrolavado · 1,250 a 5,000 m²</h3>
-                <p>Diseñado para PHs, estacionamientos residenciales, áreas comunes, complejos habitacionales y propiedades de mayor extensión.</p>
-                <label for="commercial-area-1250-5000">Metros cuadrados estimados</label>
-                <input id="commercial-area-1250-5000" type="number" min="1250" max="5000" step="1" value="1250" data-price-quantity>
-                <strong class="package-price" data-price-for="commercial-area-1250-5000">$1,562.50</strong>
-                <span class="price-unit">$1.25 por m² · total calculado según el metraje</span>
-                <button class="btn btn-blue add-to-cart" type="button" data-sku="commercial-1250-5000" data-quantity-input="#commercial-area-1250-5000">Agregar al carrito</button>
-            </article>
-        </div>
-        <p class="pricing-note reveal">* Selecciona el área aproximada para calcular el total. Las superficies fuera de estos rangos se cotizan por separado. El metraje y las condiciones del sitio se verifican antes de confirmar el servicio.</p>
-    </div>
-</section>
+
 
 <!-- 7. Oscuro: Cotizar (Llamado a la Acción) -->
 <section class="final" id="cotizar">
