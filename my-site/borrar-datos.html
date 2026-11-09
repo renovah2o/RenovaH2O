@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eliminación de Datos | RenovaH2O</title>
+  <meta name="description" content="Conoce cómo solicitar la eliminación de los datos personales asociados a tu cuenta de RenovaH2O y al inicio de sesión con Facebook.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://renovah2o.com/borrar-datos">
+  <meta name="theme-color" content="#f5f5f7">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--white:#fff;--soft:#f5f5f7;--ink:#1d1d1f;--gray:#6e6e73;--blue:#0071e3;--blue2:#2997ff;--line:#d2d2d7;--radius:28px;--max:1200px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--white);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(var(--max),calc(100% - 44px));margin:auto}
+    .nav{position:sticky;z-index:1000;top:0;height:58px;background:rgba(7,9,12,.94);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}
+    .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between}
+    .logo{height:40px;width:auto;object-fit:contain}
+    .nav-home{font-size:13px;color:#d1d1d6;transition:.2s}
+    .nav-home:hover{color:#fff}
+    .hero{background:#000;color:#fff;text-align:center;padding:105px 20px 100px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:#a1a1a6;margin-bottom:18px}
+    .display{font-size:clamp(44px,7vw,82px);line-height:.96;letter-spacing:-.065em;font-weight:800;max-width:950px;margin:auto}
+    .blue{color:var(--blue2)}
+    .hero .sub{font-size:clamp(18px,2vw,22px);line-height:1.35;color:#a1a1a6;max-width:720px;margin:26px auto 0}
+    .section{padding:100px 0}
+    .content{max-width:850px;margin:auto}
+    .section-title{font-size:clamp(34px,5vw,54px);line-height:1;letter-spacing:-.055em;font-weight:800;margin-bottom:18px}
+    .lead{font-size:19px;color:var(--gray);line-height:1.55;margin-bottom:42px}
+    .request-card{background:var(--soft);border:1px solid #ececf0;border-radius:var(--radius);padding:clamp(25px,5vw,48px);margin:34px 0 58px}
+    .request-card h2,.info-block h2{font-size:26px;letter-spacing:-.035em;margin-bottom:12px}
+    .request-card p,.info-block p{color:var(--gray);font-size:15px;line-height:1.7}
+    .steps{list-style:none;counter-reset:step;margin:28px 0 30px;display:grid;gap:22px}
+    .steps li{counter-increment:step;display:grid;grid-template-columns:42px 1fr;gap:15px;align-items:start;color:var(--gray);font-size:15px;line-height:1.65}
+    .steps li:before{content:counter(step,"0" decimal);display:grid;place-items:center;width:38px;height:38px;background:#e4f1ff;color:var(--blue);border-radius:12px;font-size:12px;font-weight:800}
+    .steps strong{color:var(--ink)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 23px;border-radius:980px;font-size:14px;font-weight:650;transition:.2s ease}
+    .btn-blue{background:var(--blue);color:#fff}
+    .btn-blue:hover{background:#0077ed;transform:translateY(-1px)}
+    .note{margin-top:24px;padding:17px 19px;border-left:3px solid var(--blue);background:#fff;border-radius:0 12px 12px 0;color:var(--gray);font-size:13px;line-height:1.65}
+    .info-block{padding:27px 0;border-top:1px solid var(--line)}
+    .info-block:last-child{border-bottom:1px solid var(--line)}
+    .info-block h2{font-size:22px}
+    .info-block a{color:var(--blue);font-weight:600}
+    #site-socials{background:#f5f5f7;color:#1d1d1f;text-align:center;padding:100px 0}
+    #site-socials .eyebrow{color:#6e6e73}
+    #site-socials h2{font-size:clamp(38px,5.5vw,68px);line-height:.96;letter-spacing:-.055em;font-weight:800}
+    #site-socials h2 span{color:#0071e3}
+    #site-socials .intro{font-size:clamp(17px,2vw,22px);line-height:1.3;color:#6e6e73;max-width:760px;margin:20px auto 0}
+    #site-socials .socials-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:48px}
+    #site-socials .social-card{background:#fff;border:1px solid #d2d2d7;padding:34px 20px;border-radius:28px;text-align:center;transition:all .3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.04)}
+    #site-socials .social-card:hover{transform:translateY(-6px);border-color:#0071e3;box-shadow:0 18px 40px rgba(0,0,0,.08)}
+    #site-socials .social-icon{width:54px;height:54px;border-radius:16px;background:#e4f1ff;display:grid;place-items:center;margin-bottom:18px;color:#0071e3}
+    #site-socials .social-icon svg{width:27px;height:27px;fill:currentColor}
+    #site-socials .social-card h3{font-size:19px;letter-spacing:-.02em;margin:0 0 6px}
+    #site-socials .social-card p{font-size:13px;color:#6e6e73;margin:0 0 15px}
+    #site-socials .social-link{font-size:13px;font-weight:600;color:#0071e3}
+    #site-socials .social-link:after{content:' ›';font-size:1.2em}
+    .footer{background:#000;color:#a1a1a6;padding:65px 0 30px}
+    .footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:50px;padding-bottom:50px}
+    .footer h4{font-size:12px;color:#fff;margin-bottom:18px;text-transform:uppercase;letter-spacing:.08em}
+    .footer a,.footer p{display:block;color:#a1a1a6;font-size:13px;margin:9px 0}
+    .footer a:hover{color:#fff}
+    .footer-logo{height:38px}
+    .bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;color:#7a7a7f;font-size:12px;display:flex;justify-content:space-between;gap:20px}
+    @media(max-width:900px){#site-socials .socials-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.footer-grid{grid-template-columns:1.5fr 1fr 1fr}}
+    @media(max-width:620px){.wrap{width:min(100% - 28px,var(--max))}.hero{padding:85px 16px}.section{padding:75px 0}#site-socials{padding:75px 0}#site-socials .socials-grid{grid-template-columns:1fr;margin-top:35px}.footer-grid{grid-template-columns:1fr 1fr;gap:35px}.footer-grid>div:first-child{grid-column:1/-1}.bottom{display:block}.bottom div+div{margin-top:10px}.nav-home{font-size:12px}}
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a href="/" aria-label="RenovaH2O - Inicio"><img class="logo" src="/Images/Logo%20Silver%20LL.png" alt="RenovaH2O" width="150" height="40"></a>
+      <a class="nav-home" href="/">Volver al inicio&nbsp; ›</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Privacidad · RenovaH2O</div>
+      <h1 class="display">Tú decides sobre<br>tus <span class="blue">datos.</span></h1>
+      <p class="sub">Conoce cómo solicitar la eliminación de la información personal asociada a tu cuenta y al inicio de sesión con Facebook.</p>
+    </section>
+
+    <section class="section">
+      <div class="wrap content">
+        <div class="eyebrow">Solicitud de eliminación</div>
+        <h2 class="section-title">¿Cómo solicitar que eliminemos tus datos?</h2>
+        <p class="lead">Si utilizaste Facebook para iniciar sesión o interactuar con RenovaH2O, puedes solicitar la eliminación de los datos personales asociados a esa interacción siguiendo estos pasos.</p>
+
+        <div class="request-card">
+          <h2>Inicia tu solicitud</h2>
+          <p>Envíanos un correo desde la dirección asociada a tu cuenta o indícanos cuál correo utilizaste para registrarte.</p>
+          <ol class="steps">
+            <li><div><strong>Escríbenos.</strong> Utiliza el botón para abrir un correo dirigido a nuestro equipo.</div></li>
+            <li><div><strong>Identifica tu cuenta.</strong> Indica que deseas eliminar los datos vinculados a Facebook Login y proporciona el correo asociado a tu cuenta.</div></li>
+            <li><div><strong>Verificaremos la solicitud.</strong> Podremos solicitar información razonable para confirmar que eres el titular de la cuenta.</div></li>
+            <li><div><strong>Procesaremos la eliminación.</strong> Te confirmaremos cuando la solicitud haya sido atendida o si necesitamos información adicional.</div></li>
+          </ol>
+          <a class="btn btn-blue" href="mailto:info@renovah2o.com?subject=Solicitud%20de%20eliminaci%C3%B3n%20de%20datos&body=Hola%20RenovaH2O%2C%0A%0ASolicito%20la%20eliminaci%C3%B3n%20de%20mis%20datos%20personales%20asociados%20a%20mi%20uso%20de%20Facebook%20Login.%0A%0ACorreo%20asociado%20a%20mi%20cuenta%3A%20%0A%0AGracias.">Solicitar eliminación por correo&nbsp; ↗</a>
+          <div class="note"><strong>Importante:</strong> nunca envíes tu contraseña de Facebook ni códigos de verificación. RenovaH2O no los necesita para procesar esta solicitud.</div>
+        </div>
+
+        <div class="info-block">
+          <h2>¿Qué información puede eliminarse?</h2>
+          <p>La solicitud puede incluir los datos de perfil recibidos mediante Facebook Login, como nombre, dirección de correo electrónico e identificador de usuario de Facebook, así como la información de cuenta vinculada que RenovaH2O conserve y que pueda eliminarse conforme a sus obligaciones legales y operativas.</p>
+        </div>
+        <div class="info-block">
+          <h2>¿Qué ocurre después?</h2>
+          <p>Revisaremos tu identidad y el alcance de la solicitud. Los datos que ya no sean necesarios serán eliminados o desvinculados de nuestros sistemas. Si alguna información debe conservarse por una obligación legal, contable o para resolver una reclamación pendiente, se mantendrá únicamente durante el período que corresponda y con acceso restringido.</p>
+        </div>
+        <div class="info-block">
+          <h2>Contacto</h2>
+          <p>Si tienes preguntas sobre privacidad o el tratamiento de tus datos, puedes escribirnos a <a href="mailto:info@renovah2o.com">info@renovah2o.com</a> o llamarnos al <a href="tel:+50763518111">+507 6351-8111</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="site-socials" aria-labelledby="site-socials-title">
+      <div class="wrap">
+        <div class="eyebrow">Comunidad</div>
+        <h2 id="site-socials-title">Síguenos en nuestras<br><span>redes sociales.</span></h2>
+        <p class="intro">Acompáñanos en nuestro día a día y mira videos reales de nuestras transformaciones antes y después.</p>
+        <div class="socials-grid">
+          <a class="social-card" href="https://instagram.com/renovah2o" target="_blank" rel="noopener" aria-label="Instagram de RenovaH2O">
+            <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div>
+            <h3>Instagram</h3><p>Historias, reels y resultados diarios.</p><span class="social-link">@renovah2o</span>
+          </a>
+          <a class="social-card" href="https://youtube.com/@renovah2o" target="_blank" rel="noopener" aria-label="YouTube de RenovaH2O">
+            <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+            <h3>YouTube</h3><p>Videos extensos y procesos de limpieza.</p><span class="social-link">RenovaH2O</span>
+          </a>
+          <a class="social-card" href="https://tiktok.com/@renovah2o" target="_blank" rel="noopener" aria-label="TikTok de RenovaH2O">
+            <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.82.56-1.31 1.52-1.33 2.52-.01 1.01.44 2 1.25 2.58.91.68 2.14.82 3.21.43.98-.33 1.73-1.13 2.03-2.12.18-.58.21-1.2.2-1.81V.02z"/></svg></div>
+            <h3>TikTok</h3><p>Contenido rápido y transformaciones impactantes.</p><span class="social-link">@renovah2o</span>
+          </a>
+          <a class="social-card" href="https://www.facebook.com/profile.php?id=61565248268444" target="_blank" rel="noopener" aria-label="Facebook de RenovaH2O">
+            <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+            <h3>Facebook</h3><p>Novedades, proyectos y reseñas de clientes.</p><span class="social-link">RenovaH2O</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a href="/" aria-label="Ir al inicio"><img class="footer-logo" src="/Images/Logo%20Silver%20LL.png" alt="RenovaH2O Logo" width="150" height="38"></a>
+          <p style="max-width:330px;margin-top:18px">Especialistas en hidrolavado residencial y comercial en Ciudad de Panamá y Panamá Oeste. Renovación y conservación de superficies exteriores.</p>
+        </div>
+        <div>
+          <h4>Servicios</h4>
+          <a href="/limpieza-de-estacionamientos-panama">Hidrolavado Comercial</a>
+          <a href="/limpieza-de-pisos-panama">Hidrolavado Residencial</a>
+          <a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a>
+        </div>
+        <div>
+          <h4>Empresa</h4>
+          <a href="/nosotros">Sobre Nosotros</a>
+          <a href="/blog">Blog &amp; Consejos</a>
+          <a href="/#resultados">Galería de Resultados</a>
+          <a href="/privacidad">Política de Privacidad</a>
+          <a href="/terminos">Términos del Servicio</a>
+          <a href="/borrar-datos.html">Eliminación de datos</a>
+        </div>
+        <div>
+          <h4>Contacto Directo</h4>
+          <a href="tel:+50763518111">+507 6351-8111</a>
+          <a href="mailto:info@renovah2o.com">info@renovah2o.com</a>
+          <a href="https://instagram.com/renovah2o" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp Chat</a>
+        </div>
+      </div>
+      <div class="bottom">
+        <div>© <span id="year"></span> RenovaH2O. Todos los derechos reservados.</div>
+        <div>Servicio de Hidrolavado en Ciudad de Panamá · Panamá Oeste (Arraiján y La Chorrera)</div>
+      </div>
+    </div>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
