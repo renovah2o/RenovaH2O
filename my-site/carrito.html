@@ -283,7 +283,7 @@
         const deposit = document.createElement("div");
         deposit.className = "summary-row";
         const depositLabel = document.createElement("span");
-        depositLabel.textContent = `Depósito reembolsable · ${rentalMachineCount()} hidrolavadora(s)`;
+        depositLabel.textContent = `Depósito de garantía · ${rentalMachineCount()} hidrolavadora(s)`;
         const depositAmount = document.createElement("strong");
         depositAmount.textContent = formatCurrency(rentalMachineCount() * 25000);
         deposit.append(depositLabel, depositAmount);
@@ -299,12 +299,6 @@
       total.append(totalLabel, totalValue);
       summary.append(total);
 
-      const note = document.createElement("p");
-      note.className = "fine";
-      note.textContent = category === "alquileres"
-        ? "El transporte se cotiza según la ubicación. Cada hidrolavadora incluye hasta 24 horas; cada hora adicional cuesta $10."
-        : "En el sitio se medirán las áreas. Si la medida real cambia el total, te notificaremos si hay un saldo adicional o una devolución.";
-      summary.append(note);
     }
 
     function renderCart() {
@@ -937,7 +931,6 @@
       <aside class="card summary-card">
         <h2>Resumen de la orden</h2>
         <div id="order-summary"></div>
-        <p class="deposit-note">El depósito de alquiler es reembolsable. Cualquier ajuste por medidas reales se confirmarán por separado antes de la coordinación final.</p>
       </aside>
     </div>
 
