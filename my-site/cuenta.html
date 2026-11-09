@@ -267,6 +267,7 @@
     let activeUserId;
     let isAgendaAdmin = false;
     let activeAvatarPath;
+    let googleAvatarUrl = null;
     let selectedAvatarFile;
     let removeAvatarRequested = false;
     let avatarPreviewUrl;
@@ -712,6 +713,14 @@
 
     function formatCurrency(amount, currency) {
       return new Intl.NumberFormat("es-PA", { style: "currency", currency }).format(amount / 100);
+    }
+
+    function getGoogleAvatarUrl(user) {
+      const googleIdentity = user?.identities?.find(identity => identity.provider === "google");
+      if (!googleIdentity) return null;
+      const identityData = googleIdentity.identity_data ?? {};
+      return identityData.picture || identityData.avatar_url ||
+        user?.user_metadata?.picture || user?.user_metadata?.avatar_url || null;
     }
 
     function setAvatar(url, fullName = "") {
@@ -1673,6 +1682,7 @@
       showRoute();
       accountEmail.textContent = user.email ?? "";
       accessEmail.value = user.email ?? "";
+      googleAvatarUrl = getGoogleAvatarUrl(user);
       profileName.value = "";
       profilePhone.value = "";
       profilePhoneCountry.value = "+507";
@@ -1751,13 +1761,15 @@
           activeAvatarPath = profileResult.data.profile_avatar_path ?? null;
           profileStatus.textContent = "";
           try {
-            const avatarUrl = await getAvatarUrl(activeAvatarPath);
+            const avatarUrl = activeAvatarPath
+              ? await getAvatarUrl(activeAvatarPath)
+              : googleAvatarUrl;
             if (activeUserId !== user.id) return;
             setAvatar(avatarUrl, profileName.value);
             avatarStatus.textContent = "";
           } catch (error) {
-            setAvatar(null, profileName.value);
-            avatarStatus.textContent = `No se pudo cargar la foto: ${error.message}`;
+            setAvatar(googleAvatarUrl, profileName.value);
+            avatarStatus.textContent = `No se pudo cargar la foto guardada; mostramos tu foto de Google si está disponible. ${error.message}`;
           }
         } else {
           profileStatus.textContent = "No encontramos tu perfil. Contacta a soporte para revisarlo.";
@@ -1841,6 +1853,7 @@
         adminCustomersTile.hidden = true;
         adminReportsTile.hidden = true;
         activeAvatarPath = null;
+        googleAvatarUrl = null;
         selectedAvatarFile = undefined;
         if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
         avatarPreviewUrl = undefined;
@@ -2151,11 +2164,14 @@
           if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
           avatarPreviewUrl = undefined;
           try {
-            setAvatar(await getAvatarUrl(activeAvatarPath), profileName.value);
+            const avatarUrl = activeAvatarPath
+              ? await getAvatarUrl(activeAvatarPath)
+              : googleAvatarUrl;
+            setAvatar(avatarUrl, profileName.value);
             if (!avatarStatus.textContent.startsWith("Perfil guardado")) avatarStatus.textContent = "";
           } catch (error) {
-            setAvatar(null, profileName.value);
-            avatarStatus.textContent = `Perfil guardado, pero no se pudo mostrar la foto: ${error.message}`;
+            setAvatar(googleAvatarUrl, profileName.value);
+            avatarStatus.textContent = `Perfil guardado, pero no se pudo mostrar la foto guardada: ${error.message}`;
           }
           let phoneSyncMessage = "";
           try {
@@ -2646,7 +2662,7 @@
             </div>
             <div class="avatar-controls">
               <label for="profile-avatar">Foto de perfil</label>
-              <p>JPG, PNG o WebP. Máximo 2 MB.</p>
+              <p>Si iniciaste sesión con Google, usaremos tu foto automáticamente. También puedes subir una imagen JPG, PNG o WebP (máximo 2 MB).</p>
               <div class="avatar-actions">
                 <input class="file-input" id="profile-avatar" type="file" accept="image/jpeg,image/png,image/webp">
                 <button class="remove-avatar" id="remove-avatar" type="button">Quitar foto</button>
