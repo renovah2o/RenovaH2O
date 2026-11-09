@@ -22,6 +22,22 @@ create table if not exists public.order_status_history (
   created_at timestamptz not null default now()
 );
 create index if not exists order_status_history_order_created_idx on public.order_status_history(order_id,created_at desc);
+
+create or replace function public.capture_order_status_change()
+returns trigger language plpgsql security definer set search_path=''
+as $
+begin
+  if new.status is distinct from old.status then
+    insert into public.order_status_history(order_id,old_status,new_status,changed_by,note)
+    values(new.id,old.status,new.status,(select auth.uid()),null);
+  end if;
+  return new;
+end;
+$;
+revoke all on function public.capture_order_status_change() from public,anon,authenticated;
+drop trigger if exists capture_order_status_change on public.orders;
+create trigger capture_order_status_change after update of status on public.orders
+for each row execute function public.capture_order_status_change();
 alter table public.order_status_history enable row level security;
 revoke all on public.order_status_history from anon, authenticated;
 
@@ -43,7 +59,7 @@ as $$
 declare v_order public.orders%rowtype; v_total_refunded bigint;
 begin
   if not (select public.is_agenda_admin()) then raise exception 'Solo un administrador puede registrar reembolsos.'; end if;
-  if p_amount is null or p_amount<=0 or p_method not in ('Yappy','Transferencia bancaria','Efectivo','Otro')
+  if p_amount is null or p_amount<=0 or p_method is null or p_method not in ('Yappy','Transferencia bancaria','Efectivo','Otro')
     or p_reason is null or char_length(trim(p_reason)) not between 1 and 350 then raise exception 'Los datos del reembolso no son válidos.'; end if;
   select * into v_order from public.orders where id=p_order_id for update;
   if not found or v_order.status<>'paid' then raise exception 'Solo se pueden reembolsar órdenes pagadas.'; end if;
@@ -54,8 +70,6 @@ begin
   if v_total_refunded>=v_order.total_amount then
     update public.orders set status='refunded' where id=p_order_id;
     update public.agenda_reservations set status='cancelled',hold_expires_at=null where order_id=p_order_id and status in ('pending','confirmed');
-    insert into public.order_status_history(order_id,old_status,new_status,changed_by,note)
-    values(p_order_id,'paid','refunded',(select auth.uid()),'Reembolso total registrado manualmente.');
   end if;
   insert into public.account_notifications(user_id,order_id,title,message)
   values(v_order.user_id,p_order_id,
@@ -78,7 +92,6 @@ begin
   if exists(select 1 from public.order_refunds where order_id=p_order_id) then raise exception 'Esta orden tiene reembolsos registrados. Completa el proceso de reembolso antes de cancelarla.'; end if;
   update public.orders set status='cancelled' where id=p_order_id;
   update public.agenda_reservations set status='cancelled',hold_expires_at=null where order_id=p_order_id and status in ('pending','confirmed');
-  insert into public.order_status_history(order_id,old_status,new_status,changed_by,note) values(p_order_id,'paid','cancelled',(select auth.uid()),'Cancelación administrativa; no implica reembolso.');
   insert into public.account_notifications(user_id,order_id,title,message) values(v_order.user_id,p_order_id,'Orden cancelada','Tu orden fue cancelada y el horario quedó liberado. Esta acción no implica un reembolso.');
 end;
 $$;
