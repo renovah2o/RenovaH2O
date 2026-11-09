@@ -196,11 +196,8 @@
     main{width:min(1400px,calc(100% - 48px));padding-top:104px}
     .account-layout{display:grid;grid-template-columns:258px minmax(0,1fr);gap:22px;align-items:start}
     .account-sidebar{position:sticky;top:82px;display:flex;flex-direction:column;min-width:0;max-height:calc(100vh - 104px);padding:18px 14px 14px;border:1px solid #252b35;border-radius:22px;background:linear-gradient(160deg,#171c25 0%,#0d1118 100%);color:#fff;box-shadow:0 16px 40px rgba(0,0,0,.13)}
-    .sidebar-intro{display:flex;align-items:center;gap:12px;padding:4px 8px 19px;border-bottom:1px solid rgba(255,255,255,.1)}
-    .sidebar-mark{display:grid;place-items:center;width:40px;height:40px;flex:none;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:linear-gradient(145deg,#303b4a,#171e28);color:#fff;font-size:13px;font-weight:800;letter-spacing:-.04em}
-    .sidebar-intro strong,.sidebar-intro span{display:block}
-    .sidebar-intro strong{font-size:13px;letter-spacing:-.01em}
-    .sidebar-intro div>span{margin-top:3px;color:#9da7b5;font-size:11px}
+    .sidebar-intro{display:flex;align-items:center;padding:5px 8px 17px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .sidebar-intro strong{font-size:14px;letter-spacing:-.015em}
     .account-navigation{display:grid;gap:17px;overflow-y:auto;padding:19px 0;scrollbar-width:thin;scrollbar-color:#434c5b transparent}
     .sidebar-group{display:grid;gap:3px}
     .sidebar-label{padding:0 10px 5px;color:#8994a3;font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}
@@ -257,7 +254,6 @@
       .account-layout{grid-template-columns:1fr;gap:13px}
       .account-sidebar{position:static;max-height:none;padding:12px;border-radius:17px}
       .sidebar-intro{padding:2px 4px 11px}
-      .sidebar-mark{width:34px;height:34px;border-radius:10px}
       .account-navigation{display:flex;gap:0;overflow-x:auto;overflow-y:hidden;padding:12px 0 4px;scrollbar-width:none}
       .account-navigation::-webkit-scrollbar{display:none}
       .sidebar-group{display:contents}
@@ -2856,10 +2852,16 @@
       <div class="account-layout">
         <aside class="account-sidebar">
           <div class="sidebar-intro">
-            <span class="sidebar-mark">RH</span>
-            <div><strong>Centro de cuenta</strong><span>Tu espacio personal</span></div>
+            <strong>Mi cuenta</strong>
           </div>
           <nav id="dashboard-home" class="account-navigation" aria-label="Secciones de mi cuenta">
+            <div class="sidebar-group admin-nav-group">
+              <span class="sidebar-label">Administración</span>
+              <a class="sidebar-link" id="admin-agenda-tile" href="#administrar-agenda" hidden><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Administrar agenda</span></a>
+              <a class="sidebar-link" id="admin-orders-tile" href="#administrar-ordenes" hidden><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Gestión de órdenes</span></a>
+              <a class="sidebar-link" id="admin-customers-tile" href="#administrar-clientes" hidden><svg aria-hidden="true"><use href="#icon-profile"></use></svg><span>Gestionar clientes</span></a>
+              <a class="sidebar-link" id="admin-reports-tile" href="#informes-clientes" hidden><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Informes de clientes</span></a>
+            </div>
             <div class="sidebar-group">
               <span class="sidebar-label">General</span>
               <a class="sidebar-link" href="#resumen"><svg aria-hidden="true"><use href="#icon-dashboard"></use></svg><span>Resumen</span></a>
@@ -2869,26 +2871,19 @@
               <a class="sidebar-link" href="#perfil"><svg aria-hidden="true"><use href="#icon-profile"></use></svg><span>Mi perfil</span></a>
               <a class="sidebar-link" href="#acceso"><svg aria-hidden="true"><use href="#icon-access"></use></svg><span>Login y acceso</span></a>
               <a class="sidebar-link" href="#direcciones"><svg aria-hidden="true"><use href="#icon-address"></use></svg><span>Direcciones y teléfonos</span></a>
+              <a class="sidebar-link" href="#pagos"><svg aria-hidden="true"><use href="#icon-payment"></use></svg><span>Métodos de pago</span></a>
+              <a class="sidebar-link" href="#regalos"><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Tarjetas de regalo</span></a>
             </div>
             <div class="sidebar-group">
               <span class="sidebar-label">Mis servicios</span>
               <a class="sidebar-link" href="#ordenes"><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Mis órdenes</span></a>
               <a class="sidebar-link" href="#agenda"><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Mi agenda</span></a>
-              <a class="sidebar-link" href="#pagos"><svg aria-hidden="true"><use href="#icon-payment"></use></svg><span>Métodos de pago</span></a>
-              <a class="sidebar-link" href="#regalos"><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Tarjetas de regalo</span></a>
               <a class="sidebar-link" href="/carrito"><svg aria-hidden="true"><use href="#icon-cart"></use></svg><span>Mi carrito</span></a>
             </div>
             <div class="sidebar-group">
               <span class="sidebar-label">Ayuda</span>
               <a class="sidebar-link" href="#mensajes"><svg aria-hidden="true"><use href="#icon-message"></use></svg><span>Mis mensajes</span></a>
               <a class="sidebar-link" href="#soporte"><svg aria-hidden="true"><use href="#icon-support"></use></svg><span>Servicio al cliente</span></a>
-            </div>
-            <div class="sidebar-group admin-nav-group">
-              <span class="sidebar-label">Administración</span>
-              <a class="sidebar-link" id="admin-agenda-tile" href="#administrar-agenda" hidden><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Administrar agenda</span></a>
-              <a class="sidebar-link" id="admin-orders-tile" href="#administrar-ordenes" hidden><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Gestión de órdenes</span></a>
-              <a class="sidebar-link" id="admin-customers-tile" href="#administrar-clientes" hidden><svg aria-hidden="true"><use href="#icon-profile"></use></svg><span>Gestionar clientes</span></a>
-              <a class="sidebar-link" id="admin-reports-tile" href="#informes-clientes" hidden><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Informes de clientes</span></a>
             </div>
           </nav>
           <a class="sidebar-back-link" href="/"><svg aria-hidden="true"><use href="#icon-home"></use></svg><span>Volver a RenovaH2O</span></a>
