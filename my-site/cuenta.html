@@ -191,7 +191,93 @@
     .admin-order-details>summary::-webkit-details-marker{display:none}
     .admin-order-detail-body{padding-top:14px}
     .admin-order-results{display:grid;gap:12px}
-</style>
+
+    /* Panel de cuenta: navegación lateral y espacio de trabajo */
+    main{width:min(1400px,calc(100% - 48px));padding-top:104px}
+    .account-layout{display:grid;grid-template-columns:258px minmax(0,1fr);gap:22px;align-items:start}
+    .account-sidebar{position:sticky;top:82px;display:flex;flex-direction:column;min-width:0;max-height:calc(100vh - 104px);padding:18px 14px 14px;border:1px solid #252b35;border-radius:22px;background:linear-gradient(160deg,#171c25 0%,#0d1118 100%);color:#fff;box-shadow:0 16px 40px rgba(0,0,0,.13)}
+    .sidebar-intro{display:flex;align-items:center;gap:12px;padding:4px 8px 19px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .sidebar-mark{display:grid;place-items:center;width:40px;height:40px;flex:none;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:linear-gradient(145deg,#303b4a,#171e28);color:#fff;font-size:13px;font-weight:800;letter-spacing:-.04em}
+    .sidebar-intro strong,.sidebar-intro span{display:block}
+    .sidebar-intro strong{font-size:13px;letter-spacing:-.01em}
+    .sidebar-intro div>span{margin-top:3px;color:#9da7b5;font-size:11px}
+    .account-navigation{display:grid;gap:17px;overflow-y:auto;padding:19px 0;scrollbar-width:thin;scrollbar-color:#434c5b transparent}
+    .sidebar-group{display:grid;gap:3px}
+    .sidebar-label{padding:0 10px 5px;color:#8994a3;font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}
+    .sidebar-link{display:flex;align-items:center;gap:11px;min-height:40px;padding:9px 10px;border:1px solid transparent;border-radius:11px;color:#d7dce4;font-size:12px;font-weight:550;text-decoration:none;transition:background .18s,border-color .18s,color .18s}
+    .sidebar-link svg{width:17px;height:17px;flex:none;color:#9eabbc}
+    .sidebar-link:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sidebar-link[aria-current="page"]{border-color:rgba(77,157,255,.25);background:rgba(0,113,227,.19);color:#fff}
+    .sidebar-link[aria-current="page"] svg{color:#78b7ff}
+    .sidebar-link[hidden]{display:none!important}
+    .admin-nav-group{display:none}
+    .admin-nav-group:has(.sidebar-link:not([hidden])){display:grid}
+    .sidebar-back-link{display:flex;align-items:center;gap:10px;margin-top:auto;padding:14px 9px 2px;border-top:1px solid rgba(255,255,255,.1);color:#bac3ce;font-size:11px;text-decoration:none}
+    .sidebar-back-link svg{width:16px;height:16px}
+    .sidebar-back-link:hover{color:#fff}
+    .account-content{display:grid;gap:18px;min-width:0}
+    .account-content>.account-panel{min-width:0;margin:0;padding:clamp(22px,3vw,34px);border:1px solid #e3e5e9;border-radius:22px;background:#fff;box-shadow:0 12px 36px rgba(17,24,39,.045)}
+    .account-content>.account-panel[hidden]{display:none}
+    .account-overview{overflow:hidden}
+    .overview-welcome{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:-1px -1px 30px;padding:30px;border-radius:17px;background:radial-gradient(circle at 92% 0%,rgba(0,113,227,.32),transparent 32%),linear-gradient(125deg,#111821,#202a37);color:#fff}
+    .overview-welcome .eyebrow{color:#9db6d3}
+    .overview-welcome h2{margin:0;font-size:clamp(27px,3vw,36px);line-height:1.1;letter-spacing:-.055em}
+    .overview-welcome p:not(.eyebrow){max-width:560px;margin:11px 0 0;color:#c2cbd6;font-size:13px;line-height:1.6}
+    .overview-primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;flex:none;min-height:42px;padding:0 16px;border:1px solid rgba(255,255,255,.24);border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:650;text-decoration:none;transition:background .2s}
+    .overview-primary:hover{background:rgba(255,255,255,.16)}
+    .overview-section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+    .overview-section-heading h3{margin:0;font-size:17px;letter-spacing:-.03em}
+    .overview-section-heading p{margin:4px 0 0;color:var(--gray);font-size:12px}
+    .overview-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .overview-stat{display:flex;flex-direction:column;min-width:0;min-height:142px;padding:17px;border:1px solid #e7e9ed;border-radius:15px;background:#fff;color:inherit;text-decoration:none;transition:border-color .18s,transform .18s,box-shadow .18s}
+    .overview-stat:hover{transform:translateY(-2px);border-color:#b8d7fb;box-shadow:0 10px 24px rgba(0,0,0,.05)}
+    .overview-stat-label{display:flex;align-items:center;gap:8px;color:#626a75;font-size:11px;font-weight:650}
+    .overview-stat-label svg{width:16px;height:16px;color:var(--blue)}
+    .overview-stat>strong{margin:10px 0 8px;font-size:34px;line-height:1;letter-spacing:-.06em}
+    .overview-stat-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;color:#7a828d;font-size:11px}
+    .overview-stat-foot span{color:var(--blue);font-size:15px}
+    .overview-lower-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:23px}
+    .overview-info-card{min-height:176px;padding:20px;border:1px solid #e7e9ed;border-radius:16px;background:#f8f9fb}
+    .overview-info-card h3{margin:9px 0 7px;font-size:18px;letter-spacing:-.035em}
+    .overview-info-card p{margin:0;color:#69717c;font-size:12px;line-height:1.6}
+    .overview-card-kicker{color:#7b8795;font-size:10px;font-weight:750;letter-spacing:.11em;text-transform:uppercase}
+    .overview-info-card a{display:inline-flex;align-items:center;gap:8px;margin-top:17px;color:var(--blue);font-size:12px;font-weight:650;text-decoration:none}
+    .overview-info-card a:hover{text-decoration:underline}
+    .account-content>.account-panel .panel-heading{margin-bottom:24px}
+    .account-content>.account-panel .panel-heading h2{font-size:25px}
+    .footer-note{padding:0 4px}
+    @media(max-width:950px){
+      .account-layout{grid-template-columns:220px minmax(0,1fr);gap:15px}
+      .account-sidebar{padding:15px 10px}
+      .overview-welcome{align-items:flex-start;flex-direction:column}
+      .overview-lower-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:760px){
+      main{width:min(100% - 28px,1120px);padding-top:90px}
+      .account-layout{grid-template-columns:1fr;gap:13px}
+      .account-sidebar{position:static;max-height:none;padding:12px;border-radius:17px}
+      .sidebar-intro{padding:2px 4px 11px}
+      .sidebar-mark{width:34px;height:34px;border-radius:10px}
+      .account-navigation{display:flex;gap:0;overflow-x:auto;overflow-y:hidden;padding:12px 0 4px;scrollbar-width:none}
+      .account-navigation::-webkit-scrollbar{display:none}
+      .sidebar-group{display:contents}
+      .sidebar-label{display:none}
+      .sidebar-link{flex:0 0 auto;min-height:38px;padding:8px 10px;margin-right:5px;border-radius:10px;white-space:nowrap;font-size:11px}
+      .sidebar-link svg{width:15px;height:15px}
+      .sidebar-back-link{display:none}
+      .account-content>.account-panel{padding:19px}
+      .overview-welcome{margin:0 0 23px;padding:23px}
+    }
+    @media(max-width:560px){
+      .overview-stats{grid-template-columns:1fr}
+      .overview-stat{min-height:112px}
+      .overview-welcome h2{font-size:28px}
+      .overview-primary{width:100%}
+      .account-top{align-items:flex-start}
+      .account-content>.account-panel .panel-heading{flex-direction:column}
+    }
+
+  </style>
   <script src="/share.js" defer></script>
   <script src="/supabase-config.js"></script>
   <script type="module">
@@ -1932,6 +2018,18 @@
           }
         }
         if (activeUserId !== user.id) return;
+        const overviewName = profileName.value.trim() || user.user_metadata?.full_name || "bienvenido";
+        document.querySelector("#overview-name").textContent = overviewName;
+        document.querySelector("#overview-orders-count").textContent = ordersResult.error ? "—" : String(ordersResult.data?.length ?? 0);
+        document.querySelector("#overview-address-count").textContent = addressesResult.error ? "—" : String(addressesResult.data?.length ?? 0);
+        const confirmedUpcoming = (reservationsResult.data ?? []).filter(item =>
+          item.status === "confirmed" && new Date(item.starts_at).getTime() >= Date.now()
+        );
+        document.querySelector("#overview-agenda-count").textContent = reservationsResult.error ? "—" : String(confirmedUpcoming.length);
+        const nextService = confirmedUpcoming[0];
+        document.querySelector("#overview-next-service").textContent = nextService
+          ? `${serviceLabels[nextService.service_type] ?? "Servicio RenovaH2O"} · ${formatAgendaDateTime(nextService.starts_at)}`
+          : "No tienes servicios confirmados próximos. Cuando se confirme una cita, aparecerá aquí.";
         showRoute();
       } catch (error) {
         if (activeUserId !== user.id) return;
@@ -1972,6 +2070,7 @@
     }
 
     const routes = {
+      resumen: "panel-overview",
       perfil: "panel-profile",
       acceso: "panel-access",
       ordenes: "panel-orders",
@@ -1989,26 +2088,26 @@
     };
 
     function showRoute() {
-      const route = window.location.hash.slice(1);
+      const route = window.location.hash.slice(1) || "resumen";
       const requestedPanelId = routes[route];
       const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-clientes", "informes-clientes"];
       const panelId = adminRoutes.includes(route) && !isAgendaAdmin
-        ? null
-        : requestedPanelId;
-      document.querySelector("#dashboard-home").hidden = Boolean(panelId);
+        ? "panel-overview"
+        : requestedPanelId || "panel-overview";
       for (const panel of document.querySelectorAll(".account-panel")) {
         panel.hidden = panel.id !== panelId;
       }
-      if (panelId) {
-        const panel = document.getElementById(panelId);
-        const breadcrumb = document.querySelector("#breadcrumb-current");
-        if (breadcrumb) breadcrumb.textContent = panel.dataset.title;
-        if (panelId === "panel-admin-customers") loadAdminCustomers();
-        if (panelId === "panel-admin-reports") loadAdminReports();
-      } else {
-        const breadcrumb = document.querySelector("#breadcrumb-current");
-        if (breadcrumb) breadcrumb.textContent = "Mi cuenta";
-      }
+      const activeRoute = panelId === "panel-overview" ? "resumen" : route;
+      document.querySelectorAll("#dashboard-home .sidebar-link").forEach(link => {
+        const isActive = link.getAttribute("href") === `#${activeRoute}`;
+        if (isActive) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+      const panel = document.getElementById(panelId);
+      const breadcrumb = document.querySelector("#breadcrumb-current");
+      if (breadcrumb) breadcrumb.textContent = panel?.dataset.title ?? "Resumen";
+      if (panelId === "panel-admin-customers") loadAdminCustomers();
+      if (panelId === "panel-admin-reports") loadAdminReports();
     }
 
     document.querySelectorAll("[data-day-open]").forEach(toggle => {
@@ -2750,25 +2849,92 @@
         </div>
       </div>
 
-      <nav id="dashboard-home" aria-label="Secciones de mi cuenta">
-        <div class="account-grid">
-          <a class="account-tile" href="#perfil"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-profile"></use></svg></span><strong>Mi perfil</strong><span>Actualiza tu nombre y teléfono de contacto.</span></a>
-          <a class="account-tile" href="#acceso"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-access"></use></svg></span><strong>Login y acceso</strong><span>Consulta tu correo y solicita restablecer tu contraseña.</span></a>
-          <a class="account-tile" href="#ordenes"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Mis órdenes</strong><span>Consulta el historial de tus compras.</span></a>
-          <a class="account-tile" href="#agenda"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Mi agenda</strong><span>Consulta las fechas y horarios confirmados de tus servicios.</span></a>
-          <a class="account-tile" id="admin-agenda-tile" href="#administrar-agenda" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Administrar agenda</strong><span>Configura horarios, registra citas y bloquea espacios.</span></a>
-          <a class="account-tile" id="admin-orders-tile" href="#administrar-ordenes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Gestión de órdenes</strong><span>Consulta pedidos, confirma pagos, cancela órdenes y registra reembolsos.</span></a>
-          <a class="account-tile" id="admin-customers-tile" href="#administrar-clientes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-profile"></use></svg></span><strong>Gestionar clientes</strong><span>Busca clientes, consulta sus datos de contacto y revisa su actividad.</span></a>
-          <a class="account-tile" id="admin-reports-tile" href="#informes-clientes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-gift"></use></svg></span><strong>Informes de clientes</strong><span>Identifica cumpleaños próximos y oportunidades de seguimiento.</span></a>
-          <a class="account-tile" href="#direcciones"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-address"></use></svg></span><strong>Mis direcciones</strong><span>Guarda direcciones para tus servicios.</span></a>
-          <a class="account-tile" href="#pagos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-payment"></use></svg></span><strong>Mis métodos de pago</strong><span>Consulta opciones de pago y seguridad.</span></a>
-          <a class="account-tile" href="#regalos"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-gift"></use></svg></span><strong>Mis tarjetas de regalo</strong><span>Consulta tarjetas y códigos asociados a tu cuenta.</span></a>
-          <a class="account-tile" href="#mensajes"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-message"></use></svg></span><strong>Mis mensajes</strong><span>Consulta avisos sobre tus órdenes, pagos y agenda.</span></a>
-          <a class="account-tile" href="#soporte"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-support"></use></svg></span><strong>Servicio al cliente</strong><span>Contáctanos para recibir ayuda.</span></a>
-          <a class="account-tile" href="/carrito"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-cart"></use></svg></span><strong>Mi carrito</strong><span>Revisa tus productos y crea una orden.</span></a>
-        </div>
-      </nav>
 
+      <div class="account-layout">
+        <aside class="account-sidebar">
+          <div class="sidebar-intro">
+            <span class="sidebar-mark">RH</span>
+            <div><strong>Centro de cuenta</strong><span>Tu espacio personal</span></div>
+          </div>
+          <nav id="dashboard-home" class="account-navigation" aria-label="Secciones de mi cuenta">
+            <div class="sidebar-group">
+              <span class="sidebar-label">General</span>
+              <a class="sidebar-link" href="#resumen"><svg aria-hidden="true"><use href="#icon-dashboard"></use></svg><span>Resumen</span></a>
+            </div>
+            <div class="sidebar-group">
+              <span class="sidebar-label">Cuenta</span>
+              <a class="sidebar-link" href="#perfil"><svg aria-hidden="true"><use href="#icon-profile"></use></svg><span>Mi perfil</span></a>
+              <a class="sidebar-link" href="#acceso"><svg aria-hidden="true"><use href="#icon-access"></use></svg><span>Login y acceso</span></a>
+              <a class="sidebar-link" href="#direcciones"><svg aria-hidden="true"><use href="#icon-address"></use></svg><span>Direcciones y teléfonos</span></a>
+            </div>
+            <div class="sidebar-group">
+              <span class="sidebar-label">Mis servicios</span>
+              <a class="sidebar-link" href="#ordenes"><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Mis órdenes</span></a>
+              <a class="sidebar-link" href="#agenda"><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Mi agenda</span></a>
+              <a class="sidebar-link" href="#pagos"><svg aria-hidden="true"><use href="#icon-payment"></use></svg><span>Métodos de pago</span></a>
+              <a class="sidebar-link" href="#regalos"><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Tarjetas de regalo</span></a>
+              <a class="sidebar-link" href="/carrito"><svg aria-hidden="true"><use href="#icon-cart"></use></svg><span>Mi carrito</span></a>
+            </div>
+            <div class="sidebar-group">
+              <span class="sidebar-label">Ayuda</span>
+              <a class="sidebar-link" href="#mensajes"><svg aria-hidden="true"><use href="#icon-message"></use></svg><span>Mis mensajes</span></a>
+              <a class="sidebar-link" href="#soporte"><svg aria-hidden="true"><use href="#icon-support"></use></svg><span>Servicio al cliente</span></a>
+            </div>
+            <div class="sidebar-group admin-nav-group">
+              <span class="sidebar-label">Administración</span>
+              <a class="sidebar-link" id="admin-agenda-tile" href="#administrar-agenda" hidden><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Administrar agenda</span></a>
+              <a class="sidebar-link" id="admin-orders-tile" href="#administrar-ordenes" hidden><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Gestión de órdenes</span></a>
+              <a class="sidebar-link" id="admin-customers-tile" href="#administrar-clientes" hidden><svg aria-hidden="true"><use href="#icon-profile"></use></svg><span>Gestionar clientes</span></a>
+              <a class="sidebar-link" id="admin-reports-tile" href="#informes-clientes" hidden><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Informes de clientes</span></a>
+            </div>
+          </nav>
+          <a class="sidebar-back-link" href="/"><svg aria-hidden="true"><use href="#icon-home"></use></svg><span>Volver a RenovaH2O</span></a>
+        </aside>
+        <div class="account-content">
+          <section class="account-panel card account-overview" id="panel-overview" data-title="Resumen">
+            <div class="overview-welcome">
+              <div>
+                <p class="eyebrow">Resumen de actividad</p>
+                <h2>Hola, <span id="overview-name">bienvenido</span>.</h2>
+                <p>Este es tu espacio para consultar servicios, administrar tus datos y mantener todo en orden.</p>
+              </div>
+              <a class="overview-primary" href="/limpieza-de-estacionamientos-panama">Explorar servicios <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="overview-section-heading">
+              <div><h3>Tu cuenta de un vistazo</h3><p>Información vinculada a tu perfil.</p></div>
+            </div>
+            <div class="overview-stats">
+              <a class="overview-stat" href="#ordenes">
+                <span class="overview-stat-label"><svg aria-hidden="true"><use href="#icon-orders"></use></svg>Órdenes</span>
+                <strong id="overview-orders-count">—</strong>
+                <span class="overview-stat-foot">Consultar historial <span aria-hidden="true">→</span></span>
+              </a>
+              <a class="overview-stat" href="#agenda">
+                <span class="overview-stat-label"><svg aria-hidden="true"><use href="#icon-agenda"></use></svg>Servicios confirmados</span>
+                <strong id="overview-agenda-count">—</strong>
+                <span class="overview-stat-foot">Ver mi agenda <span aria-hidden="true">→</span></span>
+              </a>
+              <a class="overview-stat" href="#direcciones">
+                <span class="overview-stat-label"><svg aria-hidden="true"><use href="#icon-address"></use></svg>Direcciones guardadas</span>
+                <strong id="overview-address-count">—</strong>
+                <span class="overview-stat-foot">Administrar datos <span aria-hidden="true">→</span></span>
+              </a>
+            </div>
+            <div class="overview-lower-grid">
+              <article class="overview-info-card next-service-card">
+                <span class="overview-card-kicker">Próxima actividad</span>
+                <h3>Tu próximo servicio</h3>
+                <p id="overview-next-service">Cuando tengas una cita confirmada, aparecerá aquí.</p>
+                <a href="#agenda">Consultar agenda <span aria-hidden="true">→</span></a>
+              </article>
+              <article class="overview-info-card help-card">
+                <span class="overview-card-kicker">Estamos para ayudarte</span>
+                <h3>¿Necesitas asistencia?</h3>
+                <p>Estamos disponibles para ayudarte con tus órdenes, servicios o cualquier consulta.</p>
+                <a href="https://wa.me/50763518111" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp <span aria-hidden="true">↗</span></a>
+              </article>
+            </div>
+          </section>
       <section class="account-panel card" id="panel-profile" data-title="Mi perfil" hidden>
         <div class="panel-heading"><div><h2>Mi perfil</h2><p>Actualiza los datos básicos de tu cuenta.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <form class="profile-form" id="profile-form">
@@ -3034,6 +3200,9 @@
       </section>
 
       <p class="footer-note">Al usar tu cuenta, aplican nuestros <a href="/terminos">Términos del Servicio</a> y <a href="/privacidad">Política de Privacidad</a>.</p>
+
+        </div>
+      </div>
     </section>
   </main>
   <footer></footer>
