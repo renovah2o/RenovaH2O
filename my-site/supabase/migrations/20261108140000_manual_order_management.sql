@@ -35,7 +35,6 @@ begin
 end;
 $;
 revoke all on function public.capture_order_status_change() from public,anon,authenticated;
-drop trigger if exists capture_order_status_change on public.orders;
 create trigger capture_order_status_change after update of status on public.orders
 for each row execute function public.capture_order_status_change();
 alter table public.order_status_history enable row level security;
