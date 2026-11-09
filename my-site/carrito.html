@@ -904,28 +904,110 @@
   </script>
 </head>
 <body data-no-social>
-  <header class="nav" id="site-header">
-    <div class="nav-inner">
-      <a href="/" aria-label="Ir al inicio de RenovaH2O"><img class="logo" src="/Images/Logo Silver LL.png" alt="RenovaH2O"></a>
-      <div class="nav-actions">
-        <a class="account-link" href="/cuenta">Mi cuenta</a>
-        <a class="cart-link" href="/carrito" aria-label="Carrito de compras" title="Carrito">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        </a>
-        <button class="hamb" id="hamb" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="site-mobile"><span></span><span></span><span></span></button>
+<style>
+  #site-header.nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}
+  #site-header .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;width:min(1200px,calc(100% - 44px));margin:auto}
+  #site-header .logo{height:40px;width:auto;object-fit:contain}
+  #site-header .nav-links{display:flex;gap:30px;list-style:none;align-items:center}
+  #site-header .nav-links>li{display:flex;align-items:center;height:100%}
+  #site-header .nav-links a{display:inline-flex;align-items:center;height:58px;line-height:1;font-size:13px;color:#d1d1d6;text-decoration:none;transition:.2s}
+  #site-header .nav-links a:hover{color:#fff}
+  #site-header .dropdown{position:relative}
+  #site-header .dropdown-toggle{gap:6px}
+  #site-header .dropdown-arrow{display:inline-block;font-size:15px;line-height:1;position:relative;top:-1px;transition:transform .25s ease}
+  #site-header .dropdown-menu{position:absolute;top:100%;left:-15px;min-width:210px;padding:10px;list-style:none;background:rgba(20,20,22,.97);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:14px;opacity:0;visibility:hidden;transform:translateY(8px);transition:.25s ease}
+  #site-header .dropdown-menu a{display:block;padding:12px 14px;border-radius:9px;color:#d1d1d6;font-size:13px;height:auto;line-height:1.4}
+  #site-header .dropdown-menu a:hover{background:rgba(255,255,255,.09);color:#fff}
+  #site-header .dropdown:hover .dropdown-menu,#site-header .dropdown:focus-within .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0)}
+  #site-header .dropdown:hover .dropdown-arrow{transform:rotate(180deg)}
+  #site-header .nav-actions{display:flex;align-items:center;gap:12px}
+  #site-header .nav-cta{font-size:13px;color:#fff;background:#0071e3;border-radius:980px;padding:7px 15px;text-decoration:none;white-space:nowrap}
+  #site-header .cart-button{width:38px;height:38px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);border-radius:50%;color:#fff;background:transparent}
+  #site-header .cart-button svg{width:19px;height:19px}
+  #site-header .cart-button{cursor:pointer}
+  #site-header .hamb{display:none;width:38px;height:38px;border:0;background:none;cursor:pointer}
+  #site-header .hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}
+  #site-mobile.mobile{display:none}
+  #site-mobile.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding:20px 0 max(24px,env(safe-area-inset-bottom));overflow-y:auto}
+  #site-mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  #site-mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center;text-decoration:none}
+  #site-mobile .has-sub{width:100%;display:flex;flex-direction:column;align-items:center;position:relative}
+  #site-mobile .sub-header{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;margin:12px 0}
+  #site-mobile .sub-header a{margin:0}
+  #site-mobile .sub-toggle{background:none;border:0;color:#fff;font-size:20px;font-weight:400;cursor:pointer;transition:transform .25s ease;padding:4px;display:inline-flex;align-items:center;justify-content:center}
+  #site-mobile .mobile-submenu{display:none;list-style:none;padding:0;background:rgba(255,255,255,.05);border-radius:12px;margin:4px 0 12px;width:100%;text-align:center}
+  #site-mobile .mobile-submenu li{width:100%;text-align:center}
+  #site-mobile .mobile-submenu a{font-size:20px;margin:10px 0;color:#b5b5bb}
+  #site-mobile .has-sub.open .sub-toggle{transform:rotate(180deg)}
+  #site-mobile .has-sub.open .mobile-submenu{display:block}
+  @media(max-width:900px){
+    #site-header .nav-links{display:none}
+    #site-header .hamb{display:block}
+  }
+  @media(max-width:620px){
+    #site-header .nav-inner{width:min(100% - 28px,1200px)}
+    #site-header .logo{width:120px;height:auto}
+    #site-header .nav-actions{gap:6px}
+    #site-header .nav-cta{padding:7px 11px}
+    #site-header .cart-button,#site-header .hamb{width:34px;height:34px}
+  }
+</style>
+<header class="nav" id="site-header">
+  <div class="nav-inner">
+    <a href="/#inicio" aria-label="Ir al inicio de RenovaH2O"><img class="logo" src="/Images/Logo Silver LL.png" alt="RenovaH2O Panamá" width="160" height="40"></a>
+    <nav aria-label="Navegación principal">
+      <ul class="nav-links">
+        <li><a href="/#inicio">Inicio</a></li>
+        <li class="dropdown">
+          <a href="/#servicios" class="dropdown-toggle" aria-expanded="false">Servicios <span class="dropdown-arrow" aria-hidden="true">⌄</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/limpieza-de-pisos-panama">Residencial</a></li>
+            <li><a href="/limpieza-de-estacionamientos-panama">Comercial</a></li>
+            <li><a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a></li>
+          </ul>
+        </li>
+        <li><a href="/nosotros">Nosotros</a></li>
+        <li><a href="/blog">Blog</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-cta" href="/cuenta">Mi cuenta</a>
+      <a class="cart-button" href="/carrito" aria-label="Abrir carrito de compras" title="Carrito de compras">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+      </a>
+      <button class="hamb" id="hamb" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="site-mobile">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="mobile" id="site-mobile" role="navigation" aria-label="Menú móvil">
+  <div>
+    <a href="/#inicio">Inicio</a>
+    <div class="has-sub">
+      <div class="sub-header">
+        <a href="/#servicios">Servicios</a>
+        <button class="sub-toggle" type="button" aria-expanded="false" aria-label="Expandir submenú de servicios" aria-controls="site-mobile-services">
+          <span class="arrow-icon" aria-hidden="true">⌄</span>
+        </button>
       </div>
+      <ul class="mobile-submenu" id="site-mobile-services">
+        <li><a href="/limpieza-de-pisos-panama">Residencial</a></li>
+        <li><a href="/limpieza-de-estacionamientos-panama">Comercial</a></li>
+        <li><a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a></li>
+      </ul>
     </div>
-  </header>
-  <nav class="mobile" id="site-mobile" aria-label="Menú móvil">
-    <div class="mobile-inner">
-      <a href="/">Inicio</a>
-      <a href="/limpieza-de-pisos-panama">Residencial</a>
-      <a href="/limpieza-de-estacionamientos-panama">Comercial</a>
-      <a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a>
-      <a href="/cuenta">Mi cuenta</a>
-      <a href="/carrito">Carrito</a>
-    </div>
-  </nav>
+    <a href="/nosotros">Nosotros</a>
+    <a href="/blog">Blog</a>
+    <a href="/cuenta">Mi cuenta</a>
+    <a href="/#cotizar">Cotizar</a>
+    <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</div>
 
   <main>
     <p class="eyebrow">Compra segura · Confirmación manual</p>
@@ -1065,16 +1147,37 @@
     </section>
   </main>
   <script>
-    const menuButton = document.querySelector("#hamb");
-    const mobileMenu = document.querySelector("#site-mobile");
-    menuButton.addEventListener("click", () => {
-      const isOpen = mobileMenu.classList.toggle("open");
-      menuButton.setAttribute("aria-expanded", String(isOpen));
-    });
-    mobileMenu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-      mobileMenu.classList.remove("open");
-      menuButton.setAttribute("aria-expanded", "false");
-    }));
+    (() => {
+      const hamburger = document.getElementById("hamb");
+      const mobileMenu = document.getElementById("site-mobile");
+      const submenuToggle = mobileMenu?.querySelector(".sub-toggle");
+      const submenuParent = mobileMenu?.querySelector(".has-sub");
+
+      if (hamburger && mobileMenu) {
+        hamburger.addEventListener("click", () => {
+          const open = mobileMenu.classList.toggle("open");
+          hamburger.setAttribute("aria-expanded", String(open));
+          hamburger.setAttribute("aria-label", open ? "Cerrar menú de navegación" : "Abrir menú de navegación");
+          document.body.style.overflow = open ? "hidden" : "";
+        });
+
+        mobileMenu.querySelectorAll("a").forEach(link => {
+          link.addEventListener("click", () => {
+            mobileMenu.classList.remove("open");
+            hamburger.setAttribute("aria-expanded", "false");
+            hamburger.setAttribute("aria-label", "Abrir menú de navegación");
+            document.body.style.overflow = "";
+          });
+        });
+      }
+
+      if (submenuToggle && submenuParent) {
+        submenuToggle.addEventListener("click", () => {
+          const open = submenuParent.classList.toggle("open");
+          submenuToggle.setAttribute("aria-expanded", String(open));
+        });
+      }
+    })();
   </script>
 </body>
 </html>
