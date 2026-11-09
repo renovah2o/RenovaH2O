@@ -63,9 +63,11 @@
     .field legend{margin-bottom:3px}
     .field input,.field select,.field textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
     .field textarea{min-height:90px;resize:vertical}
-    .field.full:has(>.checkbox){justify-items:stretch}
-    .checkbox{display:flex;align-items:flex-start;justify-self:stretch;gap:9px;width:100%;margin:0;text-align:left;font-size:13px;color:#4b4b52}
-    .checkbox input{margin-top:4px;accent-color:#0071e3}
+
+    .field.full:has(>.checkbox){justify-items:start}
+    .checkbox{display:flex;align-items:flex-start;justify-self:start;gap:10px;width:100%;margin:0;text-align:left;font-size:13px;color:#4b4b52;cursor:pointer}
+    .checkbox input{margin-top:2px;flex-shrink:0;accent-color:#0071e3}
+
     .choice-list{display:grid;gap:10px}
     .choice-option{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #e2e2e7;border-radius:10px;text-align:left;cursor:pointer}
     .choice-option input{width:auto;min-height:0;margin:3px 0 0;accent-color:#0071e3}
@@ -96,7 +98,8 @@
     .contact-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
     .fine{font-size:12px}
     @media(max-width:850px){.layout{grid-template-columns:1fr}.summary-card{order:-1}}
-    @media(max-width:620px){.nav-inner{width:calc(100% - 24px)}.logo{width:120px}.nav-actions{gap:6px}.account-link{padding:7px 11px}.cart-link,.hamb{width:34px;height:34px}.hamb{display:grid}main{width:calc(100% - 24px);padding-top:86px}.card{padding:19px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.cart-item{grid-template-columns:1fr}.cart-item-main{grid-template-columns:56px minmax(0,1fr);gap:11px}.cart-item-image{width:56px;height:56px}.item-price{text-align:left}.checkbox{justify-self:stretch;align-items:flex-start;width:100%;text-align:left}.mobile.open{display:flex;position:fixed;z-index:999;inset:58px 0 0;overflow-y:auto;justify-content:center;align-items:flex-start;padding:20px 0 max(24px,env(safe-area-inset-bottom));background:#08090bf7;backdrop-filter:blur(20px)}.mobile-inner{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{margin:12px 0;color:#fff;font-size:22px;font-weight:700}}
+    @media(max-width:620px){.nav-inner{width:calc(100% - 24px)}.logo{width:120px}.nav-actions{gap:6px}.account-link{padding:7px 11px}.cart-link,.hamb{width:34px;height:34px}.hamb{display:grid}main{width:calc(100% - 24px);padding-top:86px}.card{padding:19px}.form-grid{grid-template-columns:1fr}
+    .field.full{grid-column:auto}.cart-item{grid-template-columns:1fr}.cart-item-main{grid-template-columns:56px minmax(0,1fr);gap:11px}.cart-item-image{width:56px;height:56px}.item-price{text-align:left}.checkbox{justify-self:stretch;align-items:flex-start;width:100%;text-align:left}.mobile.open{display:flex;position:fixed;z-index:999;inset:58px 0 0;overflow-y:auto;justify-content:center;align-items:flex-start;padding:20px 0 max(24px,env(safe-area-inset-bottom));background:#08090bf7;backdrop-filter:blur(20px)}.mobile-inner{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}.mobile a{margin:12px 0;color:#fff;font-size:22px;font-weight:700}}
   </style>
   <script src="/supabase-config.js"></script>
   <script src="/cart.js"></script>
@@ -984,7 +987,10 @@
             </div>
           </fieldset>
           <div class="field full">
-            <label class="checkbox"><input id="terms-confirmed" type="checkbox" required><span>Entiendo que no se realizará un cobro en línea; debo contactar a RenovaH2O y esperar a que un agente confirme el pago. El horario se retendrá por 24 horas. Para servicios residenciales se verificará el metraje en el sitio y se notificará cualquier saldo adicional o devolución.</span></label>
+            <label class="checkbox" for="terms-confirmed">
+              <input id="terms-confirmed" type="checkbox" required>
+              <span>Entiendo que no se realizará un cobro en línea; debo contactar a RenovaH2O y esperar a que un agente confirme el pago. El horario se retendrá por 24 horas. Para servicios residenciales se verificará el metraje en el sitio y se notificará cualquier saldo adicional o devolución.</span>
+            </label>
           </div>
         </div>
         <button class="button" id="submit-order" type="submit">Enviar orden y retener horario por 24 horas</button>
