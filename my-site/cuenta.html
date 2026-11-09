@@ -40,16 +40,18 @@
     .auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:#e8e8ed}
     .google-button{display:flex;align-items:center;justify-content:center;gap:10px}
 
-    /* Acceso exclusivo mediante Google: se conserva el flujo interno para compatibilidad,
-       pero no se muestran las opciones de correo y contraseña. */
+    /* Acceso social: Google y Facebook permiten iniciar sesión o crear una cuenta. */
     .auth-section #auth-form>.field,
     .auth-section #auth-submit,
-    .auth-section .auth-divider,
     .auth-section .auth-switch,
     .auth-section .legal-consent{display:none!important}
+    .social-login-buttons{display:grid;gap:12px}
+    .social-login-buttons .secondary{width:100%;min-height:48px}
     .google-only-note{margin:16px 0 0;color:var(--gray);font-size:12px;line-height:1.5;text-align:center}
     .google-only-note a{color:var(--blue);text-decoration:underline}
-    .google-button svg{width:18px;height:18px}
+    .google-button svg,.facebook-button svg{width:18px;height:18px;flex:none}
+    .facebook-button{display:flex;align-items:center;justify-content:center;gap:10px}
+    .facebook-button svg{color:#1877f2}
     .legal-consent{margin:16px 0;color:var(--gray);font-size:12px}
     .legal-consent label{display:flex;align-items:flex-start;gap:9px;font-weight:400}
     .legal-consent input{margin-top:4px}
@@ -203,6 +205,7 @@
     const authIntro = document.querySelector("#auth-intro");
     const authSubmit = document.querySelector("#auth-submit");
     const googleButton = document.querySelector("#google-button");
+    const facebookButton = document.querySelector("#facebook-button");
     const switchButton = document.querySelector("#switch-mode");
     const switchText = document.querySelector("#switch-text");
     const legalConsent = document.querySelector(".legal-consent");
@@ -709,6 +712,7 @@
     function setAuthBusy(busy) {
       authSubmit.disabled = busy;
       googleButton.disabled = busy;
+      facebookButton.disabled = busy;
       switchButton.disabled = busy;
     }
 
@@ -2185,25 +2189,25 @@
       }
     });
 
-    googleButton.addEventListener("click", async () => {
-      if (authMode === "signup" && !acceptTerms.checked) {
-        showAuthMessage("Acepta los Términos del Servicio y reconoce la Política de Privacidad para continuar.");
-        return;
-      }
+    async function signInWithSocialProvider(provider, providerLabel) {
       setAuthBusy(true);
+      authMessage.hidden = true;
       try {
         if (safeReturnUrl) window.sessionStorage.setItem("renovah2o-auth-next", `${safeReturnUrl.pathname}${safeReturnUrl.search}${safeReturnUrl.hash}`);
         const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
+          provider,
           options: { redirectTo: authCallbackUrl() }
         });
         if (error) showAuthMessage(error.message);
       } catch (error) {
-        showAuthMessage(`No se pudo iniciar sesión con Google: ${error.message}`);
+        showAuthMessage(`No se pudo continuar con ${providerLabel}: ${error.message}`);
       } finally {
         setAuthBusy(false);
       }
-    });
+    }
+
+    googleButton.addEventListener("click", () => signInWithSocialProvider("google", "Google"));
+    facebookButton.addEventListener("click", () => signInWithSocialProvider("facebook", "Facebook"));
 
     document.querySelector("#profile-form").addEventListener("submit", async event => {
       event.preventDefault();
@@ -2524,6 +2528,7 @@
     if (!config?.url || !config.publishableKey) {
       authSubmit.disabled = true;
       googleButton.disabled = true;
+      facebookButton.disabled = true;
       switchButton.disabled = true;
       showAuthMessage("Falta configurar Supabase para habilitar el acceso.");
     } else {
@@ -2689,8 +2694,8 @@
   <main>
     <section class="auth-section card" id="auth-section" aria-labelledby="auth-heading">
       <p class="eyebrow">RenovaH2O</p>
-      <h1 id="auth-heading">Inicia sesión</h1>
-      <p class="lead" id="auth-intro">Accede a tu cuenta de RenovaH2O.</p>
+      <h1 id="auth-heading">Accede o crea tu cuenta</h1>
+      <p class="lead" id="auth-intro">Continúa con Google o Facebook para acceder a tu cuenta o registrarte en RenovaH2O.</p>
       <form id="auth-form">
         <div class="field">
           <label for="email">Correo electrónico</label>
@@ -2701,11 +2706,17 @@
           <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required>
         </div>
         <button class="primary" id="auth-submit" type="submit">Iniciar sesión</button>
-        <div class="auth-divider">O continúa con</div>
+        <div class="auth-divider">Continúa de forma segura con</div>
+        <div class="social-login-buttons">
         <button class="secondary google-button" id="google-button" type="button" aria-label="Continuar con Google">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18A11.96 11.96 0 0 0 1 12c0 1.77.39 3.45 1.18 4.94l3.66-2.85z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
           Continuar con Google
         </button>
+        <button class="secondary facebook-button" id="facebook-button" type="button" aria-label="Continuar con Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.4v2H7v3.1h2.9v8h3.6Z"/></svg>
+          Continuar con Facebook
+        </button>
+        </div>
         <div class="legal-consent" hidden>
           <label for="accept-terms">
             <input id="accept-terms" type="checkbox">
@@ -2713,7 +2724,7 @@
           </label>
         </div>
       </form>
-      <p class="google-only-note">Al continuar con Google, podrás crear tu cuenta o acceder a una existente. Aplican nuestros <a href="/terminos">Términos del Servicio</a> y <a href="/privacidad">Política de Privacidad</a>.</p>
+      <p class="google-only-note">Al continuar con cualquiera de estos proveedores, podrás crear tu cuenta o acceder a una existente. Aplican nuestros <a href="/terminos">Términos del Servicio</a> y <a href="/privacidad">Política de Privacidad</a>.</p>
       <p class="auth-switch"><span id="switch-text">¿Aún no tienes cuenta?</span> <button class="text-button" id="switch-mode" type="button">Regístrate</button></p>
       <p class="notice" id="auth-message" role="status" aria-live="polite" hidden></p>
     </section>
