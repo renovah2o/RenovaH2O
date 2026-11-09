@@ -25,7 +25,7 @@ create index if not exists order_status_history_order_created_idx on public.orde
 
 create or replace function public.capture_order_status_change()
 returns trigger language plpgsql security definer set search_path=''
-as $
+as $$
 begin
   if new.status is distinct from old.status then
     insert into public.order_status_history(order_id,old_status,new_status,changed_by,note)
