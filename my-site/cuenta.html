@@ -183,7 +183,13 @@
     @media(max-width:850px){.account-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:560px){main{width:min(100% - 28px,1120px);padding-top:92px}.card{padding:23px}.account-grid{grid-template-columns:1fr}.account-tile{min-height:unset}.tile-icon{margin-bottom:12px}.account-top{align-items:flex-start;flex-direction:row}.account-top-actions{gap:8px}.profile-form{grid-template-columns:1fr}.profile-form .primary{grid-column:auto}.phone-field,.address-form{grid-template-columns:1fr}.address-form .field.full,.address-form .address-actions,.address-form .profile-status{grid-column:auto}.panel-heading{align-items:flex-start}.secondary{white-space:nowrap}.agenda-form,.admin-reservation-fields{grid-template-columns:1fr}.agenda-day-row{grid-template-columns:1fr 1fr}.agenda-day-row>span:first-child{grid-column:1/-1}.agenda-rule-row{grid-template-columns:1fr 1fr}.agenda-rule-row strong{grid-column:1/-1}.calendar-day{min-height:72px;padding:4px}.calendar-event{font-size:9px;padding:3px}.calendar-weekday{padding:5px 2px;font-size:10px}.calendar-month{min-width:100px}.saved-contact-card{flex-direction:column}.calendar-heading{align-items:flex-start}.report-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-customer-search{grid-template-columns:1fr}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
-  </style>
+  
+    .admin-order-filter,.admin-order-search{width:100%;max-width:100%;margin:8px 0;padding:12px;border:1px solid var(--border-color,#d5d8dc);border-radius:10px;background:var(--card-bg,#fff);color:inherit}
+    .admin-order-details>summary{cursor:pointer;list-style:none}
+    .admin-order-details>summary::-webkit-details-marker{display:none}
+    .admin-order-detail-body{padding-top:14px}
+    .admin-order-results{display:grid;gap:12px}
+</style>
   <script src="/share.js" defer></script>
   <script src="/supabase-config.js"></script>
   <script type="module">
@@ -1290,146 +1296,235 @@
     async function loadAdminOrders(userId = activeUserId) {
       adminOrdersList.replaceChildren();
       adminOrdersStatus.textContent = "Cargando órdenes…";
-      const { data, error } = await supabase.rpc("checkout_admin_list_orders");
+      const [ordersResult, refundsResult] = await Promise.all([
+        supabase.rpc("checkout_admin_list_orders"),
+        supabase.rpc("checkout_admin_list_order_refunds")
+      ]);
       if (activeUserId !== userId || !isAgendaAdmin) return;
-      if (error) {
-        adminOrdersStatus.textContent = `No se pudieron cargar las órdenes: ${error.message}`;
+      if (ordersResult.error || refundsResult.error) {
+        adminOrdersStatus.textContent = `No se pudieron cargar los datos: ${ordersResult.error?.message || refundsResult.error?.message}`;
         return;
       }
-
-      adminOrdersStatus.textContent = "";
-      if (!data.length) {
+      const orders = ordersResult.data ?? [];
+      const refundsByOrder = new Map();
+      for (const refund of refundsResult.data ?? []) {
+        if (!refundsByOrder.has(refund.order_id)) refundsByOrder.set(refund.order_id, []);
+        refundsByOrder.get(refund.order_id).push(refund);
+      }
+      const counts = orders.reduce((result, order) => {
+        result[order.status] = (result[order.status] ?? 0) + 1;
+        return result;
+      }, {});
+      const totals = document.createElement("p");
+      totals.className = "order-meta";
+      totals.textContent = `Órdenes: ${orders.length} · Pendientes: ${counts.pending ?? 0} · Pagadas: ${counts.paid ?? 0} · Canceladas: ${counts.cancelled ?? 0} · Reembolsadas: ${counts.refunded ?? 0}`;
+      adminOrdersList.append(totals);
+      if (!orders.length) {
         appendEmptyState(adminOrdersList, "Todavía no hay órdenes registradas.");
+        adminOrdersStatus.textContent = "";
         return;
       }
 
-      for (const order of data) {
-        const card = document.createElement("article");
-        card.className = "order-card";
-        const heading = document.createElement("div");
-        heading.className = "order-head";
-        const number = document.createElement("strong");
-        number.textContent = `Orden ${order.order_id.slice(0, 8).toUpperCase()} · ${order.status === "pending" ? "Pendiente" : order.status === "paid" ? "Pagada" : "Cancelada"}`;
-        const total = document.createElement("strong");
-        total.textContent = formatCurrency(order.total_amount, order.currency);
-        heading.append(number, total);
+      const filter = document.createElement("select");
+      filter.className = "admin-order-filter";
+      filter.setAttribute("aria-label", "Filtrar órdenes por estado");
+      [["all","Todas"],["pending","Pendientes"],["paid","Pagadas"],["cancelled","Canceladas"],["refunded","Reembolsadas"]].forEach(([value,label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        filter.append(option);
+      });
+      const search = document.createElement("input");
+      search.type = "search";
+      search.className = "admin-order-search";
+      search.placeholder = "Buscar por cliente, correo o número";
+      const results = document.createElement("div");
+      results.className = "admin-order-results";
+      adminOrdersList.append(filter,search,results);
 
-        const detail = document.createElement("p");
-        detail.className = "order-meta";
-        detail.textContent = `${order.customer_name || order.user_email || "Cliente"} · ${order.contact_phone || "Sin teléfono"} · ${serviceLabels[order.service_type] ?? "Servicio"}`;
-        const address = document.createElement("p");
-        address.className = "order-meta";
-        address.textContent = order.service_address || "Sin dirección";
-        address.style.whiteSpace = "pre-line";
-        card.append(heading, detail, address);
-
-        const range = dateRangeParagraph(order.starts_at, order.ends_at);
-        card.append(range);
-        if (order.hold_expires_at && order.status === "pending") {
-          const hold = document.createElement("p");
-          hold.className = "order-meta";
-          hold.textContent = `Retención hasta ${formatAgendaDateTime(order.hold_expires_at)}`;
-          card.append(hold);
+      const labels = {pending:"Pendiente de pago",paid:"Pagada",cancelled:"Cancelada",refunded:"Reembolsada"};
+      const render = () => {
+        results.replaceChildren();
+        const term = search.value.trim().toLowerCase();
+        const visible = orders.filter(order =>
+          (filter.value === "all" || order.status === filter.value) &&
+          (!term || [order.customer_name,order.user_email,order.order_id].some(value => String(value ?? "").toLowerCase().includes(term)))
+        );
+        if (!visible.length) {
+          appendEmptyState(results,"No hay órdenes que coincidan con la búsqueda.");
+          return;
         }
+        for (const order of visible) {
+          const card = document.createElement("article");
+          card.className = "order-card";
+          const details = document.createElement("details");
+          details.className = "admin-order-details";
+          const summary = document.createElement("summary");
+          const heading = document.createElement("div");
+          heading.className = "order-head";
+          const name = document.createElement("strong");
+          name.textContent = `Orden ${order.order_id.slice(0,8).toUpperCase()} · ${labels[order.status] ?? order.status}`;
+          const amount = document.createElement("strong");
+          amount.textContent = formatCurrency(order.total_amount,order.currency);
+          heading.append(name,amount);
+          const meta = document.createElement("p");
+          meta.className = "order-meta";
+          meta.textContent = `${order.customer_name || order.user_email || "Cliente"} · ${order.created_at ? formatAgendaDateTime(order.created_at) : "Fecha no disponible"}`;
+          summary.append(heading,meta);
+          details.append(summary);
 
-        const itemList = document.createElement("ul");
-        itemList.className = "order-items";
-        for (const item of order.items ?? []) {
-          const line = document.createElement("li");
-          line.textContent = `${item.product_name} × ${item.quantity} · ${formatCurrency(item.unit_amount * item.quantity, order.currency)}`;
-          itemList.append(line);
-        }
-        card.append(itemList);
-
-        if (order.status === "pending") {
-          const actions = document.createElement("div");
-          actions.className = "admin-order-actions";
-          const confirmButton = document.createElement("button");
-          confirmButton.className = "secondary";
-          confirmButton.type = "button";
-          confirmButton.textContent = "Confirmar pago y agenda";
-          const holdExpired = !order.hold_expires_at || new Date(order.hold_expires_at) <= new Date();
-          confirmButton.disabled = holdExpired;
-          if (holdExpired) {
-            const expired = document.createElement("p");
-            expired.className = "order-meta";
-            expired.textContent = "La retención venció; no confirmes el pago hasta volver a verificar la disponibilidad.";
-            card.append(expired);
+          const body = document.createElement("div");
+          body.className = "admin-order-detail-body";
+          const contact = document.createElement("p");
+          contact.className = "order-meta";
+          contact.textContent = `Correo: ${order.user_email || "No disponible"} · Teléfono: ${order.contact_phone || "No disponible"}`;
+          const service = document.createElement("p");
+          service.className = "order-meta";
+          service.style.whiteSpace = "pre-line";
+          service.textContent = `Servicio: ${serviceLabels[order.service_type] ?? "Servicio"}\nDirección: ${order.service_address || "No indicada"}`;
+          body.append(contact,service,dateRangeParagraph(order.starts_at,order.ends_at));
+          if (order.hold_expires_at && order.status === "pending") {
+            const hold = document.createElement("p");
+            hold.className = "order-meta";
+            hold.textContent = `Retención hasta ${formatAgendaDateTime(order.hold_expires_at)}`;
+            body.append(hold);
           }
-          confirmButton.addEventListener("click", () => updateOrderStatus(order.order_id, "paid", confirmButton, userId));
-          const cancelButton = document.createElement("button");
-          cancelButton.className = "secondary";
-          cancelButton.type = "button";
-          cancelButton.textContent = "Cancelar orden";
-          cancelButton.addEventListener("click", () => updateOrderStatus(order.order_id, "cancelled", cancelButton, userId));
-          actions.append(confirmButton, cancelButton);
-          card.append(actions);
-        }
+          const items = document.createElement("ul");
+          items.className = "order-items";
+          for (const item of order.items ?? []) {
+            const line = document.createElement("li");
+            line.textContent = `${item.product_name} × ${item.quantity} · ${formatCurrency(item.unit_amount * item.quantity,order.currency)}`;
+            items.append(line);
+          }
+          body.append(items);
 
-        if (order.status === "paid") {
-          const adjustmentForm = document.createElement("form");
-          adjustmentForm.className = "admin-adjustment";
-          const adjustmentLabel = document.createElement("label");
-          adjustmentLabel.textContent = "Ajuste final en dólares (+ saldo pendiente / − devolución)";
-          const adjustmentInput = document.createElement("input");
-          adjustmentInput.type = "number";
-          adjustmentInput.min = "-1000000";
-          adjustmentInput.max = "1000000";
-          adjustmentInput.step = "0.01";
-          adjustmentInput.required = true;
-          adjustmentInput.value = ((order.adjustment_amount ?? 0) / 100).toFixed(2);
-          adjustmentLabel.append(adjustmentInput);
-          const messageLabel = document.createElement("label");
-          messageLabel.textContent = "Mensaje para el cliente";
-          const messageInput = document.createElement("textarea");
-          messageInput.rows = 3;
-          messageInput.maxLength = 350;
-          messageInput.required = true;
-          messageInput.value = order.adjustment_note ?? "";
-          messageLabel.append(messageInput);
-          const saveAdjustment = document.createElement("button");
-          saveAdjustment.className = "secondary";
-          saveAdjustment.type = "submit";
-          saveAdjustment.textContent = "Guardar y notificar";
-          const adjustmentStatus = document.createElement("p");
-          adjustmentStatus.className = "admin-adjustment-status";
-          adjustmentStatus.setAttribute("role", "status");
-          adjustmentForm.append(adjustmentLabel, messageLabel, saveAdjustment, adjustmentStatus);
-          adjustmentForm.addEventListener("submit", async event => {
-            event.preventDefault();
-            const amount = Number(adjustmentInput.value);
-            const message = messageInput.value.trim();
-            if (!Number.isFinite(amount) || !message) {
-              adjustmentStatus.textContent = "Ingresa un monto válido y un mensaje.";
-              return;
+          const refunds = refundsByOrder.get(order.order_id) ?? [];
+          if (refunds.length) {
+            const refundTitle = document.createElement("strong");
+            refundTitle.textContent = "Historial de reembolsos";
+            body.append(refundTitle);
+            for (const refund of refunds) {
+              const row = document.createElement("p");
+              row.className = "order-meta";
+              row.textContent = `${formatCurrency(refund.amount,order.currency)} · ${refund.method} · ${refund.reason} · ${formatAgendaDateTime(refund.created_at)}`;
+              body.append(row);
             }
-            const amountInCents = Math.round(amount * 100);
-            if (amountInCents !== 0 && !window.confirm(
-              amountInCents > 0
-                ? `¿Registrar un saldo adicional de ${formatCurrency(amountInCents, order.currency)} y notificar al cliente?`
-                : `¿Registrar una devolución de ${formatCurrency(Math.abs(amountInCents), order.currency)} y notificar al cliente?`
-            )) return;
-            saveAdjustment.disabled = true;
-            adjustmentStatus.textContent = "Guardando ajuste…";
-            try {
-              const { error: adjustmentError } = await supabase.rpc("checkout_admin_record_adjustment", {
-                p_order_id: order.order_id,
-                p_adjustment_amount: amountInCents,
-                p_message: message
+          }
+
+          if (order.status === "pending") {
+            const actions = document.createElement("div");
+            actions.className = "admin-order-actions";
+            const confirm = document.createElement("button");
+            confirm.className = "secondary";
+            confirm.type = "button";
+            confirm.textContent = "Confirmar pago y agenda";
+            const expired = !order.hold_expires_at || new Date(order.hold_expires_at) <= new Date();
+            confirm.disabled = expired;
+            confirm.addEventListener("click",() => updateOrderStatus(order.order_id,"paid",confirm,userId));
+            const cancel = document.createElement("button");
+            cancel.className = "secondary";
+            cancel.type = "button";
+            cancel.textContent = "Cancelar orden";
+            cancel.addEventListener("click",() => updateOrderStatus(order.order_id,"cancelled",cancel,userId));
+            actions.append(confirm,cancel);
+            body.append(actions);
+            if (expired) {
+              const note = document.createElement("p");
+              note.className = "order-meta";
+              note.textContent = "La retención venció. Verifica nuevamente la disponibilidad antes de confirmar el pago.";
+              body.append(note);
+            }
+          }
+
+          if (order.status === "paid") {
+            const refunded = refunds.reduce((sum,item) => sum + Number(item.amount),0);
+            const remaining = Number(order.total_amount) - refunded;
+            if (remaining > 0) {
+              const form = document.createElement("form");
+              form.className = "admin-adjustment";
+              const amountLabel = document.createElement("label");
+              amountLabel.textContent = `Monto a devolver (disponible: ${formatCurrency(remaining,order.currency)})`;
+              const amount = document.createElement("input");
+              amount.type = "number";
+              amount.min = "0.01";
+              amount.max = (remaining / 100).toFixed(2);
+              amount.step = "0.01";
+              amount.required = true;
+              amountLabel.append(amount);
+              const methodLabel = document.createElement("label");
+              methodLabel.textContent = "Método de devolución";
+              const method = document.createElement("select");
+              ["Yappy","Transferencia bancaria","Efectivo","Otro"].forEach(value => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = value;
+                method.append(option);
               });
-              if (adjustmentError) throw adjustmentError;
-              await loadAdminOrders(userId);
-              adminOrdersStatus.textContent = "Ajuste guardado y notificación enviada a la cuenta del cliente.";
-            } catch (error) {
-              adjustmentStatus.textContent = `No se pudo guardar el ajuste: ${error.message}`;
-              saveAdjustment.disabled = false;
+              methodLabel.append(method);
+              const reasonLabel = document.createElement("label");
+              reasonLabel.textContent = "Motivo / referencia";
+              const reason = document.createElement("textarea");
+              reason.rows = 2;
+              reason.maxLength = 350;
+              reason.required = true;
+              reasonLabel.append(reason);
+              const submit = document.createElement("button");
+              submit.className = "secondary";
+              submit.type = "submit";
+              submit.textContent = "Registrar reembolso manual";
+              const status = document.createElement("p");
+              status.className = "admin-adjustment-status";
+              form.append(amountLabel,methodLabel,reasonLabel,submit,status);
+              form.addEventListener("submit",async event => {
+                event.preventDefault();
+                const cents = Math.round(Number(amount.value) * 100);
+                if (!Number.isFinite(cents) || cents <= 0 || cents > remaining || !reason.value.trim()) {
+                  status.textContent = "Verifica el monto y el motivo del reembolso.";
+                  return;
+                }
+                if (!window.confirm(`Confirma que ya realizaste el reembolso manual de ${formatCurrency(cents,order.currency)} mediante ${method.value}.`)) return;
+                submit.disabled = true;
+                try {
+                  const {error: refundError} = await supabase.rpc("checkout_admin_record_refund",{
+                    p_order_id:order.order_id,p_amount:cents,p_method:method.value,p_reason:reason.value.trim()
+                  });
+                  if (refundError) throw refundError;
+                  await Promise.all([loadAdminOrders(userId),loadAdminReservations(userId),loadAdminCalendarMonth(userId),loadCustomerAgenda(userId),loadNotifications(userId),loadCustomerOrders(userId)]);
+                  adminOrdersStatus.textContent = "Reembolso registrado y notificado al cliente.";
+                } catch (error) {
+                  status.textContent = `No se pudo registrar el reembolso: ${error.message}`;
+                  submit.disabled = false;
+                }
+              });
+              body.append(form);
             }
-          });
-          card.append(adjustmentForm);
+            const cancelPaid = document.createElement("button");
+            cancelPaid.className = "secondary";
+            cancelPaid.type = "button";
+            cancelPaid.textContent = "Cancelar orden y liberar agenda";
+            cancelPaid.addEventListener("click",async () => {
+              if (!window.confirm("¿Cancelar esta orden pagada y liberar su espacio? Esta acción no realiza un reembolso.")) return;
+              cancelPaid.disabled = true;
+              try {
+                const {error: cancelError} = await supabase.rpc("checkout_admin_cancel_paid_order",{p_order_id:order.order_id});
+                if (cancelError) throw cancelError;
+                await Promise.all([loadAdminOrders(userId),loadAdminReservations(userId),loadAdminCalendarMonth(userId),loadCustomerAgenda(userId),loadNotifications(userId),loadCustomerOrders(userId)]);
+              } catch (error) {
+                adminOrdersStatus.textContent = `No se pudo cancelar la orden: ${error.message}`;
+                cancelPaid.disabled = false;
+              }
+            });
+            body.append(cancelPaid);
+          }
+          details.append(body);
+          card.append(details);
+          results.append(card);
         }
-
-        adminOrdersList.append(card);
-      }
+      };
+      filter.addEventListener("change",render);
+      search.addEventListener("input",render);
+      render();
+      adminOrdersStatus.textContent = "";
     }
 
     function formatDateOnly(value) {
@@ -2651,7 +2746,7 @@
           <a class="account-tile" href="#ordenes"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Mis órdenes</strong><span>Consulta el historial de tus compras.</span></a>
           <a class="account-tile" href="#agenda"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Mi agenda</strong><span>Consulta las fechas y horarios confirmados de tus servicios.</span></a>
           <a class="account-tile" id="admin-agenda-tile" href="#administrar-agenda" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-agenda"></use></svg></span><strong>Administrar agenda</strong><span>Configura horarios, registra citas y bloquea espacios.</span></a>
-          <a class="account-tile" id="admin-orders-tile" href="#administrar-ordenes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Confirmar órdenes</strong><span>Revisa pedidos pendientes, confirma pagos y actualiza la agenda.</span></a>
+          <a class="account-tile" id="admin-orders-tile" href="#administrar-ordenes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-orders"></use></svg></span><strong>Gestión de órdenes</strong><span>Consulta pedidos, confirma pagos, cancela órdenes y registra reembolsos.</span></a>
           <a class="account-tile" id="admin-customers-tile" href="#administrar-clientes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-profile"></use></svg></span><strong>Gestionar clientes</strong><span>Busca clientes, consulta sus datos de contacto y revisa su actividad.</span></a>
           <a class="account-tile" id="admin-reports-tile" href="#informes-clientes" hidden><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-gift"></use></svg></span><strong>Informes de clientes</strong><span>Identifica cumpleaños próximos y oportunidades de seguimiento.</span></a>
           <a class="account-tile" href="#direcciones"><span class="tile-icon" aria-hidden="true"><svg><use href="#icon-address"></use></svg></span><strong>Mis direcciones</strong><span>Guarda direcciones para tus servicios.</span></a>
@@ -2784,8 +2879,8 @@
         </section>
       </section>
 
-      <section class="account-panel card" id="panel-admin-orders" data-title="Confirmar órdenes" hidden>
-        <div class="panel-heading"><div><h2>Confirmar órdenes</h2><p>Verifica el pago con el cliente antes de confirmarlo. Al confirmar, la orden cambia a pagada y su fecha pasa a Mi agenda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+      <section class="account-panel card" id="panel-admin-orders" data-title="Gestión de órdenes" hidden>
+        <div class="panel-heading"><div><h2>Gestión de órdenes</h2><p>Consulta órdenes pendientes, pagadas, canceladas y reembolsadas. Abre cada orden para revisar sus detalles, confirmar pagos o registrar devoluciones manuales.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <button class="secondary" id="refresh-admin-orders" type="button">Actualizar órdenes</button>
         <div class="orders-list" id="admin-orders-list" aria-live="polite"></div>
         <p class="agenda-status" id="admin-orders-status" role="status" aria-live="polite"></p>
