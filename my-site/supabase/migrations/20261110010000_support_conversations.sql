@@ -1,6 +1,9 @@
 -- Conversaciones de atención al cliente de RenovaH2O.
 -- Requiere las migraciones previas de agenda_admins, profiles y account_notifications.
 
+-- La función de correo usa service_role para dirigir avisos a la bandeja administrativa.
+grant select on public.agenda_admins to service_role;
+
 create table public.support_conversations (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
