@@ -370,6 +370,7 @@
     let birthdaySourceAdminLocked = false;
     let birthdayInputChanged = false;
     let birthdaySocialProvider = null;
+    let birthdayDisplaySource = null;
     const avatarFile = document.querySelector("#profile-avatar");
     const avatarImage = document.querySelector("#profile-avatar-image");
     const avatarInitials = document.querySelector("#profile-avatar-initials");
@@ -2451,7 +2452,8 @@
       const locked = birthdaySourceAdminLocked || timeLocked;
       profileBirthday.disabled = locked;
       if (birthdaySourceAdminLocked) {
-        profileBirthdayHint.textContent = "La fecha que se muestra está gestionada por RenovaH2O. Si necesitas corregirla, contacta a soporte.";
+        const sourceLabel = birthdayDisplaySource === "google" ? "Google" : birthdayDisplaySource === "facebook" ? "Facebook" : "RenovaH2O";
+        profileBirthdayHint.textContent = sourceLabel === "RenovaH2O" ? "Tu cumpleaños está configurado manualmente." : `Tu cumpleaños está sincronizado con ${sourceLabel}.`;
       } else if (timeLocked) {
         const dateLabel = new Intl.DateTimeFormat("es-PA", { dateStyle: "long", timeZone: agendaTimezone }).format(nextChange);
         profileBirthdayHint.replaceChildren(
@@ -2728,6 +2730,7 @@
           setProfilePhone(profileResult.data.phone ?? "");
           profileBirthday.value = profileResult.data.birthday || "";
           birthdaySourceAdminLocked = Boolean(profileResult.data.birthday_source_admin_locked);
+          birthdayDisplaySource = profileResult.data.birthday_source || "manual";
           birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
           birthdayInputChanged = false;
           updateBirthdayEditState();
