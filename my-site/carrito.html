@@ -139,6 +139,12 @@
 
     .choice-list{display:grid;gap:10px;width:100%;min-width:0}
     .choice-option{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #e2e2e7;border-radius:10px;text-align:left;cursor:pointer;width:100%;box-sizing:border-box}
+    .choice-add-link{display:inline-flex;align-items:center;gap:8px;width:max-content;max-width:100%;margin:4px 0 2px;padding:4px 0;color:#555b65;font-size:13px;font-weight:400;cursor:pointer}
+    .choice-add-link input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+    .choice-add-link .add-icon{display:grid;place-items:center;width:20px;height:20px;border:1px solid #b9c5d3;border-radius:50%;color:#0071e3;font-size:16px;line-height:1;font-weight:400}
+    .choice-add-link:has(input:checked){color:#005bb5}
+    .choice-add-link:focus-within{outline:2px solid #0071e3;outline-offset:4px;border-radius:4px}
+    #new-phone-fields[hidden],#new-address-fields[hidden]{display:none}
     .choice-option input{width:auto;min-height:0;margin:3px 0 0;accent-color:#0071e3}
     .choice-copy{display:grid;gap:3px;min-width:0}
     .choice-copy strong{font-size:13px}
@@ -858,16 +864,16 @@
         label.append(radio, copy);
         savedPhoneOptions.append(label);
       }
-      const defaultAddress = profileAddresses.find(address => address.is_default);
+      const defaultAddress = profileAddresses.find(address => address.is_default) ?? profileAddresses[0];
       for (const radio of savedAddressOptions.querySelectorAll('input[name="address-choice"]')) {
         radio.checked = radio.value === defaultAddress?.id;
       }
-      newAddressChoice.checked = !defaultAddress;
-      const defaultPhone = profilePhones.find(phone => phone.is_default);
+      newAddressChoice.checked = profileAddresses.length === 0;
+      const defaultPhone = profilePhones.find(phone => phone.is_default) ?? profilePhones[0];
       for (const radio of savedPhoneOptions.querySelectorAll('input[name="phone-choice"]')) {
         radio.checked = radio.value === defaultPhone?.id;
       }
-      newPhoneChoice.checked = !defaultPhone;
+      newPhoneChoice.checked = profilePhones.length === 0;
       updateContactChoices();
     }
 
@@ -1185,9 +1191,10 @@
             <legend>Dirección para el servicio o entrega</legend>
             <div class="choice-list">
               <div id="saved-address-options" class="choice-list"></div>
-              <label class="choice-option">
+              <label class="choice-add-link">
                 <input id="use-new-address" type="radio" name="address-choice" value="new" required checked>
-                <span class="choice-copy"><strong>Agregar otra dirección</strong><span>Se guardará en tu perfil sin reemplazar las direcciones existentes.</span></span>
+                <span class="add-icon" aria-hidden="true">+</span>
+                <span>Usar otra dirección</span>
               </label>
             </div>
           </fieldset>
@@ -1235,9 +1242,10 @@
             <legend>Teléfono de contacto</legend>
             <div class="choice-list">
               <div id="saved-phone-options" class="choice-list"></div>
-              <label class="choice-option">
+              <label class="choice-add-link">
                 <input id="use-new-phone" type="radio" name="phone-choice" value="new" required checked>
-                <span class="choice-copy"><strong>Agregar otro teléfono</strong><span>Se guardará en tu perfil sin reemplazar los números existentes.</span></span>
+                <span class="add-icon" aria-hidden="true">+</span>
+                <span>Usar otro teléfono</span>
               </label>
             </div>
             <div id="new-phone-fields" class="form-grid">
