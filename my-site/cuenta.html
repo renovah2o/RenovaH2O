@@ -2340,25 +2340,40 @@
       }
     }
 
+    function normalizeBirthdayMonthDay(month, day) {
+      if (!Number.isInteger(month) || !Number.isInteger(day) || month < 1 || month > 12 || day < 1) return null;
+      const date = new Date(Date.UTC(2000, month - 1, day));
+      if (date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+      return `2000-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+
+    function birthdayForProfile(value) {
+      const match = /^(\\d{2})\\/(\\d{2})$/.exec(String(value ?? "").trim());
+      if (!match) return null;
+      const [, day, month] = match;
+      return normalizeBirthdayMonthDay(Number(month), Number(day));
+    }
+
+    function birthdayForDisplay(value) {
+      if (!value) return "";
+      const match = /^(?:\\d{4}-)?(\\d{2})-(\\d{2})$/.exec(String(value));
+      return match ? `${match[2]}/${match[1]}` : "";
+    }
+
     function parseSocialBirthday(provider, payload) {
+      let month, day;
       if (provider === "google") {
-        const birthday = payload?.birthdays?.find(item => item?.date?.year && item?.date?.month && item?.date?.day);
-        const date = birthday?.date;
-        if (!date) return null;
-        return `${String(date.year).padStart(4, "0")}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
-      }
-      if (provider === "facebook") {
+        const birthday = payload?.birthdays?.find(item => item?.date?.month && item?.date?.day);
+        month = Number(birthday?.date?.month);
+        day = Number(birthday?.date?.day);
+      } else if (provider === "facebook") {
         const raw = String(payload?.birthday ?? "").trim();
-        let year, month, day;
-        if (raw.includes("/")) [month, day, year] = raw.split("/").map(Number);
-        else [year, month, day] = raw.split("-").map(Number);
-        if (![year, month, day].every(Number.isInteger)) return null;
-        const date = new Date(Date.UTC(year, month - 1, day));
-        if (year < 1 || month < 1 || month > 12 || day < 1 ||
-            date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
-        return [String(year).padStart(4, "0"), String(month).padStart(2, "0"), String(day).padStart(2, "0")].join("-");
-      }
-      return null;
+        if (raw.includes("/")) [, month, day] = /^(\\d{1,2})\\/(\\d{1,2})(?:\\/\\d{4})?$/.exec(raw) || [];
+        else [, , month, day] = /^(?:\\d{4})-(\\d{1,2})-(\\d{1,2})$/.exec(raw) || [];
+        month = Number(month);
+        day = Number(day);
+      } else return null;
+      return normalizeBirthdayMonthDay(month, day);
     }
 
     async function fetchSocialBirthday(session) {
@@ -2491,7 +2506,7 @@
         } else if (profileResult.data) {
           profileName.value = profileResult.data.full_name ?? "";
           setProfilePhone(profileResult.data.phone ?? "");
-          profileBirthday.value = profileResult.data.birthday ?? "";
+          profileBirthday.value = birthdayForDisplay(profileResult.data.birthday);
           if (!profileBirthday.value && session?.provider_token) {
             const syncedBirthday = await syncSocialBirthday(session, profileBirthday.value);
             if (activeUserId !== user.id) return;
@@ -2902,6 +2917,14 @@
           if (uploadError) throw uploadError;
         }
 
+        const birthdayValue = profileBirthday.value.trim();
+        const normalizedBirthday = birthdayValue ? birthdayForProfile(birthdayValue) : null;
+        if (birthdayValue && !normalizedBirthday) {
+          profileStatus.textContent = "Ingresa un cumpleaños válido en formato DD/MM (por ejemplo, 09/04).";
+          profileBirthday.focus();
+          return;
+        }
+
         const nextAvatarPath = selectedAvatarFile
           ? uploadedAvatarPath
           : removeAvatarRequested ? null : activeAvatarPath;
@@ -2909,7 +2932,7 @@
           .update({
             full_name: profileName.value.trim() || null,
             phone: formatPhoneForProfile() || null,
-            birthday: profileBirthday.value || null,
+            birthday: normalizedBirthday,
             preferred_services: getPreferredServices(),
             profile_avatar_path: nextAvatarPath
           })
@@ -3535,7 +3558,7 @@
           <div class="field"><label for="profile-email">Correo electrónico</label><input id="profile-email" type="email" autocomplete="email" readonly aria-readonly="true"></div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><div class="phone-field"><select id="profile-phone-country" aria-label="Código de país"></select><input id="profile-phone" type="tel" maxlength="24" autocomplete="tel-national" placeholder="Número de teléfono"></div></div>
-          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" max="2026-11-10" autocomplete="bday"><small class="profile-hint">Si autorizas el acceso, intentaremos obtenerla de Google o Facebook para enviarte felicitaciones y beneficios de cumpleaños. Si no está disponible, puedes agregarla aquí.</small></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="text" inputmode="numeric" maxlength="5" placeholder="DD/MM" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Indica únicamente el día y el mes (DD/MM). Si autorizas el acceso, intentaremos obtenerlos de Google o Facebook para enviarte felicitaciones y beneficios de cumpleaños.</small></div>
           <fieldset>
             <legend>Servicios de preferencia</legend>
             <div class="service-options">
