@@ -364,6 +364,8 @@
     const profilePhone = document.querySelector("#profile-phone");
     const profilePhoneCountry = document.querySelector("#profile-phone-country");
     const profileBirthday = document.querySelector("#profile-birthday");
+    const profileGoogleBirthday = document.querySelector("#profile-google-birthday");
+    const profileGoogleBirthdayStatus = document.querySelector("#profile-google-birthday-status");
     const profileBirthdayHint = document.querySelector("#profile-birthday-hint");
     const reauthorizeGoogleBirthdayButton = document.querySelector("#reauthorize-google-birthday");
     let birthdayLastChangedAt = null;
@@ -2550,8 +2552,9 @@
         const birthday = await fetchSocialBirthday(session, providerToken);
         if (!birthday) {
           birthdaySyncDiagnostic = provider === "google"
-            ? "Google respondió, pero no compartió una fecha de cumpleaños para esta cuenta. Verifica que tengas una fecha registrada en tu perfil de Google y que esté disponible para compartir."
+            ? "La consulta a Google fue exitosa, pero la API no devolvió birthdays. Revisa que el cumpleaños esté guardado en tu Cuenta de Google; autorizar el acceso no garantiza que Google lo comparta."
             : "Facebook no devolvió una fecha de cumpleaños disponible para esta cuenta.";
+          profileGoogleBirthdayStatus.textContent = "Google no devolvió una fecha (respuesta sin birthdays).";
           updateBirthdayEditState();
           return existingBirthday || null;
         }
@@ -2561,16 +2564,31 @@
           .select("birthday_source,birthday")
           .eq("id", session.user.id)
           .maybeSingle();
-        if (profileError || activeUserId !== session.user.id) return existingBirthday || null;
+        if (profileError) {
+          birthdaySyncDiagnostic = `Google entregó una fecha, pero no se pudo comprobar el perfil en Supabase: ${profileError.message}`;
+          profileGoogleBirthdayStatus.textContent = "Error al consultar Supabase.";
+          updateBirthdayEditState();
+          return existingBirthday || null;
+        }
+        if (activeUserId !== session.user.id) return existingBirthday || null;
         const updates = { [providerColumn]: birthday };
         if (currentProfile?.birthday_source === provider && !currentProfile.birthday) updates.birthday = birthday;
         const { data, error } = await supabase.from("profiles")
           .update(updates)
           .eq("id", session.user.id)
-          .select("birthday")
+          .select("birthday,birthday_google")
           .maybeSingle();
-        if (error) return existingBirthday || null;
-        return data?.birthday ?? existingBirthday ?? null;
+        if (error || !data) {
+          birthdaySyncDiagnostic = error
+            ? `Google entregó una fecha, pero Supabase no pudo guardarla: ${error.message}`
+            : "Google entregó una fecha, pero Supabase no confirmó el guardado.";
+          profileGoogleBirthdayStatus.textContent = "No se pudo guardar en Supabase.";
+          updateBirthdayEditState();
+          return existingBirthday || null;
+        }
+        profileGoogleBirthday.value = data.birthday_google || birthday;
+        profileGoogleBirthdayStatus.textContent = "Fecha recibida y guardada desde Google.";
+        return data.birthday ?? existingBirthday ?? null;
       } catch (error) {
         const status = Number(error?.status) || 0;
         birthdaySyncDiagnostic = provider === "google"
@@ -2578,6 +2596,9 @@
             ? `Google rechazó la consulta del cumpleaños (HTTP ${status}). Vuelve a autorizar Google para conceder los permisos actualizados.`
             : "No se pudo consultar el cumpleaños en Google. Intenta volver a autorizar Google."
           : "No se pudo consultar el cumpleaños en Facebook. Verifica los permisos de la cuenta.";
+        profileGoogleBirthdayStatus.textContent = provider === "google"
+          ? `Error de Google${status ? ` (HTTP ${status})` : ""}: ${error?.message || "sin detalle"}`
+          : "No se pudo consultar Facebook.";
         console.warn("Error al consultar cumpleaños del proveedor social:", { provider, status, message: error?.message || "Error desconocido" });
         updateBirthdayEditState();
         return existingBirthday || null;
@@ -2689,6 +2710,10 @@
           profileName.value = profileResult.data.full_name ?? "";
           setProfilePhone(profileResult.data.phone ?? "");
           profileBirthday.value = profileResult.data.birthday || "";
+          profileGoogleBirthday.value = profileResult.data.birthday_google || "";
+          profileGoogleBirthdayStatus.textContent = profileResult.data.birthday_google
+            ? "Fecha recibida y guardada desde Google."
+            : "Google aún no ha entregado una fecha a RenovaH2O.";
           birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
           updateBirthdayEditState();
           if (["google", "facebook"].includes(user?.app_metadata?.provider)) {
@@ -3772,7 +3797,8 @@
           <div class="field"><label for="profile-email">Correo electrónico</label><input id="profile-email" type="email" autocomplete="email" readonly aria-readonly="true"></div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><div class="phone-field"><select id="profile-phone-country" aria-label="Código de país"></select><input id="profile-phone" type="tel" maxlength="24" autocomplete="tel-national" placeholder="Número de teléfono"></div></div>
-          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Indica tu fecha completa (día, mes y año). Si autorizas el acceso, intentaremos obtenerla de Google o Facebook.</small><button class="secondary" id="reauthorize-google-birthday" type="button" hidden>Volver a autorizar Google</button></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños manual</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Indica tu fecha completa (día, mes y año).</small></div>
+          <div class="field"><label for="profile-google-birthday">Cumpleaños recibido de Google</label><input id="profile-google-birthday" type="date" readonly aria-readonly="true"><small id="profile-google-birthday-status" class="profile-hint">Aún no se ha recibido una fecha desde Google.</small><button class="secondary" id="reauthorize-google-birthday" type="button" hidden>Volver a autorizar Google</button></div>
           <fieldset>
             <legend>Servicios de preferencia</legend>
             <div class="service-options">
