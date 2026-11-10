@@ -2462,19 +2462,27 @@
     }
 
     function parseSocialBirthday(provider, payload) {
-      let month, day;
+      let month, day, year;
       if (provider === "google") {
         const birthday = payload?.birthdays?.find(item => item?.date?.month && item?.date?.day);
         month = Number(birthday?.date?.month);
         day = Number(birthday?.date?.day);
+        year = Number(birthday?.date?.year) || 2000;
       } else if (provider === "facebook") {
         const raw = String(payload?.birthday ?? "").trim();
-        if (raw.includes("/")) [, month, day] = /^(\d{1,2})\/(\d{1,2})(?:\/\d{4})?$/.exec(raw) || [];
-        else [, , month, day] = /^(?:\d{4})-(\d{1,2})-(\d{1,2})$/.exec(raw) || [];
+        const slashMatch = /^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?$/.exec(raw);
+        const isoMatch = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(raw);
+        if (slashMatch) [, month, day, year] = slashMatch;
+        else if (isoMatch) [, year, month, day] = isoMatch;
         month = Number(month);
         day = Number(day);
+        year = Number(year) || 2000;
       } else return null;
-      return normalizeBirthdayMonthDay(month, day);
+      const normalized = normalizeBirthdayMonthDay(month, day);
+      if (!normalized) return null;
+      const result = `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+      const date = new Date(`${result}T12:00:00Z`);
+      return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month && date.getUTCDate() === day ? result : null;
     }
 
     async function fetchSocialBirthday(session) {
@@ -3037,7 +3045,7 @@
         const birthdayValue = profileBirthday.value.trim();
         const normalizedBirthday = birthdayValue ? birthdayForProfile(birthdayValue) : null;
         if (birthdayValue && !normalizedBirthday) {
-          profileStatus.textContent = "Ingresa un cumpleaños válido en formato DD/MM (por ejemplo, 09/04).";
+          profileStatus.textContent = "Ingresa una fecha de cumpleaños válida con día, mes y año.";
           profileBirthday.focus();
           return;
         }
