@@ -2589,7 +2589,8 @@
         }
         if (activeUserId !== session.user.id) return existingBirthday || null;
         const updates = { [providerColumn]: birthday };
-        if (currentProfile?.birthday_source === provider && !currentProfile.birthday) updates.birthday = birthday;
+        // Mantener profiles.birthday sincronizado siempre que este proveedor sea la fuente elegida.
+        if (currentProfile?.birthday_source === provider) updates.birthday = birthday;
         const { data, error } = await supabase.from("profiles")
           .update(updates)
           .eq("id", session.user.id)
