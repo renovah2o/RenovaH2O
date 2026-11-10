@@ -2487,9 +2487,35 @@
       return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month && date.getUTCDate() === day ? result : null;
     }
 
-    async function fetchSocialBirthday(session) {
+    function rememberGoogleProviderToken(token) {
+      if (!token) return;
+      try {
+        window.sessionStorage.setItem("renovah2o-google-provider-token", JSON.stringify({
+          token,
+          savedAt: Date.now()
+        }));
+      } catch {}
+    }
+
+    function getGoogleProviderToken() {
+      try {
+        const raw = window.sessionStorage.getItem("renovah2o-google-provider-token");
+        if (!raw) return null;
+        const saved = JSON.parse(raw);
+        if (!saved?.token || !saved?.savedAt || Date.now() - saved.savedAt > 10 * 60 * 1000) {
+          window.sessionStorage.removeItem("renovah2o-google-provider-token");
+          return null;
+        }
+        return saved.token;
+      } catch {
+        window.sessionStorage.removeItem("renovah2o-google-provider-token");
+        return null;
+      }
+    }
+
+    async function fetchSocialBirthday(session, providerToken = session?.provider_token) {
       const provider = session?.user?.app_metadata?.provider;
-      const token = session?.provider_token;
+      const token = providerToken;
       if (!token || !["google", "facebook"].includes(provider)) return null;
       const endpoint = provider === "google"
         ? "https://people.googleapis.com/v1/people/me?personFields=birthdays"
@@ -2511,16 +2537,17 @@
     async function syncSocialBirthday(session, existingBirthday) {
       const provider = session?.user?.app_metadata?.provider;
       if (!session?.user?.id || !["google", "facebook"].includes(provider)) return existingBirthday || null;
-      if (!session.provider_token) {
+      const providerToken = session.provider_token || (provider === "google" ? getGoogleProviderToken() : null);
+      if (!providerToken) {
         if (provider === "google") {
-          birthdaySyncDiagnostic = "La sesión actual no incluye el permiso temporal de Google para consultar el cumpleaños. Pulsa «Volver a autorizar Google» para actualizar el acceso.";
+          birthdaySyncDiagnostic = "No se recibió el permiso temporal de Google para consultar el cumpleaños. Vuelve a autorizar Google e intenta nuevamente.";
           updateBirthdayEditState();
         }
         return existingBirthday || null;
       }
       try {
         birthdaySyncDiagnostic = "";
-        const birthday = await fetchSocialBirthday(session);
+        const birthday = await fetchSocialBirthday(session, providerToken);
         if (!birthday) {
           birthdaySyncDiagnostic = provider === "google"
             ? "Google respondió, pero no compartió una fecha de cumpleaños para esta cuenta. Verifica que tengas una fecha registrada en tu perfil de Google y que esté disponible para compartir."
@@ -2773,27 +2800,22 @@
         // Preserve the short-lived Google access token across the post-OAuth return redirect.
         // Supabase may not expose provider_token again after the browser reloads.
         if (session.provider_token && session.user?.app_metadata?.provider === "google") {
-          try {
-            window.sessionStorage.setItem("renovah2o-google-provider-token", session.provider_token);
-          } catch {}
+          rememberGoogleProviderToken(session.provider_token);
         }
         window.sessionStorage.removeItem("renovah2o-auth-next");
         window.location.replace(safeReturnUrl.href);
         return;
       }
-      authSection.hidden = !signedIn;
+      authSection.hidden = signedIn;
       accountApp.hidden = !signedIn;
       activeUserId = signedIn ? session.user.id : undefined;
       if (signedIn) {
         // Consume the one-time token saved before the OAuth return redirect.
         if (session.user?.app_metadata?.provider === "google") {
-          try {
-            const transientGoogleToken = window.sessionStorage.getItem("renovah2o-google-provider-token");
-            window.sessionStorage.removeItem("renovah2o-google-provider-token");
-            if (!session.provider_token && transientGoogleToken) {
-              session = { ...session, provider_token: transientGoogleToken };
-            }
-          } catch {}
+          const transientGoogleToken = getGoogleProviderToken();
+          if (!session.provider_token && transientGoogleToken) {
+            session = { ...session, provider_token: transientGoogleToken };
+          }
         }
         loadAccountData(session.user, session);
       } else {
@@ -3419,6 +3441,11 @@
         else showSession(data.session);
       }).catch(error => showAuthMessage(`No se pudo comprobar la sesión: ${error.message}`));
       supabase.auth.onAuthStateChange((event, session) => {
+        // Capture the provider token from Supabase's OAuth callback event before
+        // a subsequent getSession() or page navigation drops the transient field.
+        if (session?.provider_token && session.user?.app_metadata?.provider === "google") {
+          rememberGoogleProviderToken(session.provider_token);
+        }
         showSession(session);
         if (event === "PASSWORD_RECOVERY") {
           window.location.hash = "perfil";
