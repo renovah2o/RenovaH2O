@@ -2573,8 +2573,8 @@
         const birthday = await fetchSocialBirthday(session, providerToken);
         if (!birthday) {
           birthdaySyncDiagnostic = provider === "google"
-            ? "Google no compartió un cumpleaños. Puedes introducirlo manualmente o revisar los permisos de tu cuenta Google."
-            : "Facebook no compartió un cumpleaños. Puedes introducirlo manualmente.";
+            ? "Google no compartió un cumpleaños. Puedes introducirlo manualmente o revisar los permisos de tu cuenta Google. Utilizamos este dato para ofrecerte promociones especiales y beneficios personalizados en tu cumpleaños, cuando estén disponibles."
+            : "Facebook no compartió un cumpleaños. Puedes introducirlo manualmente o revisar los permisos de tu cuenta Facebook. Utilizamos este dato para ofrecerte promociones especiales y beneficios personalizados en tu cumpleaños, cuando estén disponibles.";
           updateBirthdayEditState();
           return existingBirthday || null;
         }
