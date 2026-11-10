@@ -2621,12 +2621,11 @@
           profileBirthday.value = birthdayForDisplay(profileResult.data.birthday);
           birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
           updateBirthdayEditState();
-          if (!profileBirthday.value && session?.provider_token) {
+          if (session?.provider_token) {
             const syncedBirthday = await syncSocialBirthday(session, profileBirthday.value);
             if (activeUserId !== user.id) return;
-            if (syncedBirthday) {
+            if (syncedBirthday && !profileBirthday.value) {
               profileBirthday.value = birthdayForDisplay(syncedBirthday);
-              birthdayLastChangedAt = new Date().toISOString();
               updateBirthdayEditState();
             }
           }
