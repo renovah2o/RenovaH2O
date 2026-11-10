@@ -2510,7 +2510,14 @@
 
     async function syncSocialBirthday(session, existingBirthday) {
       const provider = session?.user?.app_metadata?.provider;
-      if (!session?.user?.id || !session.provider_token || !["google", "facebook"].includes(provider)) return existingBirthday || null;
+      if (!session?.user?.id || !["google", "facebook"].includes(provider)) return existingBirthday || null;
+      if (!session.provider_token) {
+        if (provider === "google") {
+          birthdaySyncDiagnostic = "La sesión actual no incluye el permiso temporal de Google para consultar el cumpleaños. Pulsa «Volver a autorizar Google» para actualizar el acceso.";
+          updateBirthdayEditState();
+        }
+        return existingBirthday || null;
+      }
       try {
         birthdaySyncDiagnostic = "";
         const birthday = await fetchSocialBirthday(session);
