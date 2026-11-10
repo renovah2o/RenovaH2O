@@ -1,6 +1,9 @@
 name = "renovah2o-site"
 compatibility_date = "2026-11-03"
+main = "./worker.js"
 
 [assets]
 directory = "./"
+binding = "ASSETS"
+run_worker_first = ["/compartir/*"]
 not_found_handling = "404-page"
