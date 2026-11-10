@@ -2590,18 +2590,9 @@
           return existingBirthday || null;
         }
         if (activeUserId !== session.user.id) return existingBirthday || null;
+        // Solo se actualiza la columna social autorizada; el trigger seguro de la BD
+        // decide si corresponde reflejarla en el cumpleaños visible del perfil.
         const updates = { [providerColumn]: birthday };
-        // Si el cliente no tiene fecha manual, usar por defecto el proveedor con el que inició sesión.
-        // Una selección fijada por administración siempre tiene prioridad.
-        const hasManualBirthday = Boolean(currentProfile?.birthday_manual);
-        const adminLockedSource = Boolean(currentProfile?.birthday_source_admin_locked);
-        const shouldUseProvider = currentProfile?.birthday_source === provider ||
-          (!hasManualBirthday && !adminLockedSource);
-        if (shouldUseProvider) {
-          updates.birthday = birthday;
-          if (!adminLockedSource && !hasManualBirthday) updates.birthday_source = provider;
-          birthdayDisplaySource = provider;
-        }
         const { data, error } = await supabase.from("profiles")
           .update(updates)
           .eq("id", session.user.id)
