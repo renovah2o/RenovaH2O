@@ -79,6 +79,20 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function withSecurityHeaders(response) {
+  const headers = new Headers(response.headers);
+  headers.set("X-Frame-Options", "DENY");
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  headers.set("Strict-Transport-Security", "max-age=31536000");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+
 function sharePage(product, slug, origin) {
   const title = product.title;
   const description = product.description;
@@ -124,15 +138,13 @@ function sharePage(product, slug, origin) {
 </body>
 </html>`;
 
-  return new Response(html, {
+  return withSecurityHeaders(new Response(html, {
     status: 200,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "public, max-age=300, s-maxage=3600",
-      "X-Content-Type-Options": "nosniff",
-      "Referrer-Policy": "strict-origin-when-cross-origin"
+      "Cache-Control": "public, max-age=300, s-maxage=3600"
     }
-  });
+  }));
 }
 
 export default {
@@ -144,10 +156,10 @@ export default {
       const slug = match[1].toLowerCase();
       const product = PRODUCTS[slug];
       if (!product) {
-        return new Response("Producto no encontrado", {
+        return withSecurityHeaders(new Response("Producto no encontrado", {
           status: 404,
           headers: { "Content-Type": "text/plain; charset=utf-8" }
-        });
+        }));
       }
       return sharePage(product, slug, url.origin);
     }
