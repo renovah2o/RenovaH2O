@@ -2735,7 +2735,14 @@
           birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
           birthdayInputChanged = false;
           updateBirthdayEditState();
-          if (["google", "facebook"].includes(user?.app_metadata?.provider)) {
+          // Si el perfil ya tiene un cumpleaños guardado (manual o sincronizado),
+          // no volver a consultar ni solicitar autorización social en cada inicio de sesión.
+          const hasSavedBirthday = Boolean(
+            profileResult.data.birthday ||
+            profileResult.data.birthday_google ||
+            profileResult.data.birthday_facebook
+          );
+          if (!hasSavedBirthday && ["google", "facebook"].includes(user?.app_metadata?.provider)) {
             const syncedBirthday = await syncSocialBirthday(session, profileBirthday.value);
             if (activeUserId !== user.id) return;
             if (syncedBirthday) profileBirthday.value = syncedBirthday;
