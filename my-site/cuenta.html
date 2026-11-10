@@ -2467,17 +2467,18 @@
           profileBirthdayHint.textContent = birthdaySyncDiagnostic || "Puedes modificar tu cumpleaños. Después de guardarlo, solo podrás cambiarlo nuevamente dentro de 12 meses.";
         } else {
           profileBirthdayHint.textContent = birthdaySyncDiagnostic || "Agrega tu cumpleaños para recibir felicitaciones y beneficios especiales.";
-          if (birthdaySocialProvider === "google" || birthdaySocialProvider === "facebook") {
-            const link = document.createElement("a");
-            link.href = "#";
-            link.textContent = birthdaySocialProvider === "facebook" ? "autorizar Facebook para sincronizar" : "autorizar Google para sincronizar";
-            link.style.cssText = "color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer";
-            link.addEventListener("click", event => {
-              event.preventDefault();
-              signInWithSocialProvider(birthdaySocialProvider, birthdaySocialProvider === "facebook" ? "Facebook" : "Google");
-            });
-            profileBirthdayHint.append(document.createTextNode(" También puedes "), link, document.createTextNode("."));
-          }
+        }
+        if ((birthdaySyncDiagnostic || !profileBirthday.value) && ["google", "facebook"].includes(birthdaySocialProvider)) {
+          const link = document.createElement("a");
+          link.href = "#";
+          link.textContent = birthdaySocialProvider === "facebook" ? "autorizar Facebook para sincronizar" : "autorizar Google para sincronizar";
+          link.style.cssText = "color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer";
+          link.addEventListener("click", event => {
+            event.preventDefault();
+            signInWithSocialProvider(birthdaySocialProvider, birthdaySocialProvider === "facebook" ? "Facebook" : "Google");
+          });
+          profileBirthdayHint.append(document.createTextNode(" También puedes "), link, document.createTextNode("."));
+        }
         }
       }
     }
@@ -2560,10 +2561,10 @@
       const providerToken = session.provider_token || getSocialProviderToken(provider);
       birthdaySocialProvider = provider;
       if (!providerToken) {
-        if (provider === "google") {
-          birthdaySyncDiagnostic = "No se ha autorizado el acceso al cumpleaños de Google. Puedes introducir la fecha manualmente o autorizar la sincronización.";
-          updateBirthdayEditState();
-        }
+        birthdaySyncDiagnostic = provider === "google"
+          ? "No se ha autorizado el acceso al cumpleaños de Google. Puedes introducir la fecha manualmente o autorizar la sincronización."
+          : "No se ha autorizado el acceso al cumpleaños de Facebook. Puedes introducir la fecha manualmente o autorizar la sincronización.";
+        updateBirthdayEditState();
         return existingBirthday || null;
       }
       try {
@@ -2583,7 +2584,7 @@
           .eq("id", session.user.id)
           .maybeSingle();
         if (profileError) {
-          birthdaySyncDiagnostic = `Google entregó una fecha, pero no se pudo comprobar el perfil en Supabase: ${profileError.message}`;
+          birthdaySyncDiagnostic = `${provider === "google" ? "Google" : "Facebook"} entregó una fecha, pero no se pudo comprobar el perfil en Supabase: ${profileError.message}`;
           updateBirthdayEditState();
           return existingBirthday || null;
         }
@@ -2597,8 +2598,8 @@
           .maybeSingle();
         if (error || !data) {
           birthdaySyncDiagnostic = error
-            ? `Google entregó una fecha, pero Supabase no pudo guardarla: ${error.message}`
-            : "Google entregó una fecha, pero Supabase no confirmó el guardado.";
+            ? `${provider === "google" ? "Google" : "Facebook"} entregó una fecha, pero Supabase no pudo guardarla: ${error.message}`
+            : `${provider === "google" ? "Google" : "Facebook"} entregó una fecha, pero Supabase no confirmó el guardado.`;
           updateBirthdayEditState();
           return existingBirthday || null;
         }
