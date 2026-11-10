@@ -122,6 +122,12 @@ Deno.serve(async request => {
     : (isAdminRecipient
         ? "https://renovah2o.com/cuenta#administrar-mensajes"
         : "https://renovah2o.com/cuenta#consultas");
+  const recipientType = notification.order_id
+    ? (isCustomer ? "customer" : "admin")
+    : (isAdminRecipient ? "admin" : "customer");
+  const accountLinkLabel = notification.order_id
+    ? (isCustomer ? "Ver mis órdenes" : "Administrar órdenes")
+    : (isAdminRecipient ? "Abrir bandeja de contacto" : "Ver mis consultas");
   const subject = orderNumber
     ? `${notification.title} · Orden ${orderNumber}`
     : notification.title;
@@ -134,7 +140,7 @@ Deno.serve(async request => {
     `<h1>${safeTitle}</h1>`,
     `<p>${safeMessage.replace(/\n/g, "<br>")}</p>`,
     orderReference,
-    `<p><a href="${accountUrl}">${isCustomer ? "Ver mis órdenes" : "Administrar órdenes"} en RenovaH2O</a></p>`
+    `<p><a href="${accountUrl}">${accountLinkLabel} en RenovaH2O</a></p>`
   ].join("");
   const text = [
     notification.title,
@@ -158,7 +164,7 @@ Deno.serve(async request => {
       text,
       tags: [
         { name: "notification_id", value: notification.id },
-        { name: "recipient_type", value: isCustomer ? "customer" : "admin" }
+        { name: "recipient_type", value: recipientType }
       ]
     })
   });
