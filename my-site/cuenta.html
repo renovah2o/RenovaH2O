@@ -2340,7 +2340,55 @@
       }
     }
 
-    async function loadAccountData(user) {
+    function parseSocialBirthday(provider, payload) {
+      if (provider === "google") {
+        const birthday = payload?.birthdays?.find(item => item?.date?.year && item?.date?.month && item?.date?.day);
+        const date = birthday?.date;
+        if (!date) return null;
+        return `${String(date.year).padStart(4, "0")}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
+      }
+      if (provider === "facebook") {
+        const raw = String(payload?.birthday ?? "").trim();
+        let match = raw.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/);
+        if (match) return `${match[3]}-${match[1].padStart(2, "0")}-${match[2].padStart(2, "0")}`;
+        match = raw.match(/^(\\d{4})-(\\d{1,2})-(\\d{1,2})$/);
+        if (match) return `${match[1]}-${match[2].padStart(2, "0")}-${match[3].padStart(2, "0")}`;
+      }
+      return null;
+    }
+
+    async function fetchSocialBirthday(session) {
+      const provider = session?.user?.app_metadata?.provider;
+      const token = session?.provider_token;
+      if (!token || !["google", "facebook"].includes(provider)) return null;
+      const endpoint = provider === "google"
+        ? "https://people.googleapis.com/v1/people/me?personFields=birthdays"
+        : "https://graph.facebook.com/me?fields=birthday";
+      const response = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
+      if (!response.ok) return null;
+      return parseSocialBirthday(provider, await response.json());
+    }
+
+    async function syncSocialBirthday(session, existingBirthday) {
+      if (existingBirthday || !session?.user?.id || !session.provider_token) return existingBirthday || null;
+      try {
+        const birthday = await fetchSocialBirthday(session);
+        if (!birthday || activeUserId !== session.user.id) return null;
+        const { data, error } = await supabase.from("profiles")
+          .update({ birthday })
+          .eq("id", session.user.id)
+          .is("birthday", null)
+          .select("birthday")
+          .maybeSingle();
+        if (error) return null;
+        return data?.birthday ?? null;
+      } catch (error) {
+        console.info("No fue posible sincronizar el cumpleaños desde el proveedor social.");
+        return null;
+      }
+    }
+
+    async function loadAccountData(user, session = null) {
       isAgendaAdmin = false;
       adminNavGroup.hidden = true;
       adminAgendaTile.hidden = true;
@@ -2440,6 +2488,11 @@
           profileName.value = profileResult.data.full_name ?? "";
           setProfilePhone(profileResult.data.phone ?? "");
           profileBirthday.value = profileResult.data.birthday ?? "";
+          if (!profileBirthday.value && session?.provider_token) {
+            const syncedBirthday = await syncSocialBirthday(session, profileBirthday.value);
+            if (activeUserId !== user.id) return;
+            if (syncedBirthday) profileBirthday.value = syncedBirthday;
+          }
           const preferredServices = profileResult.data.preferred_services ?? [];
           document.querySelectorAll('input[name="preferred-services"]').forEach(input => {
             input.checked = preferredServices.includes(input.value);
@@ -2545,7 +2598,7 @@
       authSection.hidden = signedIn;
       accountApp.hidden = !signedIn;
       activeUserId = signedIn ? session.user.id : undefined;
-      if (signedIn) loadAccountData(session.user);
+      if (signedIn) loadAccountData(session.user, session);
       else {
         isAgendaAdmin = false;
         adminNavGroup.hidden = true;
@@ -2796,9 +2849,12 @@
       authMessage.hidden = true;
       try {
         if (safeReturnUrl) window.sessionStorage.setItem("renovah2o-auth-next", `${safeReturnUrl.pathname}${safeReturnUrl.search}${safeReturnUrl.hash}`);
+        const scopes = provider === "google"
+          ? "https://www.googleapis.com/auth/user.birthday.read"
+          : "public_profile email user_birthday";
         const { error } = await supabase.auth.signInWithOAuth({
           provider,
-          options: { redirectTo: authCallbackUrl() }
+          options: { redirectTo: authCallbackUrl(), scopes }
         });
         if (error) showAuthMessage(error.message);
       } catch (error) {
@@ -3475,7 +3531,7 @@
           <div class="field"><label for="profile-email">Correo electrónico</label><input id="profile-email" type="email" autocomplete="email" readonly aria-readonly="true"></div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><div class="phone-field"><select id="profile-phone-country" aria-label="Código de país"></select><input id="profile-phone" type="tel" maxlength="24" autocomplete="tel-national" placeholder="Número de teléfono"></div></div>
-          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" max="2026-11-08" autocomplete="bday"></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" max="2026-11-10" autocomplete="bday"><small class="profile-hint">Si autorizas el acceso, intentaremos obtenerla de Google o Facebook. Si no está disponible, puedes agregarla aquí.</small></div>
           <fieldset>
             <legend>Servicios de preferencia</legend>
             <div class="service-options">
