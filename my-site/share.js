@@ -193,12 +193,11 @@ if (!document.body.hasAttribute("data-no-social")) {
         const url = new URL(`/compartir/${encodeURIComponent(sku)}`, window.location.origin);
 
         const description = card.querySelector("p")?.textContent.trim() || "";
-        const price = card.querySelector(".package-price, .price, .price-row")?.textContent.trim() || "";
-        const message = [title, price, description, url.href].filter(Boolean).join("\n");
+        const message = [title, description, url.href].filter(Boolean).join("\n");
 
         try {
           if (navigator.share) {
-            await navigator.share({ title, text: [price, description].filter(Boolean).join("\n"), url: url.href });
+            await navigator.share({ title, text: description, url: url.href });
           } else {
             const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
             const popup = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
