@@ -2466,7 +2466,7 @@
         if (profileBirthday.value) {
           profileBirthdayHint.textContent = birthdaySyncDiagnostic || "Puedes modificar tu cumpleaños. Después de guardarlo, solo podrás cambiarlo nuevamente dentro de 12 meses.";
         } else {
-          profileBirthdayHint.textContent = birthdaySyncDiagnostic || "Agrega tu cumpleaños para recibir felicitaciones y beneficios especiales.";
+          profileBirthdayHint.textContent = birthdaySyncDiagnostic || "Tu fecha de cumpleaños nos permite enviarte felicitaciones y promociones personalizadas cuando haya beneficios disponibles para esa ocasión.";
         }
         if ((birthdaySyncDiagnostic || !profileBirthday.value) && ["google", "facebook"].includes(birthdaySocialProvider)) {
           const link = document.createElement("a");
@@ -3821,7 +3821,7 @@
           <div class="field"><label for="profile-email">Correo electrónico</label><input id="profile-email" type="email" autocomplete="email" readonly aria-readonly="true"></div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><div class="phone-field"><select id="profile-phone-country" aria-label="Código de país"></select><input id="profile-phone" type="tel" maxlength="24" autocomplete="tel-national" placeholder="Número de teléfono"></div></div>
-          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Agrega tu cumpleaños para recibir felicitaciones y beneficios especiales.</small></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Tu fecha de cumpleaños nos permite enviarte felicitaciones y promociones personalizadas cuando haya beneficios disponibles para esa ocasión.</small></div>
           <fieldset>
             <legend>Servicios de preferencia</legend>
             <div class="service-options">
