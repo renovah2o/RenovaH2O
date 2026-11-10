@@ -2164,8 +2164,86 @@
         detail.textContent = [
           customer.email || "Sin correo",
           customer.phone || "Sin teléfono",
-          customer.birthday ? `Cumpleaños: ${formatDateOnly(customer.birthday)}` : "Cumpleaños no registrado"
+          customer.birthday ? `Cumpleaños mostrado: ${birthdayForDisplay(customer.birthday)}` : "Cumpleaños no registrado"
         ].join(" · ");
+
+        const birthdayEditor = document.createElement("div");
+        birthdayEditor.className = "admin-customer-birthday-editor";
+        birthdayEditor.style.cssText = "display:grid;gap:9px;margin:14px 0;padding:13px;border:1px solid #e7e9ee;border-radius:12px;background:#fafafa";
+        const birthdayTitle = document.createElement("strong");
+        birthdayTitle.textContent = "Gestionar cumpleaños";
+        const sourceInfo = document.createElement("p");
+        sourceInfo.className = "order-meta";
+        sourceInfo.textContent = `Manual: ${birthdayForDisplay(customer.birthday_manual) || "Sin registrar"} · Google: ${birthdayForDisplay(customer.birthday_google) || "No disponible"} · Facebook: ${birthdayForDisplay(customer.birthday_facebook) || "No disponible"}`;
+        const manualLabel = document.createElement("label");
+        manualLabel.textContent = "Fecha manual (DD/MM)";
+        const manualInput = document.createElement("input");
+        manualInput.type = "text";
+        manualInput.inputMode = "numeric";
+        manualInput.maxLength = 5;
+        manualInput.placeholder = "DD/MM";
+        manualInput.value = birthdayForDisplay(customer.birthday_manual);
+        manualInput.setAttribute("aria-label", `Cumpleaños manual de ${customer.full_name || customer.email || "cliente"}`);
+        manualInput.style.cssText = "width:100%;min-height:42px;padding:9px 11px;border:1px solid #d2d2d7;border-radius:9px";
+        manualLabel.append(manualInput);
+        const sourceLabel = document.createElement("label");
+        sourceLabel.textContent = "Fecha que utilizará RenovaH2O";
+        const sourceSelect = document.createElement("select");
+        sourceSelect.style.cssText = "width:100%;min-height:42px;padding:9px 11px;border:1px solid #d2d2d7;border-radius:9px;background:#fff";
+        for (const [value, label] of [["manual","Manual"],["google","Google"],["facebook","Facebook"]]) {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = label;
+          sourceSelect.append(option);
+        }
+        sourceSelect.value = customer.birthday_source || "manual";
+        sourceLabel.append(sourceSelect);
+        const birthdaySave = document.createElement("button");
+        birthdaySave.type = "button";
+        birthdaySave.className = "secondary";
+        birthdaySave.textContent = "Guardar cumpleaños";
+        const birthdayStatus = document.createElement("p");
+        birthdayStatus.className = "order-meta";
+        birthdayStatus.setAttribute("role", "status");
+        birthdaySave.addEventListener("click", async () => {
+          const manualBirthday = manualInput.value.trim();
+          const normalizedManual = manualBirthday ? birthdayForProfile(manualBirthday) : null;
+          if (manualBirthday && !normalizedManual) {
+            birthdayStatus.textContent = "Ingresa una fecha válida en formato DD/MM.";
+            manualInput.focus();
+            return;
+          }
+          if (sourceSelect.value === "manual" && !normalizedManual) {
+            birthdayStatus.textContent = "Registra una fecha manual antes de seleccionarla.";
+            manualInput.focus();
+            return;
+          }
+          birthdaySave.disabled = true;
+          birthdayStatus.textContent = "Guardando…";
+          try {
+            const { data, error } = await supabase.rpc("checkout_admin_set_customer_birthday", {
+              p_customer_id: customer.customer_id,
+              p_birthday_manual: normalizedManual,
+              p_birthday_source: sourceSelect.value
+            });
+            if (error) throw error;
+            customer.birthday_manual = normalizedManual;
+            customer.birthday_source = sourceSelect.value;
+            customer.birthday = data;
+            detail.textContent = [
+              customer.email || "Sin correo",
+              customer.phone || "Sin teléfono",
+              `Cumpleaños mostrado: ${birthdayForDisplay(data)}`
+            ].join(" · ");
+            sourceInfo.textContent = `Manual: ${birthdayForDisplay(customer.birthday_manual) || "Sin registrar"} · Google: ${birthdayForDisplay(customer.birthday_google) || "No disponible"} · Facebook: ${birthdayForDisplay(customer.birthday_facebook) || "No disponible"}`;
+            birthdayStatus.textContent = "Cumpleaños actualizado.";
+          } catch (error) {
+            birthdayStatus.textContent = `No se pudo guardar: ${error.message}`;
+          } finally {
+            birthdaySave.disabled = false;
+          }
+        });
+        birthdayEditor.append(birthdayTitle, sourceInfo, manualLabel, sourceLabel, birthdaySave, birthdayStatus);
         const activity = document.createElement("p");
         activity.className = "order-meta";
         activity.textContent = `${customer.order_count} órdenes · Última orden: ${customer.last_order_at ? formatAgendaDateTime(customer.last_order_at) : "ninguna"}`;
@@ -2177,7 +2255,7 @@
           alquileres: "Alquileres"
         };
         services.textContent = `Preferencias: ${(customer.preferred_services ?? []).map(service => labels[service] ?? service).join(", ") || "No indicadas"}`;
-        details.append(detail, activity, services);
+        details.append(detail, birthdayEditor, activity, services);
         appendCustomerContactActions(details, customer);
 
         summary.addEventListener("click", () => {
@@ -2412,21 +2490,29 @@
     }
 
     async function syncSocialBirthday(session, existingBirthday) {
-      if (existingBirthday || !session?.user?.id || !session.provider_token) return existingBirthday || null;
+      const provider = session?.user?.app_metadata?.provider;
+      if (!session?.user?.id || !session.provider_token || !["google", "facebook"].includes(provider)) return existingBirthday || null;
       try {
         const birthday = await fetchSocialBirthday(session);
-        if (!birthday || activeUserId !== session.user.id) return null;
-        const { data, error } = await supabase.from("profiles")
-          .update({ birthday })
+        if (!birthday || activeUserId !== session.user.id) return existingBirthday || null;
+        const providerColumn = provider === "google" ? "birthday_google" : "birthday_facebook";
+        const { data: currentProfile, error: profileError } = await supabase.from("profiles")
+          .select("birthday_source,birthday")
           .eq("id", session.user.id)
-          .is("birthday", null)
+          .maybeSingle();
+        if (profileError || activeUserId !== session.user.id) return existingBirthday || null;
+        const updates = { [providerColumn]: birthday };
+        if (currentProfile?.birthday_source === provider && !currentProfile.birthday) updates.birthday = birthday;
+        const { data, error } = await supabase.from("profiles")
+          .update(updates)
+          .eq("id", session.user.id)
           .select("birthday")
           .maybeSingle();
-        if (error) return null;
-        return data?.birthday ?? null;
+        if (error) return existingBirthday || null;
+        return data?.birthday ?? existingBirthday ?? null;
       } catch (error) {
         console.info("No fue posible sincronizar el cumpleaños desde el proveedor social.");
-        return null;
+        return existingBirthday || null;
       }
     }
 
@@ -2500,7 +2586,7 @@
 
         const [profileResult, addressesResult, phonesResult, ordersResult, reservationsResult, adminResult] = await Promise.all([
           supabase.from("profiles")
-            .select("full_name, phone, birthday, birthday_last_changed_at, preferred_services, profile_avatar_path, service_address")
+            .select("full_name, phone, birthday, birthday_last_changed_at, birthday_source, birthday_manual, birthday_google, birthday_facebook, preferred_services, profile_avatar_path, service_address")
             .eq("id", user.id)
             .maybeSingle(),
           supabase.from("profile_addresses")
