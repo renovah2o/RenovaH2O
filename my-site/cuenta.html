@@ -365,7 +365,9 @@
     const profilePhoneCountry = document.querySelector("#profile-phone-country");
     const profileBirthday = document.querySelector("#profile-birthday");
     const profileBirthdayHint = document.querySelector("#profile-birthday-hint");
+    const reauthorizeGoogleBirthdayButton = document.querySelector("#reauthorize-google-birthday");
     let birthdayLastChangedAt = null;
+    let birthdaySyncDiagnostic = "";
     const avatarFile = document.querySelector("#profile-avatar");
     const avatarImage = document.querySelector("#profile-avatar-image");
     const avatarInitials = document.querySelector("#profile-avatar-initials");
@@ -2455,9 +2457,9 @@
         supportLink.textContent = "soporte";
         profileBirthdayHint.append(supportLink, document.createTextNode("."));
       } else {
-        profileBirthdayHint.textContent = profileBirthday.value
+        profileBirthdayHint.textContent = birthdaySyncDiagnostic || (profileBirthday.value
           ? "Puedes modificar tu cumpleaños ahora. Después de guardarlo, solo podrás cambiarlo nuevamente dentro de 12 meses. Si necesitas una corrección urgente, contacta a soporte."
-          : "Indica únicamente el día y el mes (DD/MM). Si autorizas el acceso, intentaremos obtenerlos de Google o Facebook para enviarte felicitaciones y beneficios de cumpleaños.";
+          : "Indica únicamente el día y el mes (DD/MM). Si autorizas el acceso, intentaremos obtenerlos de Google o Facebook para enviarte felicitaciones y beneficios de cumpleaños.");
       }
     }
 
@@ -2493,7 +2495,16 @@
         ? "https://people.googleapis.com/v1/people/me?personFields=birthdays"
         : "https://graph.facebook.com/me?fields=birthday";
       const response = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
-      if (!response.ok) return null;
+      if (!response.ok) {
+        let detail = "";
+        try {
+          const payload = await response.json();
+          detail = payload?.error?.message || payload?.error_description || "";
+        } catch {}
+        const error = new Error(detail || `La API respondió HTTP ${response.status}.`);
+        error.status = response.status;
+        throw error;
+      }
       return parseSocialBirthday(provider, await response.json());
     }
 
@@ -2501,8 +2512,16 @@
       const provider = session?.user?.app_metadata?.provider;
       if (!session?.user?.id || !session.provider_token || !["google", "facebook"].includes(provider)) return existingBirthday || null;
       try {
+        birthdaySyncDiagnostic = "";
         const birthday = await fetchSocialBirthday(session);
-        if (!birthday || activeUserId !== session.user.id) return existingBirthday || null;
+        if (!birthday) {
+          birthdaySyncDiagnostic = provider === "google"
+            ? "Google respondió, pero no compartió una fecha de cumpleaños para esta cuenta. Verifica que tengas una fecha registrada en tu perfil de Google y que esté disponible para compartir."
+            : "Facebook no devolvió una fecha de cumpleaños disponible para esta cuenta.";
+          updateBirthdayEditState();
+          return existingBirthday || null;
+        }
+        if (activeUserId !== session.user.id) return existingBirthday || null;
         const providerColumn = provider === "google" ? "birthday_google" : "birthday_facebook";
         const { data: currentProfile, error: profileError } = await supabase.from("profiles")
           .select("birthday_source,birthday")
@@ -2519,13 +2538,22 @@
         if (error) return existingBirthday || null;
         return data?.birthday ?? existingBirthday ?? null;
       } catch (error) {
-        console.info("No fue posible sincronizar el cumpleaños desde el proveedor social.");
+        const status = Number(error?.status) || 0;
+        birthdaySyncDiagnostic = provider === "google"
+          ? status === 401 || status === 403
+            ? `Google rechazó la consulta del cumpleaños (HTTP ${status}). Vuelve a autorizar Google para conceder los permisos actualizados.`
+            : "No se pudo consultar el cumpleaños en Google. Intenta volver a autorizar Google."
+          : "No se pudo consultar el cumpleaños en Facebook. Verifica los permisos de la cuenta.";
+        console.warn("Error al consultar cumpleaños del proveedor social:", { provider, status, message: error?.message || "Error desconocido" });
+        updateBirthdayEditState();
         return existingBirthday || null;
       }
     }
 
     async function loadAccountData(user, session = null) {
       isAgendaAdmin = false;
+      reauthorizeGoogleBirthdayButton.hidden = user?.app_metadata?.provider !== "google";
+      birthdaySyncDiagnostic = "";
       adminNavGroup.hidden = true;
       adminAgendaTile.hidden = true;
       adminOrdersTile.hidden = true;
@@ -2994,11 +3022,15 @@
       try {
         if (safeReturnUrl) window.sessionStorage.setItem("renovah2o-auth-next", `${safeReturnUrl.pathname}${safeReturnUrl.search}${safeReturnUrl.hash}`);
         const scopes = provider === "google"
-          ? "https://www.googleapis.com/auth/user.birthday.read"
+          ? "https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/userinfo.profile"
           : "public_profile email user_birthday";
         const { error } = await supabase.auth.signInWithOAuth({
           provider,
-          options: { redirectTo: authCallbackUrl(), scopes }
+          options: {
+            redirectTo: authCallbackUrl(),
+            scopes,
+            ...(provider === "google" ? { queryParams: { prompt: "consent" } } : {})
+          }
         });
         if (error) showAuthMessage(error.message);
       } catch (error) {
@@ -3010,6 +3042,7 @@
 
     googleButton.addEventListener("click", () => signInWithSocialProvider("google", "Google"));
     facebookButton.addEventListener("click", () => signInWithSocialProvider("facebook", "Facebook"));
+    reauthorizeGoogleBirthdayButton.addEventListener("click", () => signInWithSocialProvider("google", "Google"));
 
     document.querySelector("#profile-form").addEventListener("submit", async event => {
       event.preventDefault();
@@ -3687,7 +3720,7 @@
           <div class="field"><label for="profile-email">Correo electrónico</label><input id="profile-email" type="email" autocomplete="email" readonly aria-readonly="true"></div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><div class="phone-field"><select id="profile-phone-country" aria-label="Código de país"></select><input id="profile-phone" type="tel" maxlength="24" autocomplete="tel-national" placeholder="Número de teléfono"></div></div>
-          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Indica tu fecha completa (día, mes y año). Si autorizas el acceso, intentaremos obtenerla de Google o Facebook.</small></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Indica tu fecha completa (día, mes y año). Si autorizas el acceso, intentaremos obtenerla de Google o Facebook.</small><button class="secondary" id="reauthorize-google-birthday" type="button" hidden>Volver a autorizar Google</button></div>
           <fieldset>
             <legend>Servicios de preferencia</legend>
             <div class="service-options">
