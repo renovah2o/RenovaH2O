@@ -2571,9 +2571,6 @@
         const birthday = await fetchSocialBirthday(session, providerToken);
         if (!birthday) {
           birthdaySyncDiagnostic = provider === "google"
-            ? "La consulta a Google fue exitosa, pero la API no devolvió birthdays. Revisa que el cumpleaños esté guardado en tu Cuenta de Google; autorizar el acceso no garantiza que Google lo comparta."
-            : "Facebook no devolvió una fecha de cumpleaños disponible para esta cuenta.";
-          birthdaySyncDiagnostic = provider === "google"
             ? "Google no compartió un cumpleaños. Puedes introducirlo manualmente o revisar los permisos de tu cuenta Google."
             : "Facebook no compartió un cumpleaños. Puedes introducirlo manualmente.";
           updateBirthdayEditState();
@@ -2602,9 +2599,6 @@
           birthdaySyncDiagnostic = error
             ? `Google entregó una fecha, pero Supabase no pudo guardarla: ${error.message}`
             : "Google entregó una fecha, pero Supabase no confirmó el guardado.";
-          profileGoogleBirthdayStatus.textContent = error
-            ? `Supabase rechazó el guardado: ${error.message}`
-            : "Supabase no devolvió la fila actualizada; revisa la política de acceso del perfil.";
           updateBirthdayEditState();
           return existingBirthday || null;
         }
@@ -2615,11 +2609,6 @@
         return data.birthday ?? existingBirthday ?? birthday;
       } catch (error) {
         const status = Number(error?.status) || 0;
-        birthdaySyncDiagnostic = provider === "google"
-          ? status === 401 || status === 403
-            ? `Google rechazó la consulta del cumpleaños (HTTP ${status}). Vuelve a autorizar Google para conceder los permisos actualizados.`
-            : "No se pudo consultar el cumpleaños en Google. Intenta volver a autorizar Google."
-          : "No se pudo consultar el cumpleaños en Facebook. Verifica los permisos de la cuenta.";
         birthdaySyncDiagnostic = provider === "google"
           ? `No se pudo sincronizar con Google${status ? ` (HTTP ${status})` : ""}. Puedes ingresar tu fecha manualmente.`
           : `No se pudo sincronizar con Facebook${status ? ` (HTTP ${status})` : ""}. Puedes ingresar tu fecha manualmente.`;
