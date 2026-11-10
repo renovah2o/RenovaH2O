@@ -869,11 +869,13 @@
         radio.checked = radio.value === defaultAddress?.id;
       }
       newAddressChoice.checked = profileAddresses.length === 0;
+      newAddressChoice.closest(".choice-add-link").hidden = profileAddresses.length === 0;
       const defaultPhone = profilePhones.find(phone => phone.is_default) ?? profilePhones[0];
       for (const radio of savedPhoneOptions.querySelectorAll('input[name="phone-choice"]')) {
         radio.checked = radio.value === defaultPhone?.id;
       }
       newPhoneChoice.checked = profilePhones.length === 0;
+      newPhoneChoice.closest(".choice-add-link").hidden = profilePhones.length === 0;
       updateContactChoices();
     }
 
