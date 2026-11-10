@@ -245,6 +245,17 @@
         "Juan Díaz", "Don Bosco", "Las Mañanitas", "Tocumen", "Las Cumbres",
         "Alcalde Díaz", "Ernesto Córdoba Campos", "Caimitillo", "Pedregal", "Las Garzas",
         "Pacora", "24 de Diciembre", "Chilibre", "San Martín", "Ancón"
+      ],
+      sanmiguelito: [
+        "Amelia Denis de Icaza",
+        "Arnulfo Arias",
+        "Belisario Frías",
+        "Belisario Porras",
+        "José Domingo Espinar",
+        "Mateo Iturralde",
+        "Omar Torrijos",
+        "Rufina Alfaro",
+        "Victoriano Lorenzo"
       ]
     };
 
@@ -785,7 +796,10 @@
       const options = provinceSelect.value === "Panamá Oeste"
         ? [{ label: "Arraiján", value: "Arraiján" }, { label: "La Chorrera", value: "La Chorrera" }]
         : provinceSelect.value === "Panamá"
-          ? [{ label: "Panamá (ciudad)", value: "Panamá" }]
+          ? [
+              { label: "Panamá (ciudad)", value: "Panamá" },
+              { label: "San Miguelito", value: "San Miguelito" }
+            ]
           : [];
       updateSelect(districtSelect, options, "Selecciona un distrito");
       updateSelect(corregimientoSelect, [], "Selecciona un corregimiento");
@@ -800,7 +814,9 @@
           ? "chorrera"
           : districtSelect.value === "Panamá"
             ? "panama"
-            : null;
+            : districtSelect.value === "San Miguelito"
+              ? "sanmiguelito"
+              : null;
       updateSelect(
         corregimientoSelect,
         (corregimientosByDistrict[key] ?? []).map(name => ({ label: name, value: name })),
