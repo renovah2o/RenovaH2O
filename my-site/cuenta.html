@@ -3050,6 +3050,8 @@
             full_name: profileName.value.trim() || null,
             phone: formatPhoneForProfile() || null,
             birthday: normalizedBirthday,
+            birthday_manual: normalizedBirthday,
+            birthday_source: "manual",
             preferred_services: getPreferredServices(),
             profile_avatar_path: nextAvatarPath
           })
