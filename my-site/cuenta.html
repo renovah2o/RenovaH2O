@@ -129,8 +129,16 @@
     .admin-adjustment-status{min-height:20px;margin:0;color:var(--gray);font-size:13px}
     .order-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
     .order-head strong{font-size:15px}
-    .order-meta,.order-items{margin:6px 0 0;color:var(--gray);font-size:14px}
-    .order-items{padding-left:20px}
+    .order-meta{margin:6px 0 0;color:var(--gray);font-size:14px}
+    .order-items{display:grid;gap:10px;margin:12px 0 0;padding:0;list-style:none}
+    .order-item-row{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:13px;align-items:center;min-width:0;padding:10px;border:1px solid #e8e8ed;border-radius:12px;background:#fff}
+    .order-item-row img{display:block;width:76px;height:66px;overflow:hidden;border:1px solid #e8e8ed;border-radius:9px;background:#f5f5f7;object-fit:cover}
+    .order-item-information{display:grid;gap:4px;min-width:0}
+    .order-item-name{color:#252a32;font-size:13px;font-weight:650;line-height:1.4;overflow-wrap:anywhere}
+    .order-item-quantity{color:var(--gray);font-size:12px}
+    .order-item-price{color:#252a32;font-size:13px;font-weight:700;white-space:nowrap}
+    .order-item-row.without-image{grid-template-columns:minmax(0,1fr) auto}
+    @media(max-width:560px){.order-item-row{grid-template-columns:62px minmax(0,1fr);gap:10px}.order-item-row img{width:62px;height:60px}.order-item-price{grid-column:2}.order-item-row.without-image{grid-template-columns:minmax(0,1fr) auto}.order-item-row.without-image .order-item-price{grid-column:auto}}
     .empty-state{margin:0;padding:22px;border-radius:14px;background:#f5f5f7;color:var(--gray);font-size:14px}
     .admin-customer-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-bottom:16px}
     .admin-customer-search input{min-width:0;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px}
@@ -969,6 +977,68 @@
       container.append(empty);
     }
 
+    const ORDER_ITEM_IMAGE_RULES = [
+      ["hidrolavadora 4000 psi", "/Images/alq-3.5%20GPM%20pressure%20washer.jpg"],
+      ["hidrolavadora 2700 psi", "/Images/alq-2.3%20gpm%20pressure%20washer.jpg"],
+      ["disco de hidrolavado de 20 pulgadas", "/Images/alq-disco.jpg"],
+      ["turbo nozzle", "/Images/alq-turbo.jpg"],
+      ["broom de 24 pulgadas", "/Images/alq-broom.jpg"],
+      ["manguera adicional de 50 pies", "/Images/alq-Manguera.jpg"],
+      ["promoción navideña de hidrolavado residencial", "/Images/promo-navidad-renovah2o.png"],
+      ["hidrolavado residencial · 65 a 100 m²", "/Images/100m2.jpeg"],
+      ["hidrolavado residencial · 115 a 500 m²", "/Images/500m2.jpeg"],
+      ["servicio de hidrolavado comercial · 115 a 500 m²", "/Images/115.jpg"],
+      ["servicio de hidrolavado comercial · 600 a 1,000 m²", "/Images/600.jpg"],
+      ["servicio de hidrolavado comercial · 1,250 a 5,000 m²", "/Images/1250.jpg"]
+    ];
+
+    function getOrderItemImage(productName) {
+      const normalizedName = String(productName ?? "").trim().toLocaleLowerCase("es-PA");
+      if (!normalizedName || normalizedName.startsWith("depósito de garantía")) return "";
+      const match = ORDER_ITEM_IMAGE_RULES.find(([prefix]) => normalizedName.startsWith(prefix));
+      return match ? match[1] : "";
+    }
+
+    function createOrderItemsList(items, currency, showPrices = false) {
+      if (!Array.isArray(items) || !items.length) return null;
+      const list = document.createElement("ul");
+      list.className = "order-items";
+      for (const item of items) {
+        const row = document.createElement("li");
+        row.className = "order-item-row";
+        const imageUrl = getOrderItemImage(item.product_name);
+        if (imageUrl) {
+          const image = document.createElement("img");
+          image.src = imageUrl;
+          image.alt = "Imagen de " + (item.product_name || "producto");
+          image.loading = "lazy";
+          image.decoding = "async";
+          image.addEventListener("error", () => { image.remove(); row.classList.add("without-image"); }, { once: true });
+          row.append(image);
+        } else {
+          row.classList.add("without-image");
+        }
+        const information = document.createElement("div");
+        information.className = "order-item-information";
+        const name = document.createElement("span");
+        name.className = "order-item-name";
+        name.textContent = item.product_name || "Producto";
+        const quantity = document.createElement("span");
+        quantity.className = "order-item-quantity";
+        quantity.textContent = "Cantidad: " + (Number(item.quantity) || 1);
+        information.append(name, quantity);
+        row.append(information);
+        if (showPrices) {
+          const price = document.createElement("strong");
+          price.className = "order-item-price";
+          price.textContent = formatCurrency((Number(item.unit_amount) || 0) * (Number(item.quantity) || 1), currency || "USD");
+          row.append(price);
+        }
+        list.append(row);
+      }
+      return list;
+    }
+
     function renderCustomerAgenda(reservations) {
       customerAgendaList.replaceChildren();
       if (!reservations.length) {
@@ -1790,14 +1860,8 @@
             hold.textContent = `Retención hasta ${formatAgendaDateTime(order.hold_expires_at)}`;
             body.append(hold);
           }
-          const items = document.createElement("ul");
-          items.className = "order-items";
-          for (const item of order.items ?? []) {
-            const line = document.createElement("li");
-            line.textContent = `${item.product_name} × ${item.quantity} · ${formatCurrency(item.unit_amount * item.quantity,order.currency)}`;
-            items.append(line);
-          }
-          body.append(items);
+          const itemsList = createOrderItemsList(order.items ?? [], order.currency, true);
+          if (itemsList) body.append(itemsList);
 
           const refunds = refundsByOrder.get(order.order_id) ?? [];
           if (refunds.length) {
@@ -2159,16 +2223,8 @@
           card.append(adjustment);
         }
 
-        if (order.order_items?.length) {
-          const items = document.createElement("ul");
-          items.className = "order-items";
-          for (const item of order.order_items) {
-            const listItem = document.createElement("li");
-            listItem.textContent = `${item.product_name} × ${item.quantity}`;
-            items.append(listItem);
-          }
-          card.append(items);
-        }
+        const itemsList = createOrderItemsList(order.order_items ?? [], order.currency, false);
+        if (itemsList) card.append(itemsList);
         ordersList.append(card);
       }
     }
