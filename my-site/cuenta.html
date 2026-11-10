@@ -365,8 +365,6 @@
     const profilePhoneCountry = document.querySelector("#profile-phone-country");
     const profileBirthday = document.querySelector("#profile-birthday");
     const profileBirthdayHint = document.querySelector("#profile-birthday-hint");
-    const reauthorizeGoogleBirthdayButton = document.querySelector("#reauthorize-google-birthday");
-    const reauthorizeFacebookBirthdayButton = document.querySelector("#reauthorize-facebook-birthday");
     let birthdayLastChangedAt = null;
     let birthdaySyncDiagnostic = "";
     let birthdaySourceAdminLocked = false;
@@ -2470,11 +2468,14 @@
         } else {
           profileBirthdayHint.textContent = birthdaySyncDiagnostic || "Agrega tu cumpleaños para recibir felicitaciones y beneficios especiales.";
           if (birthdaySocialProvider === "google" || birthdaySocialProvider === "facebook") {
-            const link = document.createElement("button");
-            link.type = "button";
-            link.className = "text-link";
-            link.textContent = birthdaySocialProvider === "facebook" ? "Autorizar Facebook para sincronizar" : "Autorizar Google para sincronizar";
-            link.addEventListener("click", () => signInWithSocialProvider(birthdaySocialProvider, birthdaySocialProvider === "facebook" ? "Facebook" : "Google"));
+            const link = document.createElement("a");
+            link.href = "#";
+            link.textContent = birthdaySocialProvider === "facebook" ? "autorizar Facebook para sincronizar" : "autorizar Google para sincronizar";
+            link.style.cssText = "color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer";
+            link.addEventListener("click", event => {
+              event.preventDefault();
+              signInWithSocialProvider(birthdaySocialProvider, birthdaySocialProvider === "facebook" ? "Facebook" : "Google");
+            });
             profileBirthdayHint.append(document.createTextNode(" También puedes "), link, document.createTextNode("."));
           }
         }
@@ -2505,28 +2506,31 @@
       return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month && date.getUTCDate() === day ? result : null;
     }
 
-    function rememberGoogleProviderToken(token) {
-      if (!token) return;
+    function rememberSocialProviderToken(provider, token) {
+      if (!token || !["google", "facebook"].includes(provider)) return;
       try {
-        window.localStorage.setItem("renovah2o-google-provider-token", token);
+        window.localStorage.setItem(`renovah2o-${provider}-provider-token`, token);
       } catch {}
     }
 
-    function getGoogleProviderToken() {
+    function getSocialProviderToken(provider) {
+      if (!["google", "facebook"].includes(provider)) return null;
       try {
-        return window.localStorage.getItem("renovah2o-google-provider-token")
-          || window.sessionStorage.getItem("renovah2o-google-provider-token")
+        return window.localStorage.getItem(`renovah2o-${provider}-provider-token`)
+          || window.sessionStorage.getItem(`renovah2o-${provider}-provider-token`)
           || null;
       } catch {
         return null;
       }
     }
 
-    function clearGoogleProviderToken() {
-      try {
-        window.localStorage.removeItem("renovah2o-google-provider-token");
-        window.sessionStorage.removeItem("renovah2o-google-provider-token");
-      } catch {}
+    function clearSocialProviderTokens() {
+      for (const provider of ["google", "facebook"]) {
+        try {
+          window.localStorage.removeItem(`renovah2o-${provider}-provider-token`);
+          window.sessionStorage.removeItem(`renovah2o-${provider}-provider-token`);
+        } catch {}
+      }
     }
 
     async function fetchSocialBirthday(session, providerToken = session?.provider_token) {
@@ -2553,7 +2557,7 @@
     async function syncSocialBirthday(session, existingBirthday) {
       const provider = session?.user?.app_metadata?.provider;
       if (!session?.user?.id || !["google", "facebook"].includes(provider)) return existingBirthday || null;
-      const providerToken = session.provider_token || (provider === "google" ? getGoogleProviderToken() : null);
+      const providerToken = session.provider_token || getSocialProviderToken(provider);
       birthdaySocialProvider = provider;
       if (!providerToken) {
         if (provider === "google") {
@@ -2583,7 +2587,6 @@
           .maybeSingle();
         if (profileError) {
           birthdaySyncDiagnostic = `Google entregó una fecha, pero no se pudo comprobar el perfil en Supabase: ${profileError.message}`;
-          profileGoogleBirthdayStatus.textContent = "Error al consultar Supabase.";
           updateBirthdayEditState();
           return existingBirthday || null;
         }
@@ -2630,8 +2633,6 @@
       isAgendaAdmin = false;
       birthdaySocialProvider = ["google", "facebook"].includes(user?.app_metadata?.provider)
         ? user.app_metadata.provider : null;
-      reauthorizeGoogleBirthdayButton.hidden = birthdaySocialProvider !== "google";
-      reauthorizeFacebookBirthdayButton.hidden = birthdaySocialProvider !== "facebook";
       birthdaySyncDiagnostic = "";
       birthdaySourceAdminLocked = false;
       birthdayInputChanged = false;
@@ -2846,8 +2847,9 @@
       if (signedIn && safeReturnUrl && allowReturnRedirect) {
         // Preserve the short-lived Google access token across the post-OAuth return redirect.
         // Supabase may not expose provider_token again after the browser reloads.
-        if (session.provider_token && session.user?.app_metadata?.provider === "google") {
-          rememberGoogleProviderToken(session.provider_token);
+        const sessionProvider = session.user?.app_metadata?.provider;
+        if (session.provider_token && ["google", "facebook"].includes(sessionProvider)) {
+          rememberSocialProviderToken(sessionProvider, session.provider_token);
         }
         window.sessionStorage.removeItem("renovah2o-auth-next");
         window.location.replace(safeReturnUrl.href);
@@ -2858,10 +2860,11 @@
       activeUserId = signedIn ? session.user.id : undefined;
       if (signedIn) {
         // Consume the one-time token saved before the OAuth return redirect.
-        if (session.user?.app_metadata?.provider === "google") {
-          const transientGoogleToken = getGoogleProviderToken();
-          if (!session.provider_token && transientGoogleToken) {
-            session = { ...session, provider_token: transientGoogleToken };
+        const sessionProvider = session.user?.app_metadata?.provider;
+        if (["google", "facebook"].includes(sessionProvider)) {
+          const transientProviderToken = getSocialProviderToken(sessionProvider);
+          if (!session.provider_token && transientProviderToken) {
+            session = { ...session, provider_token: transientProviderToken };
           }
         }
         loadAccountData(session.user, session);
@@ -3139,8 +3142,6 @@
     profileBirthday.addEventListener("input", () => {
       birthdayInputChanged = true;
     });
-    reauthorizeGoogleBirthdayButton.addEventListener("click", () => signInWithSocialProvider("google", "Google"));
-    reauthorizeFacebookBirthdayButton.addEventListener("click", () => signInWithSocialProvider("facebook", "Facebook"));
 
     document.querySelector("#profile-form").addEventListener("submit", async event => {
       event.preventDefault();
@@ -3496,10 +3497,11 @@
       supabase = createClient(config.url, config.publishableKey);
       // Register immediately: Supabase emits provider_token only once after OAuth.
       supabase.auth.onAuthStateChange((event, session) => {
-        if (session?.provider_token && session.user?.app_metadata?.provider === "google") {
-          rememberGoogleProviderToken(session.provider_token);
+        const sessionProvider = session?.user?.app_metadata?.provider;
+        if (session?.provider_token && ["google", "facebook"].includes(sessionProvider)) {
+          rememberSocialProviderToken(sessionProvider, session.provider_token);
         }
-        if (event === "SIGNED_OUT") clearGoogleProviderToken();
+        if (event === "SIGNED_OUT") clearSocialProviderTokens();
         showSession(session, event === "SIGNED_IN" || Boolean(session?.provider_token));
         if (event === "PASSWORD_RECOVERY") {
           window.location.hash = "perfil";
@@ -3830,7 +3832,7 @@
           <div class="field"><label for="profile-email">Correo electrónico</label><input id="profile-email" type="email" autocomplete="email" readonly aria-readonly="true"></div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><div class="phone-field"><select id="profile-phone-country" aria-label="Código de país"></select><input id="profile-phone" type="tel" maxlength="24" autocomplete="tel-national" placeholder="Número de teléfono"></div></div>
-          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Agrega tu cumpleaños para recibir felicitaciones y beneficios especiales.</small><button class="secondary" id="reauthorize-google-birthday" type="button" hidden>Autorizar Google</button><button class="secondary" id="reauthorize-facebook-birthday" type="button" hidden>Autorizar Facebook</button></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Agrega tu cumpleaños para recibir felicitaciones y beneficios especiales.</small></div>
           <fieldset>
             <legend>Servicios de preferencia</legend>
             <div class="service-options">
