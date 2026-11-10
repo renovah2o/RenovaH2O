@@ -2348,7 +2348,7 @@
     }
 
     function birthdayForProfile(value) {
-      const match = /^(\\d{2})\\/(\\d{2})$/.exec(String(value ?? "").trim());
+      const match = /^(\d{2})\/(\d{2})$/.exec(String(value ?? "").trim());
       if (!match) return null;
       const [, day, month] = match;
       return normalizeBirthdayMonthDay(Number(month), Number(day));
@@ -2356,7 +2356,7 @@
 
     function birthdayForDisplay(value) {
       if (!value) return "";
-      const match = /^(?:\\d{4}-)?(\\d{2})-(\\d{2})$/.exec(String(value));
+      const match = /^(?:\d{4}-)?(\d{2})-(\d{2})$/.exec(String(value));
       return match ? `${match[2]}/${match[1]}` : "";
     }
 
@@ -2368,8 +2368,8 @@
         day = Number(birthday?.date?.day);
       } else if (provider === "facebook") {
         const raw = String(payload?.birthday ?? "").trim();
-        if (raw.includes("/")) [, month, day] = /^(\\d{1,2})\\/(\\d{1,2})(?:\\/\\d{4})?$/.exec(raw) || [];
-        else [, , month, day] = /^(?:\\d{4})-(\\d{1,2})-(\\d{1,2})$/.exec(raw) || [];
+        if (raw.includes("/")) [, month, day] = /^(\d{1,2})\/(\d{1,2})(?:\/\d{4})?$/.exec(raw) || [];
+        else [, , month, day] = /^(?:\d{4})-(\d{1,2})-(\d{1,2})$/.exec(raw) || [];
         month = Number(month);
         day = Number(day);
       } else return null;
