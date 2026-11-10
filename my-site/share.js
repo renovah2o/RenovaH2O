@@ -190,8 +190,7 @@ if (!document.body.hasAttribute("data-no-social")) {
       status.hidden = true;
 
       button.addEventListener("click", async () => {
-        const url = new URL(window.location.href);
-        url.hash = card.id;
+        const url = new URL(`/compartir/${encodeURIComponent(sku)}`, window.location.origin);
 
         const description = card.querySelector("p")?.textContent.trim() || "";
         const price = card.querySelector(".package-price, .price, .price-row")?.textContent.trim() || "";
