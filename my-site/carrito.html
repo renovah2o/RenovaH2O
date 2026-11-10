@@ -37,8 +37,12 @@
     .cart-items{display:grid;gap:12px}
     .cart-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:16px;border:1px solid #e9e9ed;border-radius:14px}
     .cart-item-main{display:grid;grid-template-columns:68px minmax(0,1fr);align-items:start;gap:14px;min-width:0}
+    .cart-item-product-link{display:contents}
     .cart-item-image{display:block;width:68px;height:68px;border-radius:10px;background:#f5f5f7;object-fit:cover}
     .cart-item h3{margin:0;font-size:16px}
+    .cart-item-product-link:focus-visible{outline:2px solid #0071e3;outline-offset:4px;border-radius:8px}
+    .cart-item h3 a{color:inherit;text-decoration:none}
+    .cart-item h3 a:hover{color:#0066cc;text-decoration:underline;text-underline-offset:3px}
     .cart-item p{margin:5px 0 0;font-size:13px}
     .item-price{font-weight:700;text-align:right;white-space:nowrap}
     .quantity-control{display:flex;align-items:center;gap:8px;margin-top:12px}
@@ -505,8 +509,28 @@
         image.loading = "lazy";
         image.decoding = "async";
         const information = document.createElement("div");
+        const detailUrl = item.sku === "residential-holiday-promo" ||
+          item.sku.startsWith("residential-")
+          ? "/limpieza-de-pisos-panama"
+          : item.sku.startsWith("commercial-")
+            ? "/limpieza-de-estacionamientos-panama"
+            : ({
+                "rental-35": "/alquiler-de-hidrolavadoras-panama#rental-35",
+                "rental-23": "/alquiler-de-hidrolavadoras-panama#rental-23",
+                "rental-surface-cleaner": "/alquiler-de-hidrolavadoras-panama#rental-surface-cleaner",
+                "rental-turbo-nozzle": "/alquiler-de-hidrolavadoras-panama#rental-turbo-nozzle",
+                "rental-broom": "/alquiler-de-hidrolavadoras-panama#rental-broom",
+                "rental-extra-hose": "/alquiler-de-hidrolavadoras-panama#rental-extra-hose"
+              }[item.sku] || "/");
+        const productLink = document.createElement("a");
+        productLink.className = "cart-item-product-link";
+        productLink.href = detailUrl;
+        productLink.setAttribute("aria-label", `Ver detalles de ${product.name}`);
         const title = document.createElement("h3");
-        title.textContent = product.name;
+        const titleLink = document.createElement("a");
+        titleLink.href = detailUrl;
+        titleLink.textContent = product.name;
+        title.append(titleLink);
         const description = document.createElement("p");
         description.textContent = lineDescription(product, item);
         const controls = document.createElement("div");
@@ -562,7 +586,8 @@
         information.append(title, description);
         if (product.pricing !== "promo") information.append(controls);
         information.append(remove);
-        main.append(image, information);
+        productLink.append(image, title);
+        main.append(productLink, information);
         card.append(main, price);
         cartItems.append(card);
       }
