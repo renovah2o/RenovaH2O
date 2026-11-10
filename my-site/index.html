@@ -703,6 +703,18 @@
       }
     });
 
+    // 6.5. Acordeón de Preguntas Frecuentes
+    document.querySelectorAll('.faq-item').forEach(item => {
+      const question = item.querySelector('.faq-q');
+      if (!question) return;
+      question.setAttribute('type', 'button');
+      question.setAttribute('aria-expanded', String(item.classList.contains('open')));
+      question.addEventListener('click', () => {
+        const isOpen = item.classList.toggle('open');
+        question.setAttribute('aria-expanded', String(isOpen));
+      });
+    });
+
     // 7. Procesamiento del Formulario de Cotización enviando datos a WhatsApp
     const quoteForm = document.getElementById('quoteForm');
     if (quoteForm) {
