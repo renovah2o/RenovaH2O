@@ -2335,7 +2335,15 @@
 
       try {
         const { error: holdsError } = await supabase.rpc("checkout_release_expired_holds");
-        const { data: identitiesData, error: identitiesError } = await supabase.auth.getUserIdentities();
+        let identitiesData = null;
+        let identitiesError = null;
+        try {
+          const identitiesResult = await supabase.auth.getUserIdentities();
+          identitiesData = identitiesResult.data;
+          identitiesError = identitiesResult.error;
+        } catch (error) {
+          identitiesError = error;
+        }
         if (activeUserId !== user.id) return;
         renderAccountAccess(user, identitiesData?.identities ?? user.identities ?? [], identitiesError);
 
