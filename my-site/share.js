@@ -143,12 +143,12 @@ if (!document.body.hasAttribute("data-no-social")) {
     .product-share-button{
       position:absolute;top:14px;right:14px;z-index:5;
       display:grid;place-items:center;width:38px;height:38px;
-      padding:0;border:1px solid rgba(20,24,32,.12);border-radius:50%;
-      background:rgba(255,255,255,.96);color:#242832;
-      box-shadow:0 3px 12px rgba(0,0,0,.12);cursor:pointer;
-      -webkit-tap-highlight-color:transparent;transition:transform .18s ease,background .18s ease;
+      padding:0;border:1px solid #0071e3;border-radius:50%;
+      background:#0071e3;color:#fff;
+      box-shadow:0 3px 12px rgba(0,113,227,.28);cursor:pointer;
+      -webkit-tap-highlight-color:transparent;transition:transform .18s ease,background .18s ease,box-shadow .18s ease;
     }
-    .product-share-button:hover{transform:translateY(-2px);background:#fff}
+    .product-share-button:hover{transform:translateY(-2px);background:#005bbf;border-color:#005bbf;box-shadow:0 5px 16px rgba(0,91,191,.32)}
     .product-share-button:focus-visible{outline:3px solid rgba(0,113,227,.35);outline-offset:3px}
     .product-share-button svg{width:18px;height:18px;display:block}
     .product-share-status{
