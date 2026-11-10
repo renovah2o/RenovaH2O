@@ -2349,9 +2349,9 @@
       }
       if (provider === "facebook") {
         const raw = String(payload?.birthday ?? "").trim();
-        let match = raw.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/);
+        let match = raw.match(/^(\d{1,2})\\/(\d{1,2})\\/(\d{4})$/);
         if (match) return `${match[3]}-${match[1].padStart(2, "0")}-${match[2].padStart(2, "0")}`;
-        match = raw.match(/^(\\d{4})-(\\d{1,2})-(\\d{1,2})$/);
+        match = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
         if (match) return `${match[1]}-${match[2].padStart(2, "0")}-${match[3].padStart(2, "0")}`;
       }
       return null;
