@@ -102,9 +102,26 @@ Deno.serve(async request => {
     ? notification.order_id.slice(0, 8).toUpperCase()
     : null;
   const isCustomer = order?.user_id === notification.user_id;
-  const accountUrl = isCustomer
-    ? "https://renovah2o.com/cuenta#ordenes"
-    : "https://renovah2o.com/cuenta#administrar-ordenes";
+  let isAdminRecipient = false;
+  if (!notification.order_id) {
+    const { data: adminRecord, error: adminLookupError } = await supabase
+      .from("agenda_admins")
+      .select("user_id")
+      .eq("user_id", notification.user_id)
+      .maybeSingle();
+    if (adminLookupError) {
+      console.error("Could not determine whether the notification recipient is an admin:", adminLookupError.message);
+      return jsonResponse({ error: "Could not determine the notification recipient role." }, 500);
+    }
+    isAdminRecipient = Boolean(adminRecord);
+  }
+  const accountUrl = notification.order_id
+    ? (isCustomer
+        ? "https://renovah2o.com/cuenta#ordenes"
+        : "https://renovah2o.com/cuenta#administrar-ordenes")
+    : (isAdminRecipient
+        ? "https://renovah2o.com/cuenta#administrar-mensajes"
+        : "https://renovah2o.com/cuenta#consultas");
   const subject = orderNumber
     ? `${notification.title} · Orden ${orderNumber}`
     : notification.title;
