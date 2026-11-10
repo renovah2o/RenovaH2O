@@ -2664,7 +2664,7 @@
           profileBirthday.value = profileResult.data.birthday || "";
           birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
           updateBirthdayEditState();
-          if (session?.provider_token) {
+          if (["google", "facebook"].includes(user?.app_metadata?.provider)) {
             const syncedBirthday = await syncSocialBirthday(session, profileBirthday.value);
             if (activeUserId !== user.id) return;
             if (syncedBirthday && !profileBirthday.value) {
@@ -2770,15 +2770,33 @@
     function showSession(session) {
       const signedIn = Boolean(session);
       if (signedIn && safeReturnUrl) {
+        // Preserve the short-lived Google access token across the post-OAuth return redirect.
+        // Supabase may not expose provider_token again after the browser reloads.
+        if (session.provider_token && session.user?.app_metadata?.provider === "google") {
+          try {
+            window.sessionStorage.setItem("renovah2o-google-provider-token", session.provider_token);
+          } catch {}
+        }
         window.sessionStorage.removeItem("renovah2o-auth-next");
         window.location.replace(safeReturnUrl.href);
         return;
       }
-      authSection.hidden = signedIn;
+      authSection.hidden = !signedIn;
       accountApp.hidden = !signedIn;
       activeUserId = signedIn ? session.user.id : undefined;
-      if (signedIn) loadAccountData(session.user, session);
-      else {
+      if (signedIn) {
+        // Consume the one-time token saved before the OAuth return redirect.
+        if (session.user?.app_metadata?.provider === "google") {
+          try {
+            const transientGoogleToken = window.sessionStorage.getItem("renovah2o-google-provider-token");
+            window.sessionStorage.removeItem("renovah2o-google-provider-token");
+            if (!session.provider_token && transientGoogleToken) {
+              session = { ...session, provider_token: transientGoogleToken };
+            }
+          } catch {}
+        }
+        loadAccountData(session.user, session);
+      } else {
         isAgendaAdmin = false;
         adminNavGroup.hidden = true;
         adminAgendaTile.hidden = true;
