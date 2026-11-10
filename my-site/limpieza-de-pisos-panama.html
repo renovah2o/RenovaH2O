@@ -234,6 +234,34 @@
 /* Mantener visible el acceso a Mi cuenta en móvil */
 @media(max-width:950px){.nav-actions .nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;font-size:12px;white-space:nowrap}}
   
+
+/* Ajuste tablet/iPad: imagen completa y contenido en una sola columna */
+@media (min-width: 621px) and (max-width: 1100px) {
+  .promo-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .promo-art {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    display: block;
+    background: transparent;
+    padding: 0;
+  }
+  .promo-art img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+    object-position: center;
+    margin: 0 auto;
+  }
+  .promo-copy {
+    min-width: 0;
+  }
+}
+
 /* Oferta navideña: imagen limpia y adaptable, sin marco oscuro */
 .promo-art {
   min-height: 0;
