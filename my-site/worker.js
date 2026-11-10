@@ -36,9 +36,9 @@ const PRODUCTS = {
     page: "/alquiler-de-hidrolavadoras-panama"
   },
   "residential-holiday-promo": {
-    title: "Promoción de hidrolavado residencial · $74.25",
+    title: "Promoción de hidrolavado residencial en Panamá",
     description: "Promoción RenovaH2O para hidrolavado residencial de superficies exteriores de 10 a 50 m². Válida hasta el 31 de diciembre de 2026.",
-    image: "/Images/promo-navidad-renovah2o.png",
+    image: "/Images/og-december.webp",
     page: "/limpieza-de-pisos-panama"
   },
   "residential-65-100": {
