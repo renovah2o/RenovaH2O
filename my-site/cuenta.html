@@ -149,6 +149,21 @@
     .admin-customer-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-bottom:16px}
     .admin-customer-search input{min-width:0;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px}
     .admin-customer-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+    .admin-customer-list{display:grid;gap:9px}
+    .admin-customer-entry{overflow:hidden;border:1px solid #e7e9ee;border-radius:13px;background:#fff}
+    .admin-customer-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;padding:14px 15px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+    .admin-customer-summary:hover{background:#f8f9fb}
+    .admin-customer-summary:focus-visible{outline:2px solid #1677d2;outline-offset:-3px}
+    .admin-customer-identity{display:grid;gap:4px;min-width:0}
+    .admin-customer-identity strong{font-size:14px;font-weight:650;overflow-wrap:anywhere}
+    .admin-customer-identity span{color:var(--gray);font-size:13px;overflow-wrap:anywhere}
+    .admin-customer-toggle{display:flex;align-items:center;gap:7px;color:var(--gray);font-size:12px;white-space:nowrap}
+    .admin-customer-toggle svg{width:16px;height:16px;transition:transform .18s ease}
+    .admin-customer-entry.is-expanded .admin-customer-toggle svg{transform:rotate(180deg)}
+    .admin-customer-details{padding:0 15px 15px;border-top:1px solid #eef0f3}
+    .admin-customer-details[hidden]{display:none}
+    .admin-customer-details .order-meta:first-child{margin-top:12px}
+    @media(max-width:560px){.admin-customer-summary{padding:13px 12px}.admin-customer-details{padding:0 12px 13px}.admin-customer-toggle span{display:none}}
     .report-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
     .report-metric{display:grid;align-content:start;gap:5px;min-height:100px;padding:16px;border:1px solid #e8e8ed;border-radius:14px;background:#fff}
     .report-metric strong{font-size:26px;letter-spacing:-.04em}
@@ -2106,9 +2121,42 @@
 
       for (const customer of customers) {
         const card = document.createElement("article");
-        card.className = "order-card";
-        const heading = document.createElement("h3");
+        card.className = "admin-customer-entry";
+
+        const summary = document.createElement("button");
+        summary.type = "button";
+        summary.className = "admin-customer-summary";
+        summary.setAttribute("aria-expanded", "false");
+
+        const identity = document.createElement("span");
+        identity.className = "admin-customer-identity";
+        const heading = document.createElement("strong");
         heading.textContent = customer.full_name || customer.email || "Cliente";
+        const phone = document.createElement("span");
+        phone.textContent = customer.phone || "Teléfono no registrado";
+        identity.append(heading, phone);
+
+        const toggle = document.createElement("span");
+        toggle.className = "admin-customer-toggle";
+        const toggleLabel = document.createElement("span");
+        toggleLabel.textContent = "Ver datos";
+        const chevron = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        chevron.setAttribute("viewBox", "0 0 24 24");
+        chevron.setAttribute("aria-hidden", "true");
+        const chevronPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        chevronPath.setAttribute("d", "m6 9 6 6 6-6");
+        chevronPath.setAttribute("fill", "none");
+        chevronPath.setAttribute("stroke", "currentColor");
+        chevronPath.setAttribute("stroke-width", "2");
+        chevronPath.setAttribute("stroke-linecap", "round");
+        chevronPath.setAttribute("stroke-linejoin", "round");
+        chevron.append(chevronPath);
+        toggle.append(toggleLabel, chevron);
+        summary.append(identity, toggle);
+
+        const details = document.createElement("div");
+        details.className = "admin-customer-details";
+        details.hidden = true;
         const detail = document.createElement("p");
         detail.className = "order-meta";
         detail.textContent = [
@@ -2127,8 +2175,18 @@
           alquileres: "Alquileres"
         };
         services.textContent = `Preferencias: ${(customer.preferred_services ?? []).map(service => labels[service] ?? service).join(", ") || "No indicadas"}`;
-        card.append(heading, detail, activity, services);
-        appendCustomerContactActions(card, customer);
+        details.append(detail, activity, services);
+        appendCustomerContactActions(details, customer);
+
+        summary.addEventListener("click", () => {
+          const expanded = summary.getAttribute("aria-expanded") === "true";
+          summary.setAttribute("aria-expanded", String(!expanded));
+          details.hidden = expanded;
+          card.classList.toggle("is-expanded", !expanded);
+          toggleLabel.textContent = expanded ? "Ver datos" : "Ocultar datos";
+        });
+
+        card.append(summary, details);
         adminCustomersList.append(card);
       }
     }
@@ -3556,7 +3614,7 @@
           <input id="admin-customer-query" type="search" maxlength="120" placeholder="Nombre, correo o teléfono" aria-label="Buscar clientes por nombre, correo o teléfono">
           <button class="secondary" type="submit">Buscar clientes</button>
         </form>
-        <div class="orders-list" id="admin-customers-list" aria-live="polite"></div>
+        <div class="admin-customer-list" id="admin-customers-list" aria-live="polite"></div>
         <p class="agenda-status" id="admin-customers-status" role="status" aria-live="polite"></p>
       </section>
 
