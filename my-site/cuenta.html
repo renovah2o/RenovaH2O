@@ -2581,7 +2581,7 @@
         if (activeUserId !== session.user.id) return existingBirthday || null;
         const providerColumn = provider === "google" ? "birthday_google" : "birthday_facebook";
         const { data: currentProfile, error: profileError } = await supabase.from("profiles")
-          .select("birthday_source,birthday")
+          .select("birthday_source,birthday,birthday_manual,birthday_source_admin_locked")
           .eq("id", session.user.id)
           .maybeSingle();
         if (profileError) {
@@ -2591,12 +2591,21 @@
         }
         if (activeUserId !== session.user.id) return existingBirthday || null;
         const updates = { [providerColumn]: birthday };
-        // Mantener profiles.birthday sincronizado siempre que este proveedor sea la fuente elegida.
-        if (currentProfile?.birthday_source === provider) updates.birthday = birthday;
+        // Si el cliente no tiene fecha manual, usar por defecto el proveedor con el que inició sesión.
+        // Una selección fijada por administración siempre tiene prioridad.
+        const hasManualBirthday = Boolean(currentProfile?.birthday_manual);
+        const adminLockedSource = Boolean(currentProfile?.birthday_source_admin_locked);
+        const shouldUseProvider = currentProfile?.birthday_source === provider ||
+          (!hasManualBirthday && !adminLockedSource);
+        if (shouldUseProvider) {
+          updates.birthday = birthday;
+          if (!adminLockedSource && !hasManualBirthday) updates.birthday_source = provider;
+          birthdayDisplaySource = provider;
+        }
         const { data, error } = await supabase.from("profiles")
           .update(updates)
           .eq("id", session.user.id)
-          .select("birthday,birthday_google,birthday_facebook")
+          .select("birthday,birthday_google,birthday_facebook,birthday_source")
           .maybeSingle();
         if (error || !data) {
           birthdaySyncDiagnostic = error
@@ -2607,6 +2616,7 @@
         }
         birthdaySyncDiagnostic = "";
         profileBirthday.value = data.birthday || birthday;
+        birthdayDisplaySource = data.birthday_source || birthdayDisplaySource;
         birthdayInputChanged = false;
         updateBirthdayEditState();
         return data.birthday ?? existingBirthday ?? birthday;
