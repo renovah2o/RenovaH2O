@@ -233,7 +233,21 @@
   
 /* Mantener visible el acceso a Mi cuenta en móvil */
 @media(max-width:950px){.nav-actions .nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;font-size:12px;white-space:nowrap}}
-  </style>
+  
+/* Oferta navideña: imagen limpia y adaptable, sin marco oscuro */
+.promo-art {
+  min-height: 0;
+  background: transparent;
+  padding: 0;
+}
+.promo-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+}
+</style>
 <link rel="stylesheet" href="/share.css">
 <script src="/cart.js" defer></script>
 <script src="/share.js" defer></script>
