@@ -473,6 +473,17 @@
         "Juan Díaz", "Don Bosco", "Las Mañanitas", "Tocumen", "Las Cumbres",
         "Alcalde Díaz", "Ernesto Córdoba Campos", "Caimitillo", "Pedregal", "Las Garzas",
         "Pacora", "24 de Diciembre", "Chilibre", "San Martín", "Ancón"
+      ],
+      sanmiguelito: [
+        "Amelia Denis de Icaza",
+        "Arnulfo Arias",
+        "Belisario Frías",
+        "Belisario Porras",
+        "José Domingo Espinar",
+        "Mateo Iturralde",
+        "Omar Torrijos",
+        "Rufina Alfaro",
+        "Victoriano Lorenzo"
       ]
     };
 
@@ -511,7 +522,7 @@
     function updateAddressDistricts(selectedDistrict = "") {
       let districts = [];
       if (addressProvince.value === "Panamá Oeste") districts = ["Arraiján", "La Chorrera"];
-      if (addressProvince.value === "Panamá") districts = ["Panamá"];
+      if (addressProvince.value === "Panamá") districts = ["Panamá", "San Miguelito"];
       populateAddressSelect(addressDistrict, districts, "Selecciona un distrito", selectedDistrict);
       addressDistrict.disabled = !districts.length;
       updateAddressCorregimientos();
@@ -524,7 +535,9 @@
           ? "chorrera"
           : addressDistrict.value === "Panamá"
             ? "panama"
-            : null;
+            : addressDistrict.value === "San Miguelito"
+              ? "sanmiguelito"
+              : null;
       populateAddressSelect(
         addressCorregimiento,
         addressCorregimientos[key] ?? [],
