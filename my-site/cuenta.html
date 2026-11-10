@@ -2176,13 +2176,12 @@
         sourceInfo.className = "order-meta";
         sourceInfo.textContent = `Manual: ${birthdayForDisplay(customer.birthday_manual) || "Sin registrar"} · Google: ${birthdayForDisplay(customer.birthday_google) || "No disponible"} · Facebook: ${birthdayForDisplay(customer.birthday_facebook) || "No disponible"}`;
         const manualLabel = document.createElement("label");
-        manualLabel.textContent = "Fecha manual (DD/MM)";
+        manualLabel.textContent = "Fecha manual (DD/MM/AAAA)";
         const manualInput = document.createElement("input");
-        manualInput.type = "text";
-        manualInput.inputMode = "numeric";
-        manualInput.maxLength = 5;
-        manualInput.placeholder = "DD/MM";
-        manualInput.value = birthdayForDisplay(customer.birthday_manual);
+        manualInput.type = "date";
+        manualInput.min = "1900-01-01";
+        manualInput.max = "2099-12-31";
+        manualInput.value = customer.birthday_manual || "";
         manualInput.setAttribute("aria-label", `Cumpleaños manual de ${customer.full_name || customer.email || "cliente"}`);
         manualInput.style.cssText = "width:100%;min-height:42px;padding:9px 11px;border:1px solid #d2d2d7;border-radius:9px";
         manualLabel.append(manualInput);
@@ -2206,10 +2205,10 @@
         birthdayStatus.className = "order-meta";
         birthdayStatus.setAttribute("role", "status");
         birthdaySave.addEventListener("click", async () => {
-          const manualBirthday = manualInput.value.trim();
+          const manualBirthday = manualInput.value;
           const normalizedManual = manualBirthday ? birthdayForProfile(manualBirthday) : null;
           if (manualBirthday && !normalizedManual) {
-            birthdayStatus.textContent = "Ingresa una fecha válida en formato DD/MM.";
+            birthdayStatus.textContent = "Ingresa una fecha válida con día, mes y año.";
             manualInput.focus();
             return;
           }
@@ -2428,16 +2427,17 @@
     }
 
     function birthdayForProfile(value) {
-      const match = /^(\d{2})\/(\d{2})$/.exec(String(value ?? "").trim());
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value ?? "").trim());
       if (!match) return null;
-      const [, day, month] = match;
-      return normalizeBirthdayMonthDay(Number(month), Number(day));
+      const [, year, month, day] = match;
+      const normalized = normalizeBirthdayMonthDay(Number(month), Number(day));
+      return normalized ? `${year}-${normalized.slice(5)}` : null;
     }
 
     function birthdayForDisplay(value) {
       if (!value) return "";
-      const match = /^(?:\d{4}-)?(\d{2})-(\d{2})$/.exec(String(value));
-      return match ? `${match[2]}/${match[1]}` : "";
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value));
+      return match ? `${match[3]}/${match[2]}/${match[1]}` : "";
     }
 
     function updateBirthdayEditState() {
@@ -2618,14 +2618,14 @@
         } else if (profileResult.data) {
           profileName.value = profileResult.data.full_name ?? "";
           setProfilePhone(profileResult.data.phone ?? "");
-          profileBirthday.value = birthdayForDisplay(profileResult.data.birthday);
+          profileBirthday.value = profileResult.data.birthday || "";
           birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
           updateBirthdayEditState();
           if (session?.provider_token) {
             const syncedBirthday = await syncSocialBirthday(session, profileBirthday.value);
             if (activeUserId !== user.id) return;
             if (syncedBirthday && !profileBirthday.value) {
-              profileBirthday.value = birthdayForDisplay(syncedBirthday);
+              profileBirthday.value = syncedBirthday;
               updateBirthdayEditState();
             }
           }
@@ -3679,7 +3679,7 @@
           <div class="field"><label for="profile-email">Correo electrónico</label><input id="profile-email" type="email" autocomplete="email" readonly aria-readonly="true"></div>
           <div class="field"><label for="profile-name">Nombre</label><input id="profile-name" type="text" maxlength="120" autocomplete="name"></div>
           <div class="field"><label for="profile-phone">Teléfono</label><div class="phone-field"><select id="profile-phone-country" aria-label="Código de país"></select><input id="profile-phone" type="tel" maxlength="24" autocomplete="tel-national" placeholder="Número de teléfono"></div></div>
-          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="text" inputmode="numeric" maxlength="5" placeholder="DD/MM" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Indica únicamente el día y el mes (DD/MM). Si autorizas el acceso, intentaremos obtenerlos de Google o Facebook para enviarte felicitaciones y beneficios de cumpleaños.</small></div>
+          <div class="field"><label for="profile-birthday">Fecha de cumpleaños</label><input id="profile-birthday" type="date" min="1900-01-01" max="2099-12-31" autocomplete="bday" aria-describedby="profile-birthday-hint"><small id="profile-birthday-hint" class="profile-hint">Indica tu fecha completa (día, mes y año). Si autorizas el acceso, intentaremos obtenerla de Google o Facebook.</small></div>
           <fieldset>
             <legend>Servicios de preferencia</legend>
             <div class="service-options">
