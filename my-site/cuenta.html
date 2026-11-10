@@ -2581,7 +2581,9 @@
           birthdaySyncDiagnostic = error
             ? `Google entregó una fecha, pero Supabase no pudo guardarla: ${error.message}`
             : "Google entregó una fecha, pero Supabase no confirmó el guardado.";
-          profileGoogleBirthdayStatus.textContent = "No se pudo guardar en Supabase.";
+          profileGoogleBirthdayStatus.textContent = error
+            ? `Supabase rechazó el guardado: ${error.message}`
+            : "Supabase no devolvió la fila actualizada; revisa la política de acceso del perfil.";
           updateBirthdayEditState();
           return existingBirthday || null;
         }
