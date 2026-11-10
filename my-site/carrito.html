@@ -912,6 +912,11 @@
         setFeedback("No se pudo iniciar el carrito. Recarga la página para intentarlo otra vez.", "error");
         return;
       }
+
+      // Renderizar el contenido inmediatamente; la consulta de sesión no debe bloquear
+      // el estado vacío ni las recomendaciones si Supabase tarda o devuelve un error.
+      renderCart();
+
       if (!config?.url || !config.publishableKey) {
         setStatus("Falta configurar Supabase. No se puede iniciar el checkout todavía.", "error");
         renderCart();
