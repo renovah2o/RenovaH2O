@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contáctanos | RenovaH2O Panamá</title>
+  <meta name="description" content="Contacta a RenovaH2O para cotizaciones, consultas de servicios, alquiler de hidrolavadoras y seguimiento de órdenes en Panamá.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#f5f5f7">
+  <link rel="canonical" href="https://renovah2o.com/contactanos">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/share.js" defer></script>
+  <script src="/supabase-config.js"></script>
+  <style>
+    :root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1d1d1f;background:#fff;font-synthesis:none;text-rendering:optimizeLegibility}
+    *{box-sizing:border-box}
+    body{margin:0;line-height:1.6}
+    main{width:min(1120px,calc(100% - 40px));margin:0 auto;padding:122px 0 86px}
+    .contact-hero{max-width:760px;margin:0 0 38px}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;margin:0 0 13px;color:#006edb;font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+    .eyebrow:before{content:"";width:24px;height:1px;background:#0071e3}
+    h1{max-width:740px;margin:0;font-size:clamp(38px,6vw,66px);line-height:1.02;letter-spacing:-.06em}
+    .hero-copy{max-width:630px;margin:18px 0 0;color:#666a73;font-size:16px;line-height:1.7}
+    .contact-grid{display:grid;grid-template-columns:minmax(280px,.82fr) minmax(0,1.18fr);gap:20px;align-items:stretch}
+    .contact-card{padding:28px;border:1px solid #e5e7eb;border-radius:22px;background:#fff;box-shadow:0 16px 44px rgba(15,23,42,.045)}
+    .contact-card h2{margin:0 0 8px;font-size:22px;letter-spacing:-.035em}
+    .card-copy{margin:0 0 20px;color:#6b7079;font-size:13px;line-height:1.65}
+    .contact-option{display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid #eceef1;color:inherit;text-decoration:none}
+    .contact-option:first-of-type{border-top:0}
+    .option-icon{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:14px;background:#edf4ff;color:#006edb}
+    .option-icon svg{width:21px;height:21px}
+    .contact-option strong{display:block;font-size:14px}
+    .contact-option small{display:block;margin-top:3px;color:#727780;font-size:12px}
+    .contact-option .arrow{margin-left:auto;color:#8c929b;font-size:20px}
+    .account-note{margin-top:20px;padding:16px;border:1px solid #dce8f8;border-radius:15px;background:#f6f9fe}
+    .account-note strong{display:block;font-size:13px}
+    .account-note p{margin:5px 0 0;color:#626b78;font-size:12px;line-height:1.6}
+    .contact-form{display:grid;gap:15px}
+    .field{display:grid;gap:7px}
+    .field label{font-size:12px;font-weight:700;color:#30343b}
+    .field input,.field select,.field textarea{width:100%;min-height:46px;padding:12px 13px;border:1px solid #d8dce2;border-radius:11px;background:#fff;color:#20242b;font:inherit;font-size:14px;outline:none;transition:border-color .18s,box-shadow .18s}
+    .field textarea{min-height:150px;resize:vertical}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#2583ea;box-shadow:0 0 0 3px rgba(0,113,227,.1)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    .primary{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 20px;border:0;border-radius:999px;background:#0071e3;color:#fff;font:inherit;font-size:13px;font-weight:750;text-decoration:none;cursor:pointer;transition:background .18s,transform .18s}
+    .primary:hover{background:#0062c5;transform:translateY(-1px)}
+    .primary:disabled{opacity:.58;cursor:not-allowed;transform:none}
+    .secondary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 17px;border:1px solid #d9dde3;border-radius:999px;background:#fff;color:#252a32;font-size:13px;font-weight:700;text-decoration:none}
+    .login-card{padding:22px;border:1px solid #e5e7eb;border-radius:17px;background:#f8fafc}
+    .login-card h3{margin:0;font-size:18px;letter-spacing:-.03em}
+    .login-card p{margin:8px 0 16px;color:#686e78;font-size:13px}
+    .form-status{min-height:20px;margin:0;color:#626a75;font-size:13px}
+    .form-status.error{color:#b42318}
+    .form-status.success{color:#187344}
+    .privacy-copy{margin:0;color:#777d86;font-size:11px;line-height:1.6}
+    [hidden]{display:none!important}
+    @media(max-width:820px){main{padding-top:108px}.contact-grid{grid-template-columns:1fr}.contact-options{display:grid;grid-template-columns:1fr 1fr;column-gap:20px}.contact-options h2,.contact-options>.card-copy,.account-note{grid-column:1/-1}.contact-option:nth-of-type(2){border-top:0}}
+    @media(max-width:560px){main{width:min(100% - 28px,1120px);padding:98px 0 60px}.contact-card{padding:21px;border-radius:18px}.hero-copy{font-size:14px}.form-row{grid-template-columns:1fr}.contact-options{display:block}.contact-options .contact-option:nth-of-type(2){border-top:1px solid #eceef1}}
+  </style>
+<style>
+  #site-header.nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}
+  #site-header .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;width:min(1200px,calc(100% - 44px));margin:auto}
+  #site-header .logo{height:40px;width:auto;object-fit:contain}
+  #site-header .nav-links{display:flex;gap:30px;list-style:none;align-items:center}
+  #site-header .nav-links>li{display:flex;align-items:center;height:100%}
+  #site-header .nav-links a{display:inline-flex;align-items:center;height:58px;line-height:1;font-size:13px;color:#d1d1d6;text-decoration:none;transition:.2s}
+  #site-header .nav-links a:hover{color:#fff}
+  #site-header .dropdown{position:relative}
+  #site-header .dropdown-toggle{gap:6px}
+  #site-header .dropdown-arrow{display:inline-block;font-size:15px;line-height:1;position:relative;top:-1px;transition:transform .25s ease}
+  #site-header .dropdown-menu{position:absolute;top:100%;left:-15px;min-width:210px;padding:10px;list-style:none;background:rgba(20,20,22,.97);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:14px;opacity:0;visibility:hidden;transform:translateY(8px);transition:.25s ease}
+  #site-header .dropdown-menu a{display:block;padding:12px 14px;border-radius:9px;color:#d1d1d6;font-size:13px;height:auto;line-height:1.4}
+  #site-header .dropdown-menu a:hover{background:rgba(255,255,255,.09);color:#fff}
+  #site-header .dropdown:hover .dropdown-menu,#site-header .dropdown:focus-within .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0)}
+  #site-header .dropdown:hover .dropdown-arrow{transform:rotate(180deg)}
+  #site-header .nav-actions{display:flex;align-items:center;gap:12px}
+  #site-header .nav-cta{font-size:13px;color:#fff;background:#0071e3;border-radius:980px;padding:7px 15px;text-decoration:none;white-space:nowrap}
+  #site-header .cart-button{width:38px;height:38px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);border-radius:50%;color:#fff;background:transparent}
+  #site-header .cart-button svg{width:19px;height:19px}
+  #site-header .cart-button{cursor:pointer}
+  #site-header .hamb{display:none;width:38px;height:38px;border:0;background:none;cursor:pointer}
+  #site-header .hamb span{display:block;width:18px;height:1.5px;background:#fff;margin:5px auto}
+  #site-mobile.mobile{display:none}
+  #site-mobile.mobile.open{display:flex;position:fixed;inset:58px 0 0;background:rgba(7,9,12,.97);backdrop-filter:blur(20px);z-index:999;align-items:flex-start;justify-content:center;padding:20px 0 max(24px,env(safe-area-inset-bottom));overflow-y:auto}
+  #site-mobile>div{width:100%;max-width:320px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  #site-mobile a{display:block;font-size:24px;font-weight:700;letter-spacing:-.04em;margin:12px 0;color:#fff;text-align:center;text-decoration:none}
+  #site-mobile .has-sub{width:100%;display:flex;flex-direction:column;align-items:center;position:relative}
+  #site-mobile .sub-header{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;margin:12px 0}
+  #site-mobile .sub-header a{margin:0}
+  #site-mobile .sub-toggle{background:none;border:0;color:#fff;font-size:20px;font-weight:400;cursor:pointer;transition:transform .25s ease;padding:4px;display:inline-flex;align-items:center;justify-content:center}
+  #site-mobile .mobile-submenu{display:none;list-style:none;padding:0;background:rgba(255,255,255,.05);border-radius:12px;margin:4px 0 12px;width:100%;text-align:center}
+  #site-mobile .mobile-submenu li{width:100%;text-align:center}
+  #site-mobile .mobile-submenu a{font-size:20px;margin:10px 0;color:#b5b5bb}
+  #site-mobile .has-sub.open .sub-toggle{transform:rotate(180deg)}
+  #site-mobile .has-sub.open .mobile-submenu{display:block}
+  @media(max-width:900px){
+    #site-header .nav-links{display:none}
+    #site-header .hamb{display:block}
+  }
+  @media(max-width:620px){
+    #site-header .nav-inner{width:min(100% - 28px,1200px)}
+    #site-header .logo{width:120px;height:auto}
+    #site-header .nav-actions{gap:6px}
+    #site-header .nav-cta{padding:7px 11px}
+    #site-header .cart-button,#site-header .hamb{width:34px;height:34px}
+  }
+</style>
+</head>
+<body>
+<header class="nav" id="site-header">
+  <div class="nav-inner">
+    <a href="/#inicio" aria-label="Ir al inicio de RenovaH2O"><img class="logo" src="/Images/Logo Silver LL.png" alt="RenovaH2O Panamá" width="160" height="40"></a>
+    <nav aria-label="Navegación principal">
+      <ul class="nav-links">
+        <li><a href="/#inicio">Inicio</a></li>
+        <li class="dropdown">
+          <a href="/#servicios" class="dropdown-toggle" aria-expanded="false">Servicios <span class="dropdown-arrow" aria-hidden="true">⌄</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/limpieza-de-pisos-panama">Residencial</a></li>
+            <li><a href="/limpieza-de-estacionamientos-panama">Comercial</a></li>
+            <li><a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a></li>
+          </ul>
+        </li>
+        <li><a href="/nosotros">Nosotros</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contactanos" aria-current="page">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-cta" href="/cuenta">Mi cuenta</a>
+      <a class="cart-button" href="/carrito" aria-label="Abrir carrito de compras" title="Carrito de compras">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+      </a>
+      <button class="hamb" id="hamb" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="site-mobile">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="mobile" id="site-mobile" role="navigation" aria-label="Menú móvil">
+  <div>
+    <a href="/#inicio">Inicio</a>
+    <div class="has-sub">
+      <div class="sub-header">
+        <a href="/#servicios">Servicios</a>
+        <button class="sub-toggle" type="button" aria-expanded="false" aria-label="Expandir submenú de servicios" aria-controls="site-mobile-services">
+          <span class="arrow-icon" aria-hidden="true">⌄</span>
+        </button>
+      </div>
+      <ul class="mobile-submenu" id="site-mobile-services">
+        <li><a href="/limpieza-de-pisos-panama">Residencial</a></li>
+        <li><a href="/limpieza-de-estacionamientos-panama">Comercial</a></li>
+        <li><a href="/alquiler-de-hidrolavadoras-panama">Alquileres</a></li>
+      </ul>
+    </div>
+    <a href="/nosotros">Nosotros</a>
+    <a href="/blog">Blog</a>
+    <a href="/contactanos">Contacto</a>
+    <a href="/cuenta">Mi cuenta</a>
+    <a href="/#cotizar">Cotizar</a>
+    <a href="https://wa.me/50763518111" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</div>
+<script>
+  const mobileHeader = document.querySelector("#site-header");
+  const mobileMenu = document.querySelector("#site-mobile");
+  const menuButton = mobileHeader.querySelector("#hamb");
+  menuButton.addEventListener("click", () => {
+    const isOpen = mobileMenu.classList.toggle("open");
+    menuButton.setAttribute("aria-expanded", String(isOpen));
+  });
+  mobileMenu.querySelectorAll("a").forEach(link => {
+    if (link.closest(".sub-header")) return;
+    link.addEventListener("click", () => {
+      mobileMenu.classList.remove("open");
+      menuButton.setAttribute("aria-expanded", "false");
+    });
+  });
+  mobileMenu.querySelectorAll(".sub-header > a, .sub-toggle").forEach(control => {
+    control.addEventListener("click", event => {
+      event.preventDefault();
+      const submenu = control.closest(".has-sub");
+      const isOpen = submenu.classList.toggle("open");
+      submenu.querySelector(".sub-toggle").setAttribute("aria-expanded", String(isOpen));
+      submenu.querySelector(".sub-header > a").setAttribute("aria-expanded", String(isOpen));
+    });
+  });
+</script>
+<main>
+  <section class="contact-hero">
+    <p class="eyebrow">Contacto RenovaH2O</p>
+    <h1>Cuéntanos qué necesitas renovar.</h1>
+    <p class="hero-copy">Estamos para ayudarte con cotizaciones, servicios residenciales y comerciales, alquiler de equipos o cualquier consulta sobre una orden.</p>
+  </section>
+
+  <div class="contact-grid">
+    <section class="contact-card contact-options">
+      <h2>Elige cómo contactarnos</h2>
+      <p class="card-copy">Puedes escribirnos directamente o dejar tu consulta desde tu cuenta para conservar toda la conversación en un solo lugar.</p>
+
+      <a class="contact-option" href="https://wa.me/50763518111?text=Hola%20RenovaH2O%2C%20tengo%20una%20consulta." target="_blank" rel="noopener noreferrer">
+        <span class="option-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.1-4.5A8.5 8.5 0 1 1 20.5 11.5Z"/><path d="M8.5 8.5c.3 2.1 2.9 4.8 5.1 5.2l1.3-1.1 2 1c-.2 1.5-1.3 2.2-2.7 2.1-3.6-.4-6.8-3.6-7.2-7.2-.1-1.4.6-2.5 2.1-2.7l1 2-1.6.7Z"/></svg></span>
+        <span><strong>WhatsApp</strong><small>Para conversar directamente con nosotros</small></span>
+        <span class="arrow" aria-hidden="true">›</span>
+      </a>
+
+      <a class="contact-option" href="tel:+50763518111">
+        <span class="option-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h4l2 5-2.5 1.5a15 15 0 0 0 6 6L16 13l5 2v4c0 1.1-.9 2-2 2C10 21 3 14 3 5c0-1.1.9-2 2-2Z"/></svg></span>
+        <span><strong>Llamar</strong><small>+507 6351-8111</small></span>
+        <span class="arrow" aria-hidden="true">›</span>
+      </a>
+
+      <a class="contact-option" href="mailto:info@renovah2o.com">
+        <span class="option-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
+        <span><strong>Correo electrónico</strong><small>info@renovah2o.com</small></span>
+        <span class="arrow" aria-hidden="true">›</span>
+      </a>
+
+      <div class="account-note">
+        <strong>¿Quieres conservar el historial?</strong>
+        <p>Las consultas enviadas desde tu cuenta quedan guardadas en «Mi Cuenta → Mis consultas». Allí podrás revisar la conversación y responder cuando lo necesites.</p>
+      </div>
+    </section>
+
+    <section class="contact-card">
+      <h2>Envíanos un mensaje</h2>
+      <p class="card-copy">Cuéntanos brevemente qué necesitas. Tu consulta quedará vinculada a tu cuenta.</p>
+
+      <div class="login-card" id="contact-login" hidden>
+        <h3>Inicia sesión para enviar tu consulta</h3>
+        <p>Así podremos asociar el mensaje contigo y mantener el historial disponible en Mi Cuenta.</p>
+        <a class="primary" href="/cuenta?next=%2Fcontactanos">Iniciar sesión o crear cuenta</a>
+      </div>
+
+      <form class="contact-form" id="contact-form" hidden>
+        <div class="form-row">
+          <div class="field">
+            <label for="contact-category">Motivo de contacto</label>
+            <select id="contact-category" required>
+              <option value="">Selecciona una opción</option>
+              <option value="cotizacion">Cotización de un servicio</option>
+              <option value="servicio">Consulta sobre un servicio</option>
+              <option value="orden">Orden o fecha reservada</option>
+              <option value="alquiler">Alquiler de equipos</option>
+              <option value="pagos">Pagos y facturación</option>
+              <option value="otro">Otra consulta</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="contact-subject">Asunto</label>
+            <input id="contact-subject" type="text" minlength="4" maxlength="120" placeholder="Ej. Cotización para PH" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="contact-message">Tu mensaje</label>
+          <textarea id="contact-message" minlength="10" maxlength="3000" placeholder="Escribe los detalles de tu consulta..." required></textarea>
+        </div>
+        <p class="privacy-copy">No incluyas contraseñas ni información de tarjetas. Utilizaremos estos datos únicamente para atender y dar seguimiento a tu consulta.</p>
+        <button class="primary" id="contact-submit" type="submit">Enviar consulta</button>
+        <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </div>
+</main>
+
+<footer></footer>
+
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const config = window.RENOVA_SUPABASE_CONFIG;
+  const loginCard = document.querySelector("#contact-login");
+  const contactForm = document.querySelector("#contact-form");
+  const submitButton = document.querySelector("#contact-submit");
+  const status = document.querySelector("#contact-status");
+
+  function showContactMode(session) {
+    loginCard.hidden = Boolean(session);
+    contactForm.hidden = !session;
+  }
+
+  if (!config?.url || !config.publishableKey) {
+    loginCard.hidden = false;
+    loginCard.querySelector("p").textContent = "El formulario no está disponible en este momento. Puedes contactarnos directamente por WhatsApp o correo.";
+    loginCard.querySelector("a").hidden = true;
+  } else {
+    const supabase = createClient(config.url, config.publishableKey);
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      loginCard.hidden = false;
+      loginCard.querySelector("p").textContent = "No pudimos comprobar tu sesión. Puedes escribirnos por WhatsApp mientras lo intentas de nuevo.";
+      loginCard.querySelector("a").hidden = true;
+    } else {
+      showContactMode(data.session);
+    }
+    supabase.auth.onAuthStateChange((_event, session) => showContactMode(session));
+
+    contactForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!contactForm.reportValidity()) return;
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando...";
+      status.className = "form-status";
+      status.textContent = "";
+      try {
+        const { data: conversationId, error: sendError } = await supabase.rpc("support_create_conversation", {
+          p_subject: document.querySelector("#contact-subject").value.trim(),
+          p_category: document.querySelector("#contact-category").value,
+          p_message: document.querySelector("#contact-message").value.trim()
+        });
+        if (sendError) throw sendError;
+        if (!conversationId) throw new Error("No se recibió la confirmación de la consulta.");
+        status.className = "form-status success";
+        status.textContent = "Consulta enviada. Abriendo el historial de tu cuenta...";
+        contactForm.reset();
+        window.location.assign("/cuenta#consultas");
+      } catch (error) {
+        status.className = "form-status error";
+        status.textContent = error.message || "No se pudo enviar tu consulta. Inténtalo de nuevo o escríbenos por WhatsApp.";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Enviar consulta";
+      }
+    });
+  }
+</script>
+</body>
+</html>
