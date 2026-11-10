@@ -81,7 +81,7 @@
     .panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid #e8e8ed}
     .panel-heading h2{margin:0;font-size:26px;letter-spacing:-.045em}
     .panel-heading p{margin:7px 0 0;color:var(--gray);font-size:14px}
-    .profile-form{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+    .profile-form{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
     .profile-form .primary{grid-column:1/-1}
     .phone-field{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr);gap:8px}
     .phone-field select,.phone-field input{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
@@ -2369,7 +2369,13 @@
       profileBirthday.disabled = locked;
       if (locked) {
         const dateLabel = new Intl.DateTimeFormat("es-PA", { dateStyle: "long", timeZone: agendaTimezone }).format(nextChange);
-        profileBirthdayHint.textContent = `Por seguridad, este cumpleaños no se puede modificar nuevamente hasta el ${dateLabel}. Si necesitas corregirlo antes, contacta a <a href="mailto:Julian.Remy@RenovaH2O.com?subject=Solicitud%20de%20correcci%C3%B3n%20de%20cumplea%C3%B1os">soporte</a>.`;
+        profileBirthdayHint.replaceChildren(
+          document.createTextNode(`Por seguridad, este cumpleaños no se puede modificar nuevamente hasta el ${dateLabel}. Si necesitas corregirlo antes, contacta a `)
+        );
+        const supportLink = document.createElement("a");
+        supportLink.href = "mailto:Julian.Remy@RenovaH2O.com?subject=Solicitud%20de%20correcci%C3%B3n%20de%20cumplea%C3%B1os";
+        supportLink.textContent = "soporte";
+        profileBirthdayHint.append(supportLink, document.createTextNode("."));
       } else {
         profileBirthdayHint.textContent = profileBirthday.value
           ? "Puedes modificar tu cumpleaños ahora. Después de guardarlo, solo podrás cambiarlo nuevamente dentro de 12 meses. Si necesitas una corrección urgente, contacta a soporte."
