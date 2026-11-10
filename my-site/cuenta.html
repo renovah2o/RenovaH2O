@@ -2492,27 +2492,25 @@
     function rememberGoogleProviderToken(token) {
       if (!token) return;
       try {
-        window.sessionStorage.setItem("renovah2o-google-provider-token", JSON.stringify({
-          token,
-          savedAt: Date.now()
-        }));
+        window.localStorage.setItem("renovah2o-google-provider-token", token);
       } catch {}
     }
 
     function getGoogleProviderToken() {
       try {
-        const raw = window.sessionStorage.getItem("renovah2o-google-provider-token");
-        if (!raw) return null;
-        const saved = JSON.parse(raw);
-        if (!saved?.token || !saved?.savedAt || Date.now() - saved.savedAt > 10 * 60 * 1000) {
-          window.sessionStorage.removeItem("renovah2o-google-provider-token");
-          return null;
-        }
-        return saved.token;
+        return window.localStorage.getItem("renovah2o-google-provider-token")
+          || window.sessionStorage.getItem("renovah2o-google-provider-token")
+          || null;
       } catch {
-        window.sessionStorage.removeItem("renovah2o-google-provider-token");
         return null;
       }
+    }
+
+    function clearGoogleProviderToken() {
+      try {
+        window.localStorage.removeItem("renovah2o-google-provider-token");
+        window.sessionStorage.removeItem("renovah2o-google-provider-token");
+      } catch {}
     }
 
     async function fetchSocialBirthday(session, providerToken = session?.provider_token) {
@@ -2542,7 +2540,8 @@
       const providerToken = session.provider_token || (provider === "google" ? getGoogleProviderToken() : null);
       if (!providerToken) {
         if (provider === "google") {
-          birthdaySyncDiagnostic = "No se recibió el permiso temporal de Google para consultar el cumpleaños. Vuelve a autorizar Google e intenta nuevamente.";
+          birthdaySyncDiagnostic = "La sesión de RenovaH2O no recibió el token de Google. Pulsa «Volver a autorizar Google»; si vuelve a ocurrir, revisaremos el callback OAuth.";
+          profileGoogleBirthdayStatus.textContent = "No llegó el token de acceso de Google; todavía no se consultó la API.";
           updateBirthdayEditState();
         }
         return existingBirthday || null;
@@ -2713,7 +2712,7 @@
           profileGoogleBirthday.value = profileResult.data.birthday_google || "";
           profileGoogleBirthdayStatus.textContent = profileResult.data.birthday_google
             ? "Fecha recibida y guardada desde Google."
-            : "Google aún no ha entregado una fecha a RenovaH2O.";
+            : "Aún no hay fecha guardada. Se consultará Google al cargar tu perfil.";
           birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
           updateBirthdayEditState();
           if (["google", "facebook"].includes(user?.app_metadata?.provider)) {
@@ -2819,9 +2818,9 @@
       }
     }
 
-    function showSession(session) {
+    function showSession(session, allowReturnRedirect = false) {
       const signedIn = Boolean(session);
-      if (signedIn && safeReturnUrl) {
+      if (signedIn && safeReturnUrl && allowReturnRedirect) {
         // Preserve the short-lived Google access token across the post-OAuth return redirect.
         // Supabase may not expose provider_token again after the browser reloads.
         if (session.provider_token && session.user?.app_metadata?.provider === "google") {
@@ -3461,23 +3460,23 @@
       showAuthMessage("Falta configurar Supabase para habilitar el acceso.");
     } else {
       supabase = createClient(config.url, config.publishableKey);
-      supabase.auth.getSession().then(({ data, error }) => {
-        if (error) showAuthMessage(`No se pudo comprobar la sesión: ${error.message}`);
-        else showSession(data.session);
-      }).catch(error => showAuthMessage(`No se pudo comprobar la sesión: ${error.message}`));
+      // Register immediately: Supabase emits provider_token only once after OAuth.
       supabase.auth.onAuthStateChange((event, session) => {
-        // Capture the provider token from Supabase's OAuth callback event before
-        // a subsequent getSession() or page navigation drops the transient field.
         if (session?.provider_token && session.user?.app_metadata?.provider === "google") {
           rememberGoogleProviderToken(session.provider_token);
         }
-        showSession(session);
+        if (event === "SIGNED_OUT") clearGoogleProviderToken();
+        showSession(session, event === "SIGNED_IN" || Boolean(session?.provider_token));
         if (event === "PASSWORD_RECOVERY") {
           window.location.hash = "perfil";
           profilePasswordResetForm.hidden = false;
           profileAccessStatus.textContent = "Elige una contraseña nueva para tu cuenta.";
         }
       });
+      supabase.auth.getSession().then(({ data, error }) => {
+        if (error) showAuthMessage(`No se pudo comprobar la sesión: ${error.message}`);
+        else showSession(data.session, false);
+      }).catch(error => showAuthMessage(`No se pudo comprobar la sesión: ${error.message}`));
     }
   </script>
 <style>
