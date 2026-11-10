@@ -179,6 +179,29 @@
     .calendar-day-detail h4{margin:0 0 8px;font-size:15px}
     .calendar-day-detail .agenda-card{padding:12px}
     .support-links{display:flex;flex-wrap:wrap;gap:12px}
+    .support-workspace{display:grid;grid-template-columns:minmax(220px,.72fr) minmax(0,1.28fr);gap:16px;margin-top:18px;min-width:0}
+    .support-list-pane,.support-thread-pane{min-width:0;border:1px solid #e7e9ee;border-radius:16px;background:#fff;padding:14px}
+    .support-list-pane h3,.support-thread-pane h3{margin:0 0 10px;font-size:15px}
+    .support-conversation-list{display:grid;gap:8px;max-height:560px;overflow:auto}
+    .support-conversation-button{display:grid;gap:5px;width:100%;padding:12px;border:1px solid #e7e9ee;border-radius:12px;background:#fff;color:#252a32;text-align:left;cursor:pointer}
+    .support-conversation-button[aria-pressed="true"]{border-color:#9fc8f6;background:#f4f8ff}
+    .support-conversation-button strong{font-size:13px;line-height:1.4}
+    .support-conversation-button span,.support-conversation-button small{color:var(--gray);font-size:11px;line-height:1.4}
+    .support-thread-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .support-thread-head p{margin:3px 0 0;color:var(--gray);font-size:12px}
+    .support-message-list{display:grid;gap:10px;max-height:460px;overflow:auto;padding:4px 2px 14px}
+    .support-message{max-width:88%;padding:12px 14px;border:1px solid #e6e9ee;border-radius:14px;background:#f7f8fa}
+    .support-message.mine{justify-self:end;border-color:#c9def8;background:#eef6ff}
+    .support-message strong{display:block;margin-bottom:4px;font-size:11px;color:#45505e}
+    .support-message p{margin:0;color:#252a32;font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+    .support-message time{display:block;margin-top:7px;color:#818894;font-size:10px}
+    .support-reply-form{display:grid;gap:9px;margin-top:10px;padding-top:14px;border-top:1px solid #eceef1}
+    .support-reply-form textarea{width:100%;min-height:88px;padding:11px 12px;border:1px solid #d6dae1;border-radius:11px;font:inherit;font-size:13px;resize:vertical}
+    .support-reply-form button{justify-self:start}
+    .support-inline-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .support-status-badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#f1f4f8;color:#596271;font-size:10px;font-weight:750}
+    @media(max-width:760px){.support-workspace{grid-template-columns:1fr}.support-conversation-list{max-height:300px}.support-message{max-width:96%}}
+    
     .footer-note{margin-top:28px;color:var(--gray);font-size:12px}
     .footer-note a{color:var(--blue)}
     @media(max-width:1000px){.report-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -310,6 +333,26 @@
     const notificationsStatus = document.querySelector("#notifications-status");
     const customerAgendaList = document.querySelector("#customer-agenda-list");
     const customerAgendaStatus = document.querySelector("#customer-agenda-status");
+    const adminSupportTile = document.querySelector("#admin-support-tile");
+    const adminSupportList = document.querySelector("#admin-support-list");
+    const adminSupportListStatus = document.querySelector("#admin-support-list-status");
+    const adminSupportMessages = document.querySelector("#admin-support-messages");
+    const adminSupportThreadTitle = document.querySelector("#admin-support-thread-title");
+    const adminSupportThreadMeta = document.querySelector("#admin-support-thread-meta");
+    const adminSupportReplyForm = document.querySelector("#admin-support-reply-form");
+    const adminSupportReply = document.querySelector("#admin-support-reply");
+    const adminSupportThreadStatus = document.querySelector("#admin-support-thread-status");
+    const adminSupportToggleStatus = document.querySelector("#admin-support-toggle-status");
+    const customerSupportList = document.querySelector("#customer-support-list");
+    const customerSupportListStatus = document.querySelector("#customer-support-list-status");
+    const customerSupportMessages = document.querySelector("#customer-support-messages");
+    const customerSupportThreadTitle = document.querySelector("#customer-support-thread-title");
+    const customerSupportThreadMeta = document.querySelector("#customer-support-thread-meta");
+    const customerSupportReplyForm = document.querySelector("#customer-support-reply-form");
+    const customerSupportReply = document.querySelector("#customer-support-reply");
+    const customerSupportThreadStatus = document.querySelector("#customer-support-thread-status");
+    const refreshCustomerSupportButton = document.querySelector("#refresh-customer-support");
+    const refreshAdminSupportButton = document.querySelector("#refresh-admin-support");
     const adminAgendaTile = document.querySelector("#admin-agenda-tile");
     const adminAgendaList = document.querySelector("#admin-agenda-list");
     const adminAgendaStatus = document.querySelector("#admin-agenda-status");
@@ -382,6 +425,10 @@
     let calendarMonth;
     let editingAddressId = null;
     let editingPhoneId = null;
+    let selectedCustomerSupportId = null;
+    let selectedAdminSupportId = null;
+    let customerSupportConversations = [];
+    let adminSupportConversations = [];
 
     const callingCodes = [
       ["Panamá", "+507"], ["Estados Unidos", "+1"], ["Canadá", "+1"],
@@ -1306,6 +1353,251 @@
       ]);
     }
 
+    const supportCategoryLabels = {
+      cotizacion: "Cotización",
+      servicio: "Servicio",
+      orden: "Orden o agenda",
+      alquiler: "Alquiler de equipos",
+      pagos: "Pagos y facturación",
+      otro: "Otra consulta"
+    };
+    const supportStatusLabels = {
+      open: "Abierta",
+      in_progress: "En atención",
+      closed: "Cerrada"
+    };
+
+    function formatSupportTimestamp(value) {
+      return new Intl.DateTimeFormat("es-PA", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: agendaTimezone
+      }).format(new Date(value));
+    }
+
+    function renderSupportMessages(container, messages, viewerRole) {
+      container.replaceChildren();
+      if (!messages.length) {
+        appendEmptyState(container, "Todavía no hay mensajes en esta conversación.");
+        return;
+      }
+      for (const message of messages) {
+        const bubble = document.createElement("article");
+        bubble.className = `support-message${message.sender_role === viewerRole ? " mine" : ""}`;
+        const sender = document.createElement("strong");
+        sender.textContent = message.sender_role === "admin" ? "Equipo RenovaH2O" : "Cliente";
+        if (message.sender_role === viewerRole) sender.textContent = viewerRole === "admin" ? "Tú · RenovaH2O" : "Tú";
+        const body = document.createElement("p");
+        body.textContent = message.body;
+        const time = document.createElement("time");
+        time.dateTime = message.created_at;
+        time.textContent = formatSupportTimestamp(message.created_at);
+        bubble.append(sender, body, time);
+        container.append(bubble);
+      }
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function makeSupportConversationButton(conversation, selectedId, onSelect, isAdminView = false) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "support-conversation-button";
+      const conversationId = conversation.id || conversation.conversation_id;
+      button.setAttribute("aria-pressed", String(conversationId === selectedId));
+      const title = document.createElement("strong");
+      title.textContent = conversation.subject;
+      const detail = document.createElement("span");
+      detail.textContent = isAdminView
+        ? `${conversation.customer_name || conversation.customer_email || "Cliente"} · ${supportCategoryLabels[conversation.category] || conversation.category}`
+        : `${supportCategoryLabels[conversation.category] || conversation.category}`;
+      const meta = document.createElement("small");
+      const timestamp = conversation.updated_at || conversation.created_at || conversation.last_message_at;
+      meta.textContent = `${supportStatusLabels[conversation.status] || conversation.status} · ${timestamp ? formatSupportTimestamp(timestamp) : ""}`;
+      button.append(title, detail, meta);
+      button.addEventListener("click", () => onSelect(conversationId));
+      return button;
+    }
+
+    async function openCustomerSupportConversation(conversationId) {
+      selectedCustomerSupportId = conversationId;
+      const userId = activeUserId;
+      const conversation = customerSupportConversations.find(item => item.id === conversationId);
+      if (!conversation) return;
+      customerSupportThreadTitle.textContent = conversation.subject;
+      customerSupportThreadMeta.textContent = `${supportCategoryLabels[conversation.category] || conversation.category} · ${supportStatusLabels[conversation.status] || conversation.status}`;
+      customerSupportThreadStatus.textContent = "";
+      customerSupportReplyForm.hidden = conversation.status === "closed";
+      const { data, error } = await supabase.from("support_messages")
+        .select("id, sender_id, sender_role, body, created_at")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
+      if (activeUserId !== userId) return;
+      if (error) {
+        customerSupportThreadStatus.textContent = `No se pudo cargar la conversación: ${error.message}`;
+        return;
+      }
+      renderSupportMessages(customerSupportMessages, data || [], "customer");
+      customerSupportList.replaceChildren(...customerSupportConversations.map(item =>
+        makeSupportConversationButton(item, selectedCustomerSupportId, openCustomerSupportConversation)
+      ));
+    }
+
+    async function loadCustomerSupportConversations(userId = activeUserId) {
+      customerSupportList.replaceChildren();
+      customerSupportListStatus.textContent = "Cargando tus consultas…";
+      const { data, error } = await supabase.from("support_conversations")
+        .select("id, subject, category, status, created_at, updated_at")
+        .eq("user_id", userId)
+        .order("updated_at", { ascending: false });
+      if (activeUserId !== userId) return;
+      if (error) {
+        customerSupportListStatus.textContent = `No se pudieron cargar tus consultas: ${error.message}`;
+        return;
+      }
+      customerSupportConversations = data || [];
+      customerSupportListStatus.textContent = "";
+      if (!customerSupportConversations.length) {
+        appendEmptyState(customerSupportList, "Todavía no has iniciado una consulta. Usa «Nueva consulta» para escribirnos.");
+        selectedCustomerSupportId = null;
+        customerSupportMessages.replaceChildren();
+        customerSupportThreadTitle.textContent = "Aún no hay consultas";
+        customerSupportThreadMeta.textContent = "Cuando nos escribas, tu conversación aparecerá aquí.";
+        customerSupportReplyForm.hidden = true;
+        return;
+      }
+      if (!customerSupportConversations.some(item => item.id === selectedCustomerSupportId)) {
+        selectedCustomerSupportId = customerSupportConversations[0].id;
+      }
+      customerSupportList.replaceChildren(...customerSupportConversations.map(item =>
+        makeSupportConversationButton(item, selectedCustomerSupportId, openCustomerSupportConversation)
+      ));
+      await openCustomerSupportConversation(selectedCustomerSupportId);
+    }
+
+    async function sendCustomerSupportReply(event) {
+      event.preventDefault();
+      const body = customerSupportReply.value.trim();
+      if (!selectedCustomerSupportId || body.length < 2) return;
+      const button = document.querySelector("#customer-support-send");
+      button.disabled = true;
+      customerSupportThreadStatus.textContent = "Enviando respuesta…";
+      try {
+        const { error } = await supabase.rpc("support_send_message", {
+          p_conversation_id: selectedCustomerSupportId,
+          p_message: body
+        });
+        if (error) throw error;
+        customerSupportReply.value = "";
+        await loadCustomerSupportConversations(activeUserId);
+        customerSupportThreadStatus.textContent = "Respuesta enviada.";
+      } catch (error) {
+        customerSupportThreadStatus.textContent = `No se pudo enviar la respuesta: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function openAdminSupportConversation(conversationId) {
+      selectedAdminSupportId = conversationId;
+      const userId = activeUserId;
+      const conversation = adminSupportConversations.find(item => item.conversation_id === conversationId);
+      if (!conversation) return;
+      adminSupportThreadTitle.textContent = conversation.subject;
+      adminSupportThreadMeta.textContent = `${conversation.customer_name || "Cliente"} · ${conversation.customer_email || "Sin correo"} · ${supportCategoryLabels[conversation.category] || conversation.category}`;
+      adminSupportToggleStatus.hidden = false;
+      adminSupportToggleStatus.textContent = conversation.status === "closed" ? "Reabrir consulta" : "Cerrar consulta";
+      adminSupportReplyForm.hidden = conversation.status === "closed";
+      adminSupportThreadStatus.textContent = "";
+      const { data, error } = await supabase.from("support_messages")
+        .select("id, sender_id, sender_role, body, created_at")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
+      if (activeUserId !== userId || !isAgendaAdmin) return;
+      if (error) {
+        adminSupportThreadStatus.textContent = `No se pudo cargar la conversación: ${error.message}`;
+        return;
+      }
+      renderSupportMessages(adminSupportMessages, data || [], "admin");
+      adminSupportList.replaceChildren(...adminSupportConversations.map(item =>
+        makeSupportConversationButton(item, selectedAdminSupportId, openAdminSupportConversation, true)
+      ));
+    }
+
+    async function loadAdminSupportInbox(userId = activeUserId) {
+      adminSupportList.replaceChildren();
+      adminSupportListStatus.textContent = "Cargando consultas…";
+      const { data, error } = await supabase.rpc("support_admin_list_conversations", {
+        p_status: null,
+        p_search: null
+      });
+      if (activeUserId !== userId || !isAgendaAdmin) return;
+      if (error) {
+        adminSupportListStatus.textContent = `No se pudo cargar la bandeja: ${error.message}`;
+        return;
+      }
+      adminSupportConversations = data || [];
+      adminSupportListStatus.textContent = "";
+      if (!adminSupportConversations.length) {
+        appendEmptyState(adminSupportList, "Todavía no hay consultas de clientes.");
+        selectedAdminSupportId = null;
+        adminSupportMessages.replaceChildren();
+        adminSupportThreadTitle.textContent = "Bandeja vacía";
+        adminSupportThreadMeta.textContent = "Las nuevas consultas aparecerán aquí.";
+        adminSupportReplyForm.hidden = true;
+        adminSupportToggleStatus.hidden = true;
+        return;
+      }
+      if (!adminSupportConversations.some(item => item.conversation_id === selectedAdminSupportId)) {
+        selectedAdminSupportId = adminSupportConversations[0].conversation_id;
+      }
+      adminSupportList.replaceChildren(...adminSupportConversations.map(item =>
+        makeSupportConversationButton(item, selectedAdminSupportId, openAdminSupportConversation, true)
+      ));
+      await openAdminSupportConversation(selectedAdminSupportId);
+    }
+
+    async function sendAdminSupportReply(event) {
+      event.preventDefault();
+      const body = adminSupportReply.value.trim();
+      if (!selectedAdminSupportId || body.length < 2) return;
+      const button = document.querySelector("#admin-support-send");
+      button.disabled = true;
+      adminSupportThreadStatus.textContent = "Enviando respuesta…";
+      try {
+        const { error } = await supabase.rpc("support_send_message", {
+          p_conversation_id: selectedAdminSupportId,
+          p_message: body
+        });
+        if (error) throw error;
+        adminSupportReply.value = "";
+        await loadAdminSupportInbox(activeUserId);
+        adminSupportThreadStatus.textContent = "Respuesta enviada al cliente.";
+      } catch (error) {
+        adminSupportThreadStatus.textContent = `No se pudo enviar la respuesta: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function toggleAdminSupportStatus() {
+      const conversation = adminSupportConversations.find(item => item.conversation_id === selectedAdminSupportId);
+      if (!conversation) return;
+      const nextStatus = conversation.status === "closed" ? "open" : "closed";
+      adminSupportToggleStatus.disabled = true;
+      try {
+        const { error } = await supabase.rpc("support_admin_set_status", {
+          p_conversation_id: selectedAdminSupportId,
+          p_status: nextStatus
+        });
+        if (error) throw error;
+        await loadAdminSupportInbox(activeUserId);
+      } catch (error) {
+        adminSupportThreadStatus.textContent = `No se pudo actualizar el estado: ${error.message}`;
+      } finally {
+        adminSupportToggleStatus.disabled = false;
+      }
+    }
+
     async function loadNotifications(userId = activeUserId) {
       notificationsList.replaceChildren();
       notificationsStatus.textContent = "Cargando mensajes…";
@@ -1865,6 +2157,7 @@
       adminOrdersTile.hidden = true;
       adminCustomersTile.hidden = true;
       adminReportsTile.hidden = true;
+      adminSupportTile.hidden = true;
       adminAgendaList.replaceChildren();
       adminAgendaStatus.textContent = "";
       adminOrdersList.replaceChildren();
@@ -2010,6 +2303,7 @@
           adminOrdersTile.hidden = !isAgendaAdmin;
           adminCustomersTile.hidden = !isAgendaAdmin;
           adminReportsTile.hidden = !isAgendaAdmin;
+          adminSupportTile.hidden = !isAgendaAdmin;
           if (isAgendaAdmin) {
             await Promise.all([loadAdminAgenda(user.id), loadAdminOrders(user.id)]);
           }
@@ -2074,12 +2368,14 @@
       agenda: "panel-agenda",
       "administrar-agenda": "panel-admin-agenda",
       "administrar-ordenes": "panel-admin-orders",
+      "administrar-mensajes": "panel-admin-support",
       "administrar-clientes": "panel-admin-customers",
       "informes-clientes": "panel-admin-reports",
       direcciones: "panel-addresses",
       pagos: "panel-payments",
       regalos: "panel-giftcards",
       mensajes: "panel-messages",
+      consultas: "panel-support-conversations",
       soporte: "panel-support",
       carrito: "panel-cart"
     };
@@ -2087,7 +2383,7 @@
     function showRoute() {
       const route = window.location.hash.slice(1) || "resumen";
       const requestedPanelId = routes[route];
-      const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-clientes", "informes-clientes"];
+      const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-mensajes", "administrar-clientes", "informes-clientes"];
       const panelId = adminRoutes.includes(route) && !isAgendaAdmin
         ? "panel-overview"
         : requestedPanelId || "panel-overview";
@@ -2105,6 +2401,8 @@
       if (breadcrumb) breadcrumb.textContent = panel?.dataset.title ?? "Resumen";
       if (panelId === "panel-admin-customers") loadAdminCustomers();
       if (panelId === "panel-admin-reports") loadAdminReports();
+      if (panelId === "panel-support-conversations" && activeUserId) loadCustomerSupportConversations(activeUserId);
+      if (panelId === "panel-admin-support" && activeUserId && isAgendaAdmin) loadAdminSupportInbox(activeUserId);
     }
 
     document.querySelectorAll("[data-day-open]").forEach(toggle => {
@@ -2618,6 +2916,11 @@
       event.preventDefault();
       loadAdminCustomers();
     });
+    customerSupportReplyForm.addEventListener("submit", sendCustomerSupportReply);
+    adminSupportReplyForm.addEventListener("submit", sendAdminSupportReply);
+    adminSupportToggleStatus.addEventListener("click", toggleAdminSupportStatus);
+    refreshCustomerSupportButton.addEventListener("click", () => loadCustomerSupportConversations(activeUserId));
+    refreshAdminSupportButton.addEventListener("click", () => loadAdminSupportInbox(activeUserId));
     updateAuthMode();
     showRoute();
 
@@ -2857,6 +3160,7 @@
           <nav id="dashboard-home" class="account-navigation" aria-label="Secciones de mi cuenta">
             <div class="sidebar-group admin-nav-group">
               <span class="sidebar-label">Administración</span>
+              <a class="sidebar-link" id="admin-support-tile" href="#administrar-mensajes" hidden><svg aria-hidden="true"><use href="#icon-message"></use></svg><span>Bandeja de contacto</span></a>
               <a class="sidebar-link" id="admin-agenda-tile" href="#administrar-agenda" hidden><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Administrar agenda</span></a>
               <a class="sidebar-link" id="admin-orders-tile" href="#administrar-ordenes" hidden><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Gestión de órdenes</span></a>
               <a class="sidebar-link" id="admin-customers-tile" href="#administrar-clientes" hidden><svg aria-hidden="true"><use href="#icon-profile"></use></svg><span>Gestionar clientes</span></a>
@@ -2882,6 +3186,7 @@
             </div>
             <div class="sidebar-group">
               <span class="sidebar-label">Ayuda</span>
+              <a class="sidebar-link" href="#consultas"><svg aria-hidden="true"><use href="#icon-message"></use></svg><span>Mis consultas</span></a>
               <a class="sidebar-link" href="#mensajes"><svg aria-hidden="true"><use href="#icon-message"></use></svg><span>Mis mensajes</span></a>
               <a class="sidebar-link" href="#soporte"><svg aria-hidden="true"><use href="#icon-support"></use></svg><span>Servicio al cliente</span></a>
             </div>
@@ -3061,6 +3366,28 @@
         <p class="agenda-status" id="admin-orders-status" role="status" aria-live="polite"></p>
       </section>
 
+      <section class="account-panel card" id="panel-admin-support" data-title="Bandeja de contacto" hidden>
+        <div class="panel-heading"><div><h2>Bandeja de contacto</h2><p>Consultas iniciadas desde la página de contacto. Responde y actualiza su estado desde aquí.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <div class="support-inline-actions"><button class="secondary" id="refresh-admin-support" type="button">Actualizar bandeja</button></div>
+        <div class="support-workspace">
+          <section class="support-list-pane">
+            <h3>Consultas recibidas</h3>
+            <div class="support-conversation-list" id="admin-support-list" aria-live="polite"></div>
+            <p class="agenda-status" id="admin-support-list-status" role="status" aria-live="polite"></p>
+          </section>
+          <section class="support-thread-pane">
+            <div class="support-thread-head"><div><h3 id="admin-support-thread-title">Selecciona una consulta</h3><p id="admin-support-thread-meta">El historial aparecerá aquí.</p></div><button class="secondary" id="admin-support-toggle-status" type="button" hidden>Cerrar consulta</button></div>
+            <div class="support-message-list" id="admin-support-messages" aria-live="polite"></div>
+            <form class="support-reply-form" id="admin-support-reply-form" hidden>
+              <label for="admin-support-reply">Responder al cliente</label>
+              <textarea id="admin-support-reply" minlength="2" maxlength="3000" placeholder="Escribe una respuesta..." required></textarea>
+              <button class="primary" id="admin-support-send" type="submit">Enviar respuesta</button>
+              <p class="agenda-status" id="admin-support-thread-status" role="status" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
+      </section>
+
       <section class="account-panel card" id="panel-admin-customers" data-title="Gestionar clientes" hidden>
         <div class="panel-heading"><div><h2>Gestionar clientes</h2><p>Busca por nombre, correo o teléfono. Revisa preferencias y actividad para dar seguimiento.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <form class="admin-customer-search" id="admin-customer-search">
@@ -3185,6 +3512,28 @@
         <p>Los avisos se guardan en tu cuenta. El correo automático requiere configurar un proveedor de correo transaccional.</p>
         <div class="orders-list" id="notifications-list" aria-live="polite"></div>
         <p class="agenda-status" id="notifications-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="account-panel card" id="panel-support-conversations" data-title="Mis consultas" hidden>
+        <div class="panel-heading"><div><h2>Mis consultas</h2><p>Tu conversación con RenovaH2O queda guardada aquí para que puedas retomarla cuando lo necesites.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <div class="support-inline-actions"><a class="primary" href="/contactanos">Nueva consulta</a><button class="secondary" id="refresh-customer-support" type="button">Actualizar</button></div>
+        <div class="support-workspace">
+          <section class="support-list-pane">
+            <h3>Historial de consultas</h3>
+            <div class="support-conversation-list" id="customer-support-list" aria-live="polite"></div>
+            <p class="agenda-status" id="customer-support-list-status" role="status" aria-live="polite"></p>
+          </section>
+          <section class="support-thread-pane">
+            <div class="support-thread-head"><div><h3 id="customer-support-thread-title">Selecciona una consulta</h3><p id="customer-support-thread-meta">Tus mensajes y nuestras respuestas aparecerán aquí.</p></div></div>
+            <div class="support-message-list" id="customer-support-messages" aria-live="polite"></div>
+            <form class="support-reply-form" id="customer-support-reply-form" hidden>
+              <label for="customer-support-reply">Escribe una respuesta</label>
+              <textarea id="customer-support-reply" minlength="2" maxlength="3000" placeholder="Escribe tu mensaje..." required></textarea>
+              <button class="primary" id="customer-support-send" type="submit">Enviar respuesta</button>
+              <p class="agenda-status" id="customer-support-thread-status" role="status" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
       </section>
 
       <section class="account-panel card" id="panel-support" data-title="Servicio al cliente" hidden>
