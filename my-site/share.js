@@ -221,6 +221,10 @@ if (!document.body.hasAttribute("data-no-social")) {
       });
 
       card.append(button, status);
+
+      if (window.location.hash === `#${card.id}`) {
+        requestAnimationFrame(() => card.scrollIntoView({ block: "center", behavior: "smooth" }));
+      }
     });
   }
 
