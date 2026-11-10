@@ -272,19 +272,26 @@
       .overview-welcome{align-items:flex-start;flex-direction:column}
       .overview-lower-grid{grid-template-columns:1fr}
     }
+    .mobile-account-back{display:none;align-items:center;gap:9px;width:max-content;min-height:42px;margin:0 0 2px;padding:8px 14px;border:1px solid #d9dee6;border-radius:999px;background:#fff;color:#253042;font-size:13px;font-weight:650;text-decoration:none}
+    .mobile-account-back svg{width:17px;height:17px;flex:none}
     @media(max-width:760px){
       main{width:min(100% - 28px,1120px);padding-top:90px}
       .account-layout{grid-template-columns:1fr;gap:13px}
-      .account-sidebar{position:static;max-height:none;padding:12px;border-radius:17px}
-      .sidebar-intro{padding:2px 4px 11px}
-      .account-navigation{display:flex;gap:0;overflow-x:auto;overflow-y:hidden;padding:12px 0 4px;scrollbar-width:none}
-      .account-navigation::-webkit-scrollbar{display:none}
-      .sidebar-group{display:contents}
-      .sidebar-label{display:none}
-      .sidebar-link{flex:0 0 auto;min-height:38px;padding:8px 10px;margin-right:5px;border-radius:10px;white-space:nowrap;font-size:11px}
-      .sidebar-link svg{width:15px;height:15px}
-      .sidebar-back-link{display:none}
-      .admin-nav-group{display:contents!important}
+      .account-layout.mobile-menu-view .account-sidebar{display:flex}
+      .account-layout.mobile-menu-view .account-content{display:none}
+      .account-layout.mobile-panel-view .account-sidebar{display:none}
+      .account-layout.mobile-panel-view .account-content{display:grid}
+      .account-sidebar{position:static;max-height:none;width:100%;padding:17px 14px 13px;border-radius:18px}
+      .sidebar-intro{padding:3px 7px 13px}
+      .account-navigation{display:grid;gap:15px;overflow:visible;padding:15px 0 9px;scrollbar-width:auto}
+      .sidebar-group{display:grid;gap:4px}
+      .sidebar-label{display:block;padding:0 10px 5px;font-size:10px}
+      .sidebar-link{display:flex;flex:initial;align-items:center;width:100%;min-height:46px;margin:0;padding:11px 12px;border-radius:11px;white-space:normal;font-size:13px}
+      .sidebar-link svg{width:18px;height:18px}
+      .sidebar-back-link{display:flex;margin-top:3px;padding:13px 9px 2px}
+      .admin-nav-group:has(.sidebar-link:not([hidden])){display:grid}
+      .account-layout.mobile-panel-view .mobile-account-back{display:inline-flex}
+      .account-layout.mobile-panel-view .account-content>.account-panel .panel-heading>a[href="#cuenta"]{display:none}
       .account-content>.account-panel{padding:19px}
       .overview-welcome{margin:0 0 23px;padding:23px}
     }
@@ -2381,24 +2388,30 @@
     };
 
     function showRoute() {
-      const route = window.location.hash.slice(1) || "resumen";
+      const currentHash = window.location.hash.slice(1);
+      const isMobileAccount = window.matchMedia("(max-width:760px)").matches;
+      const isMobileMenu = isMobileAccount && (!currentHash || currentHash === "cuenta");
+      const route = currentHash || (isMobileAccount ? "cuenta" : "resumen");
       const requestedPanelId = routes[route];
       const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-mensajes", "administrar-clientes", "informes-clientes"];
       const panelId = adminRoutes.includes(route) && !isAgendaAdmin
         ? "panel-overview"
         : requestedPanelId || "panel-overview";
+      const accountLayout = document.querySelector(".account-layout");
+      accountLayout?.classList.toggle("mobile-menu-view", isMobileMenu);
+      accountLayout?.classList.toggle("mobile-panel-view", isMobileAccount && !isMobileMenu);
       for (const panel of document.querySelectorAll(".account-panel")) {
         panel.hidden = panel.id !== panelId;
       }
-      const activeRoute = panelId === "panel-overview" ? "resumen" : route;
+      const activeRoute = isMobileMenu ? "" : (panelId === "panel-overview" ? "resumen" : route);
       document.querySelectorAll("#dashboard-home .sidebar-link").forEach(link => {
-        const isActive = link.getAttribute("href") === `#${activeRoute}`;
+        const isActive = Boolean(activeRoute) && link.getAttribute("href") === `#${activeRoute}`;
         if (isActive) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
       });
       const panel = document.getElementById(panelId);
       const breadcrumb = document.querySelector("#breadcrumb-current");
-      if (breadcrumb) breadcrumb.textContent = panel?.dataset.title ?? "Resumen";
+      if (breadcrumb) breadcrumb.textContent = isMobileMenu ? "Menú" : (panel?.dataset.title ?? "Resumen");
       if (panelId === "panel-admin-customers") loadAdminCustomers();
       if (panelId === "panel-admin-reports") loadAdminReports();
       if (panelId === "panel-support-conversations" && activeUserId) loadCustomerSupportConversations(activeUserId);
@@ -2911,6 +2924,9 @@
     });
 
     window.addEventListener("hashchange", showRoute);
+    const accountMobileBreakpoint = window.matchMedia("(max-width:760px)");
+    if (accountMobileBreakpoint.addEventListener) accountMobileBreakpoint.addEventListener("change", showRoute);
+    else accountMobileBreakpoint.addListener(showRoute);
     refreshAdminOrdersButton.addEventListener("click", () => loadAdminOrders());
     adminCustomerSearchForm.addEventListener("submit", event => {
       event.preventDefault();
@@ -3195,6 +3211,10 @@
           <a class="sidebar-back-link" href="/"><svg aria-hidden="true"><use href="#icon-home"></use></svg><span>Volver a RenovaH2O</span></a>
         </aside>
         <div class="account-content">
+          <a class="mobile-account-back" href="#cuenta">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5-7 7 7 7M8 12h13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Volver al menú</span>
+          </a>
           <section class="account-panel card account-overview" id="panel-overview" data-title="Resumen">
             <div class="overview-welcome">
               <div>
