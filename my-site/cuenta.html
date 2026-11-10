@@ -272,19 +272,26 @@
       .overview-welcome{align-items:flex-start;flex-direction:column}
       .overview-lower-grid{grid-template-columns:1fr}
     }
+    .mobile-account-back{display:none;align-items:center;gap:9px;width:max-content;min-height:42px;margin:0 0 2px;padding:8px 14px;border:1px solid #d9dee6;border-radius:999px;background:#fff;color:#253042;font-size:13px;font-weight:650;text-decoration:none}
+    .mobile-account-back svg{width:17px;height:17px;flex:none}
     @media(max-width:760px){
       main{width:min(100% - 28px,1120px);padding-top:90px}
       .account-layout{grid-template-columns:1fr;gap:13px}
-      .account-sidebar{position:static;max-height:none;padding:12px;border-radius:17px}
-      .sidebar-intro{padding:2px 4px 11px}
-      .account-navigation{display:flex;gap:0;overflow-x:auto;overflow-y:hidden;padding:12px 0 4px;scrollbar-width:none}
-      .account-navigation::-webkit-scrollbar{display:none}
-      .sidebar-group{display:contents}
-      .sidebar-label{display:none}
-      .sidebar-link{flex:0 0 auto;min-height:38px;padding:8px 10px;margin-right:5px;border-radius:10px;white-space:nowrap;font-size:11px}
-      .sidebar-link svg{width:15px;height:15px}
-      .sidebar-back-link{display:none}
-      .admin-nav-group{display:contents!important}
+      .account-layout.mobile-menu-view .account-sidebar{display:flex}
+      .account-layout.mobile-menu-view .account-content{display:none}
+      .account-layout.mobile-panel-view .account-sidebar{display:none}
+      .account-layout.mobile-panel-view .account-content{display:grid}
+      .account-sidebar{position:static;max-height:none;width:100%;padding:17px 14px 13px;border-radius:18px}
+      .sidebar-intro{padding:3px 7px 13px}
+      .account-navigation{display:grid;gap:15px;overflow:visible;padding:15px 0 9px;scrollbar-width:auto}
+      .sidebar-group{display:grid;gap:4px}
+      .sidebar-label{display:block;padding:0 10px 5px;font-size:10px}
+      .sidebar-link{display:flex;flex:initial;align-items:center;width:100%;min-height:46px;margin:0;padding:11px 12px;border-radius:11px;white-space:normal;font-size:13px}
+      .sidebar-link svg{width:18px;height:18px}
+      .sidebar-back-link{display:flex;margin-top:3px;padding:13px 9px 2px}
+      .admin-nav-group:has(.sidebar-link:not([hidden])){display:grid}
+      .account-layout.mobile-panel-view .mobile-account-back{display:inline-flex}
+      .account-layout.mobile-panel-view .account-content>.account-panel .panel-heading>a[href="#cuenta"]{display:none}
       .account-content>.account-panel{padding:19px}
       .overview-welcome{margin:0 0 23px;padding:23px}
     }
@@ -2381,24 +2388,30 @@
     };
 
     function showRoute() {
-      const route = window.location.hash.slice(1) || "resumen";
+      const currentHash = window.location.hash.slice(1);
+      const isMobileAccount = window.matchMedia("(max-width:760px)").matches;
+      const isMobileMenu = isMobileAccount && (!currentHash || currentHash === "cuenta");
+      const route = currentHash || (isMobileAccount ? "cuenta" : "resumen");
       const requestedPanelId = routes[route];
       const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-mensajes", "administrar-clientes", "informes-clientes"];
       const panelId = adminRoutes.includes(route) && !isAgendaAdmin
         ? "panel-overview"
         : requestedPanelId || "panel-overview";
+      const accountLayout = document.querySelector(".account-layout");
+      accountLayout?.classList.toggle("mobile-menu-view", isMobileMenu);
+      accountLayout?.classList.toggle("mobile-panel-view", isMobileAccount && !isMobileMenu);
       for (const panel of document.querySelectorAll(".account-panel")) {
         panel.hidden = panel.id !== panelId;
       }
-      const activeRoute = panelId === "panel-overview" ? "resumen" : route;
+      const activeRoute = isMobileMenu ? "" : (panelId === "panel-overview" ? "resumen" : route);
       document.querySelectorAll("#dashboard-home .sidebar-link").forEach(link => {
-        const isActive = link.getAttribute("href") === `#${activeRoute}`;
+        const isActive = Boolean(activeRoute) && link.getAttribute("href") === `#${activeRoute}`;
         if (isActive) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
       });
       const panel = document.getElementById(panelId);
       const breadcrumb = document.querySelector("#breadcrumb-current");
-      if (breadcrumb) breadcrumb.textContent = panel?.dataset.title ?? "Resumen";
+      if (breadcrumb) breadcrumb.textContent = isMobileMenu ? "Menú" : (panel?.dataset.title ?? "Resumen");
       if (panelId === "panel-admin-customers") loadAdminCustomers();
       if (panelId === "panel-admin-reports") loadAdminReports();
       if (panelId === "panel-support-conversations" && activeUserId) loadCustomerSupportConversations(activeUserId);
@@ -2911,6 +2924,9 @@
     });
 
     window.addEventListener("hashchange", showRoute);
+    const accountMobileBreakpoint = window.matchMedia("(max-width:760px)");
+    if (accountMobileBreakpoint.addEventListener) accountMobileBreakpoint.addEventListener("change", showRoute);
+    else accountMobileBreakpoint.addListener(showRoute);
     refreshAdminOrdersButton.addEventListener("click", () => loadAdminOrders());
     adminCustomerSearchForm.addEventListener("submit", event => {
       event.preventDefault();
@@ -3090,6 +3106,7 @@
     <symbol id="icon-support" viewBox="0 0 24 24"><path d="M4 13v-2a8 8 0 0 1 16 0v2m-16-1H3v6h4v-6H4Zm16 0h1v6h-4v-6h3Zm-3 7c-.8 1.3-2.2 2-4 2h-2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-cart" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="19" cy="21" r="1" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M1 2h3l3 13a2 2 0 0 0 2 1.5h9a2 2 0 0 0 2-1.5L22 7H5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="3" width="8" height="5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="10" width="8" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="13" width="8" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 21h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
     <symbol id="icon-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
   </svg>
   <main>
@@ -3181,19 +3198,23 @@
             <div class="sidebar-group">
               <span class="sidebar-label">Mis servicios</span>
               <a class="sidebar-link" href="#ordenes"><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Mis órdenes</span></a>
+              <a class="sidebar-link" href="#mensajes"><svg aria-hidden="true"><use href="#icon-bell"></use></svg><span>Mis notificaciones</span></a>
               <a class="sidebar-link" href="#agenda"><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Mi agenda</span></a>
               <a class="sidebar-link" href="/carrito"><svg aria-hidden="true"><use href="#icon-cart"></use></svg><span>Mi carrito</span></a>
             </div>
             <div class="sidebar-group">
               <span class="sidebar-label">Ayuda</span>
               <a class="sidebar-link" href="#consultas"><svg aria-hidden="true"><use href="#icon-message"></use></svg><span>Mis consultas</span></a>
-              <a class="sidebar-link" href="#mensajes"><svg aria-hidden="true"><use href="#icon-message"></use></svg><span>Mis mensajes</span></a>
               <a class="sidebar-link" href="#soporte"><svg aria-hidden="true"><use href="#icon-support"></use></svg><span>Servicio al cliente</span></a>
             </div>
           </nav>
           <a class="sidebar-back-link" href="/"><svg aria-hidden="true"><use href="#icon-home"></use></svg><span>Volver a RenovaH2O</span></a>
         </aside>
         <div class="account-content">
+          <a class="mobile-account-back" href="#cuenta">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5-7 7 7 7M8 12h13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Volver al menú</span>
+          </a>
           <section class="account-panel card account-overview" id="panel-overview" data-title="Resumen">
             <div class="overview-welcome">
               <div>
@@ -3507,9 +3528,9 @@
         <p class="empty-state">Las tarjetas de regalo aún no están disponibles. No hay saldo ni códigos de ejemplo en tu cuenta.</p>
       </section>
 
-      <section class="account-panel card" id="panel-messages" data-title="Mis mensajes" hidden>
-        <div class="panel-heading"><div><h2>Mis mensajes</h2><p>Avisos sobre tus órdenes, pagos y agenda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
-        <p>Los avisos se guardan en tu cuenta. El correo automático requiere configurar un proveedor de correo transaccional.</p>
+      <section class="account-panel card" id="panel-messages" data-title="Mis notificaciones" hidden>
+        <div class="panel-heading"><div><h2>Mis notificaciones</h2><p>Actualizaciones importantes sobre tus órdenes, pagos y agenda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <p>Aquí encontrarás las notificaciones relacionadas con la actividad de tu cuenta.</p>
         <div class="orders-list" id="notifications-list" aria-live="polite"></div>
         <p class="agenda-status" id="notifications-status" role="status" aria-live="polite"></p>
       </section>
