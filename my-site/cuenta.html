@@ -364,6 +364,8 @@
     const profilePhone = document.querySelector("#profile-phone");
     const profilePhoneCountry = document.querySelector("#profile-phone-country");
     const profileBirthday = document.querySelector("#profile-birthday");
+    const profileBirthdayHint = document.querySelector("#profile-birthday-hint");
+    let birthdayLastChangedAt = null;
     const avatarFile = document.querySelector("#profile-avatar");
     const avatarImage = document.querySelector("#profile-avatar-image");
     const avatarInitials = document.querySelector("#profile-avatar-initials");
@@ -2360,6 +2362,21 @@
       return match ? `${match[2]}/${match[1]}` : "";
     }
 
+    function updateBirthdayEditState() {
+      const changedAt = birthdayLastChangedAt ? new Date(birthdayLastChangedAt) : null;
+      const nextChange = changedAt ? new Date(changedAt.getTime() + 365 * 24 * 60 * 60 * 1000) : null;
+      const locked = Boolean(profileBirthday.value && nextChange && nextChange.getTime() > Date.now());
+      profileBirthday.disabled = locked;
+      if (locked) {
+        const dateLabel = new Intl.DateTimeFormat("es-PA", { dateStyle: "long", timeZone: agendaTimezone }).format(nextChange);
+        profileBirthdayHint.textContent = `Por seguridad, este cumpleaños no se puede modificar nuevamente hasta el ${dateLabel}. Si necesitas corregirlo antes, contacta a <a href="mailto:Julian.Remy@RenovaH2O.com?subject=Solicitud%20de%20correcci%C3%B3n%20de%20cumplea%C3%B1os">soporte</a>.`;
+      } else {
+        profileBirthdayHint.textContent = profileBirthday.value
+          ? "Puedes modificar tu cumpleaños ahora. Después de guardarlo, solo podrás cambiarlo nuevamente dentro de 12 meses. Si necesitas una corrección urgente, contacta a soporte."
+          : "Indica únicamente el día y el mes (DD/MM). Si autorizas el acceso, intentaremos obtenerlos de Google o Facebook para enviarte felicitaciones y beneficios de cumpleaños.";
+      }
+    }
+
     function parseSocialBirthday(provider, payload) {
       let month, day;
       if (provider === "google") {
@@ -2429,6 +2446,9 @@
       profilePhone.value = "";
       profilePhoneCountry.value = "+507";
       profileBirthday.value = "";
+      profileBirthday.disabled = false;
+      birthdayLastChangedAt = null;
+      updateBirthdayEditState();
       setAddressForm(null);
       addressStatus.textContent = "";
       profileAddresses = [];
@@ -2474,7 +2494,7 @@
 
         const [profileResult, addressesResult, phonesResult, ordersResult, reservationsResult, adminResult] = await Promise.all([
           supabase.from("profiles")
-            .select("full_name, phone, birthday, preferred_services, profile_avatar_path, service_address")
+            .select("full_name, phone, birthday, birthday_last_changed_at, preferred_services, profile_avatar_path, service_address")
             .eq("id", user.id)
             .maybeSingle(),
           supabase.from("profile_addresses")
@@ -2507,10 +2527,16 @@
           profileName.value = profileResult.data.full_name ?? "";
           setProfilePhone(profileResult.data.phone ?? "");
           profileBirthday.value = birthdayForDisplay(profileResult.data.birthday);
+          birthdayLastChangedAt = profileResult.data.birthday_last_changed_at ?? null;
+          updateBirthdayEditState();
           if (!profileBirthday.value && session?.provider_token) {
             const syncedBirthday = await syncSocialBirthday(session, profileBirthday.value);
             if (activeUserId !== user.id) return;
-            if (syncedBirthday) profileBirthday.value = syncedBirthday;
+            if (syncedBirthday) {
+              profileBirthday.value = birthdayForDisplay(syncedBirthday);
+              birthdayLastChangedAt = new Date().toISOString();
+              updateBirthdayEditState();
+            }
           }
           const preferredServices = profileResult.data.preferred_services ?? [];
           document.querySelectorAll('input[name="preferred-services"]').forEach(input => {
@@ -2928,7 +2954,7 @@
         const nextAvatarPath = selectedAvatarFile
           ? uploadedAvatarPath
           : removeAvatarRequested ? null : activeAvatarPath;
-        const { error } = await supabase.from("profiles")
+        const { data: savedProfile, error } = await supabase.from("profiles")
           .update({
             full_name: profileName.value.trim() || null,
             phone: formatPhoneForProfile() || null,
@@ -2937,7 +2963,7 @@
             profile_avatar_path: nextAvatarPath
           })
           .eq("id", userId)
-          .select("id")
+          .select("id, birthday_last_changed_at")
           .single();
         if (error) {
           if (uploadedAvatarPath) {
@@ -2945,6 +2971,8 @@
           }
           profileStatus.textContent = `No se pudo guardar: ${error.message}`;
         } else if (activeUserId === userId) {
+          birthdayLastChangedAt = savedProfile?.birthday_last_changed_at ?? birthdayLastChangedAt;
+          updateBirthdayEditState();
           if (activeAvatarPath && activeAvatarPath !== nextAvatarPath) {
             const { error: removeError } = await supabase.storage
               .from("profile-avatars")
