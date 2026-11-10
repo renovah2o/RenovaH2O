@@ -72,7 +72,7 @@
     .recommendation-detail{margin:7px 0 12px;color:#686c75;font-size:12px;line-height:1.5}
     .recommendation-price{margin-top:auto;margin-bottom:12px;color:#17191d;font-size:17px;font-weight:800;letter-spacing:-.03em}
     .recommendation-price small{color:#777b84;font-size:11px;font-weight:500;letter-spacing:0}
-    .recommendation-card .button{width:100%;min-height:42px;font-size:13px}
+    .recommendation-card .button{width:100%;min-height:42px;font-size:13px}.recommendation-card .recommendation-more{margin-top:8px;border:1px solid #dfe2e7;background:#fff;color:#252a32}
     @media(max-width:760px){.recommendation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.recommendation-card:last-child{grid-column:1/-1}.recommendation-card:last-child .recommendation-image{height:180px}}
     @media(max-width:520px){.layout.is-empty{margin-top:20px}.empty{padding:28px 17px 24px;border-radius:18px}.recommendations{margin-top:23px}.recommendations-heading{display:block}.recommendations-heading h2{font-size:18px}.recommendation-grid{grid-template-columns:1fr;gap:12px}.recommendation-card:last-child{grid-column:auto}.recommendation-card{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:148px}.recommendation-image,.recommendation-card:last-child .recommendation-image{width:112px;height:100%;min-height:148px}.recommendation-body{padding:12px}.recommendation-card h3{font-size:14px}.recommendation-detail{margin:5px 0 8px}.recommendation-price{font-size:15px;margin-bottom:8px}.recommendation-card .button{min-height:36px;padding:8px 10px;font-size:12px}}
     .button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border:0;border-radius:999px;background:#0071e3;color:#fff;font-weight:700;cursor:pointer}
@@ -375,19 +375,25 @@
             sku: promoIsActive ? "residential-holiday-promo" : "residential-65-100",
             quantity: promoIsActive ? 1 : 65,
             category: "Residencial",
-            detail: promoIsActive ? "10–50 m² · precio promocional fijo" : "Desde 65 m² · ideal para patios y entradas"
+            detail: promoIsActive ? "10–50 m² · precio promocional fijo" : "Desde 65 m² · ideal para patios y entradas",
+            moreUrl: "/limpieza-de-pisos-panama",
+            moreLabel: "Ver más servicios residenciales"
           },
           {
             sku: "commercial-115-500",
             quantity: 115,
             category: "Comercial",
-            detail: "Paquete desde 115 m² · plazas, escuelas y PH"
+            detail: "Paquete desde 115 m² · plazas, escuelas y PH",
+            moreUrl: "/limpieza-de-estacionamientos-panama",
+            moreLabel: "Ver más servicios comerciales"
           },
           {
             sku: "rental-35",
             quantity: 1,
             category: "Alquiler de equipos",
-            detail: "4000 PSI · 3.5 GPM · hasta 24 horas"
+            detail: "4000 PSI · 3.5 GPM · hasta 24 horas",
+            moreUrl: "/alquiler-de-hidrolavadoras-panama",
+            moreLabel: "Ver más alquileres"
           }
         ];
         const grid = document.createElement("div");
@@ -441,7 +447,11 @@
               setFeedback(error.message, "error");
             }
           });
-          body.append(tag, name, detail, price, add);
+          const more = document.createElement("a");
+          more.className = "button secondary recommendation-more";
+          more.href = pick.moreUrl;
+          more.textContent = pick.moreLabel;
+          body.append(tag, name, detail, price, add, more);
           card.append(image, body);
           grid.append(card);
         }
