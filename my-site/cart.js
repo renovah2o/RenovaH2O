@@ -290,7 +290,8 @@
     products,
     readItems,
     saveItems,
-    storageKey
+    storageKey,
+    addProduct
   };
 
   if (document.readyState === "loading") {
