@@ -334,6 +334,9 @@
       .account-content>.account-panel .panel-heading{flex-direction:column}
     }
 
+
+    .catalog-admin-list{display:grid;gap:10px;margin:20px 0 30px}.catalog-admin-item{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid #e4e4e8;border-radius:14px;background:#fff}.catalog-admin-item img{width:76px;height:68px;object-fit:cover;border-radius:10px;background:#f2f2f4}.catalog-admin-item .meta{flex:1;min-width:0}.catalog-admin-item strong{display:block;font-size:14px}.catalog-admin-item small{color:#6e6e73}.catalog-admin-item .actions{display:flex;gap:7px;flex-wrap:wrap}.catalog-admin-item button{min-height:34px;padding:5px 11px;border:1px solid #d2d2d7;border-radius:999px;background:white;font-size:12px}.catalog-admin-editor{padding:22px;border:1px solid #e4e4e8;border-radius:18px;background:#fafafa}.catalog-admin-editor h3{margin:0 0 18px}.catalog-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.catalog-form-grid label{display:grid;gap:6px;font-size:13px}.catalog-form-grid input:not([type=checkbox]),.catalog-form-grid select,.catalog-form-grid textarea{width:100%;min-height:42px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}.catalog-form-grid .full{grid-column:1/-1}.catalog-form-grid .catalog-check{display:flex;align-items:center;gap:8px}.catalog-editor-actions{display:flex;gap:10px;margin-top:18px}.catalog-editor-actions button{width:auto}.catalog-photo-thumb{display:inline-flex;position:relative;margin:5px}.catalog-photo-thumb img{width:90px;height:76px;object-fit:cover;border-radius:9px}.catalog-photo-thumb button{position:absolute;top:3px;right:3px;border:0;border-radius:50%;background:#111;color:#fff;width:23px;height:23px}.catalog-status-pill{font-size:11px;padding:3px 8px;border-radius:999px;background:#edf5ff;color:#075aa9}
+    @media(max-width:650px){.catalog-form-grid{grid-template-columns:1fr}.catalog-form-grid .full{grid-column:auto}.catalog-admin-item{align-items:flex-start;flex-wrap:wrap}.catalog-admin-item .actions{width:100%}.catalog-editor-actions{flex-direction:column}.catalog-editor-actions button{width:100%}}
   </style>
   <script src="/share.js" defer></script>
   <script src="/supabase-config.js"></script>
@@ -416,6 +419,7 @@
     const adminCustomerSearchForm = document.querySelector("#admin-customer-search");
     const adminCustomerSearchInput = document.querySelector("#admin-customer-query");
     const adminReportsTile = document.querySelector("#admin-reports-tile");
+    const adminCatalogTile = document.querySelector("#admin-catalog-tile");
     const adminReportsStatus = document.querySelector("#admin-reports-status");
     const birthdayReportList = document.querySelector("#birthday-report-list");
     const saveProfileButton = document.querySelector("#save-profile");
@@ -2660,6 +2664,7 @@
       adminOrdersTile.hidden = true;
       adminCustomersTile.hidden = true;
       adminReportsTile.hidden = true;
+      adminCatalogTile.hidden = true;
       adminSupportTile.hidden = true;
       adminAgendaList.replaceChildren();
       adminAgendaStatus.textContent = "";
@@ -2844,6 +2849,7 @@
           adminOrdersTile.hidden = !isAgendaAdmin;
           adminCustomersTile.hidden = !isAgendaAdmin;
           adminReportsTile.hidden = !isAgendaAdmin;
+          adminCatalogTile.hidden = !isAgendaAdmin;
           adminSupportTile.hidden = !isAgendaAdmin;
           if (isAgendaAdmin) {
             await Promise.all([loadAdminAgenda(user.id), loadAdminOrders(user.id)]);
@@ -2907,6 +2913,7 @@
         adminOrdersTile.hidden = true;
         adminCustomersTile.hidden = true;
         adminReportsTile.hidden = true;
+        adminCatalogTile.hidden = true;
         activeAvatarPath = null;
         googleAvatarUrl = null;
         selectedAvatarFile = undefined;
@@ -2927,6 +2934,7 @@
       "administrar-mensajes": "panel-admin-support",
       "administrar-clientes": "panel-admin-customers",
       "informes-clientes": "panel-admin-reports",
+      "administrar-catalogo": "panel-admin-catalog",
       direcciones: "panel-addresses",
       pagos: "panel-payments",
       regalos: "panel-giftcards",
@@ -2942,7 +2950,7 @@
       const isMobileMenu = isMobileAccount && (!currentHash || currentHash === "cuenta");
       const route = currentHash || (isMobileAccount ? "cuenta" : "resumen");
       const requestedPanelId = routes[route];
-      const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-mensajes", "administrar-clientes", "informes-clientes"];
+      const adminRoutes = ["administrar-agenda", "administrar-ordenes", "administrar-mensajes", "administrar-clientes", "informes-clientes", "administrar-catalogo"];
       const panelId = adminRoutes.includes(route) && !isAgendaAdmin
         ? "panel-overview"
         : requestedPanelId || "panel-overview";
@@ -3768,7 +3776,8 @@
               <a class="sidebar-link" id="admin-agenda-tile" href="#administrar-agenda" hidden><svg aria-hidden="true"><use href="#icon-agenda"></use></svg><span>Administrar agenda</span></a>
               <a class="sidebar-link" id="admin-orders-tile" href="#administrar-ordenes" hidden><svg aria-hidden="true"><use href="#icon-orders"></use></svg><span>Gestión de órdenes</span></a>
               <a class="sidebar-link" id="admin-customers-tile" href="#administrar-clientes" hidden><svg aria-hidden="true"><use href="#icon-profile"></use></svg><span>Gestionar clientes</span></a>
-              <a class="sidebar-link" id="admin-reports-tile" href="#informes-clientes" hidden><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Informes de clientes</span></a>
+              <a class="sidebar-link" id="admin-catalog-tile" href="#administrar-catalogo" hidden><svg aria-hidden="true"><use href="#icon-dashboard"></use></svg><span>Editar catálogo</span></a>
+               <a class="sidebar-link" id="admin-reports-tile" href="#informes-clientes" hidden><svg aria-hidden="true"><use href="#icon-gift"></use></svg><span>Informes de clientes</span></a>
             </div>
             <div class="sidebar-group">
               <span class="sidebar-label">General</span>
@@ -3999,6 +4008,40 @@
         </div>
       </section>
 
+      <section class="account-panel card" id="panel-admin-catalog" data-title="Editar catálogo" hidden>
+        <div class="panel-heading"><div><h2>Editar catálogo</h2><p>Agrega productos, modifica su ficha, administra fotos y publica páginas nuevas en la tienda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+        <div id="catalog-admin-list" class="catalog-admin-list" aria-live="polite"></div>
+        <div class="catalog-admin-editor">
+          <h3 id="catalog-editor-heading">Nuevo producto</h3>
+          <form id="catalog-product-form">
+            <input id="catalog-original-sku" type="hidden">
+            <div class="catalog-form-grid">
+              <label>Nombre del producto<input id="catalog-title" required maxlength="160"></label>
+              <label>URL de la página (slug)<input id="catalog-slug" required pattern="[a-z0-9-]+" maxlength="80" placeholder="ej. limpieza-de-patios"></label>
+              <label>Categoría<select id="catalog-category"><option value="residencial">Residencial</option><option value="comercial">Comercial</option><option value="alquileres">Alquileres</option></select></label>
+              <label>Etiqueta / ribbon<select id="catalog-badge"><option value="">Sin etiqueta</option><option>Más vendido</option><option>Recomendado</option><option>Nuevo</option><option>Oferta especial</option><option>Edición limitada</option></select></label>
+              <label class="full">Descripción corta<input id="catalog-short" maxlength="280" required></label>
+              <label class="full">Descripción completa<textarea id="catalog-description" rows="4" required></textarea></label>
+              <label class="full">Qué incluye (un elemento por línea)<textarea id="catalog-includes" rows="5" placeholder="Equipo profesional&#10;Productos de limpieza&#10;Mano de obra"></textarea></label>
+              <label class="full">Condiciones / notas (una por línea)<textarea id="catalog-conditions" rows="3"></textarea></label>
+              <label class="full">Disponibilidad / cómo reservar<input id="catalog-availability" maxlength="300"></label>
+              <label>Texto de precio (ej. Desde $74.25)<input id="catalog-price-label" maxlength="80" placeholder="Consultar cotización"></label>
+              <label>Orden en la tienda<input id="catalog-sort" type="number" min="0" max="32000" value="100"></label>
+              <label class="full">Fotos del producto (JPG, PNG o WebP; máximo 6 MB cada una)<input id="catalog-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+              <div class="full" id="catalog-photo-preview"></div>
+              <label class="catalog-check"><input id="catalog-active" type="checkbox" checked> Publicar en la tienda</label>
+              <label class="catalog-check"><input id="catalog-bookable" type="checkbox"> Permitir reserva y agregar al carrito</label>
+              <label>Precio de reserva (USD)<input id="catalog-price" type="number" min="0" step="0.01" placeholder="0.00"></label>
+              <label>Unidad de cobro<select id="catalog-kind"><option value="area">Por m²</option><option value="machine">Por equipo / día</option><option value="accessory">Por unidad</option></select></label>
+              <label>Cantidad mínima<input id="catalog-min" type="number" min="1" value="1"></label>
+              <label>Cantidad máxima<input id="catalog-max" type="number" min="1" value="1"></label>
+            </div>
+            <div class="catalog-editor-actions"><button class="primary" id="catalog-save" type="submit">Guardar producto</button><button class="secondary" id="catalog-cancel" type="button">Limpiar formulario</button></div>
+            <p id="catalog-editor-status" class="agenda-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
       <section class="account-panel card" id="panel-admin-customers" data-title="Gestionar clientes" hidden>
         <div class="panel-heading"><div><h2>Gestionar clientes</h2><p>Busca por nombre, correo o teléfono. Revisa preferencias y actividad para dar seguimiento.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <form class="admin-customer-search" id="admin-customer-search">
@@ -4164,5 +4207,6 @@
     </section>
   </main>
   <footer></footer>
+<script type="module" src="/catalog-admin.js?v=20261111"></script>
 </body>
 </html>

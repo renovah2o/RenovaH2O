@@ -64,8 +64,8 @@
       baseAmount: 7425,
       includedMeters: 50,
       additionalMeterAmount: 0,
-      minimum: 1,
-      maximum: 1,
+      minimum: 10,
+      maximum: 50,
       saleEndsOn: "2026-12-31"
     },
     "residential-65-100": {
@@ -160,8 +160,8 @@
     }
 
     const normalized = parsed.map(item =>
-      item?.sku === "residential-holiday-promo" && item.quantity !== 1
-        ? { ...item, quantity: 1 }
+      item?.sku === "residential-holiday-promo" && item.quantity !== 50
+        ? { ...item, quantity: 50 }
         : item
     );
     if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
@@ -290,7 +290,8 @@
     products,
     readItems,
     saveItems,
-    storageKey
+    storageKey,
+    addProduct
   };
 
   if (document.readyState === "loading") {

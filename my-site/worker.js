@@ -150,7 +150,7 @@ function sharePage(product, slug, origin) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const match = url.pathname.match(/^\/compartir\/([a-z0-9-]+)\/?$/i);
+    const productRoute = url.pathname.match(/^\/tienda\/([a-z0-9-]+)\/?$/i);\n    if (productRoute) return env.ASSETS.fetch(new Request(new URL("/producto.html?slug=" + encodeURIComponent(productRoute[1]), url), request));\n    const match = url.pathname.match(/^\/compartir\/([a-z0-9-]+)\/?$/i);
 
     if (match) {
       const slug = match[1].toLowerCase();
