@@ -63,9 +63,9 @@
       pricing: "promo",
       baseAmount: 7425,
       includedMeters: 50,
-      additionalMeterAmount: 0,
-      minimum: 1,
-      maximum: 1,
+      additionalMeterAmount: 150,
+      minimum: 10,
+      maximum: 64,
       saleEndsOn: "2026-12-31"
     },
     "residential-65-100": {
@@ -160,7 +160,10 @@
     }
 
     const normalized = parsed.map(item =>
-      item?.sku === "residential-holiday-promo" ? { ...item, quantity: 1 } : item
+      item?.sku === "residential-holiday-promo" &&
+      (!Number.isInteger(item.quantity) || item.quantity < 10 || item.quantity > 64)
+        ? { ...item, quantity: 50 }
+        : item
     );
     if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
       window.localStorage.setItem(storageKey, JSON.stringify(normalized));
@@ -223,7 +226,7 @@
     const items = readItems();
     const existingCategory = items.length ? products[items[0].sku].category : null;
     if (existingCategory && existingCategory !== product.category) {
-      throw new Error("Para iniciar, cada orden debe ser solo de alquiler o solo residencial. Completa o vacía el carrito antes de agregar otra categoría.");
+      throw new Error("Cada orden debe incluir una sola categoría: residencial, comercial o alquileres. Completa o vacía el carrito antes de cambiar de categoría.");
     }
 
     if (product.kind === "area" && items.some(item => item.sku !== sku && products[item.sku].kind === "area")) {
