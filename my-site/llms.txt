@@ -2,7 +2,7 @@
 
 > RenovaH2O ofrece servicios de hidrolavado comercial y residencial en Ciudad de Panamá y Panamá Oeste, incluyendo Arraiján y La Chorrera.
 
-RenovaH2O realiza limpieza a presión de superficies exteriores, incluyendo pisos, patios, terrazas, aceras, estacionamientos y fachadas. Para información sobre un servicio o una cotización, contactar directamente a la empresa.
+RenovaH2O realiza limpieza a presión de superficies exteriores, incluyendo pisos, patios, terrazas, aceras, estacionamientos y fachadas. También ofrece Mantenimiento Programado de Hidrolavado: visitas recurrentes para residencias, PH, comercios e instituciones, con frecuencia semanal, mensual, trimestral o personalizada. Cada propuesta se adapta al metraje, materiales, ubicación y alcance del trabajo; no hay una tarifa única para todos los planes. Para información o cotizaciones, contactar directamente a la empresa.
 
 ## Contacto
 
@@ -15,6 +15,7 @@ RenovaH2O realiza limpieza a presión de superficies exteriores, incluyendo piso
 - [Inicio](https://renovah2o.com/): resumen de la empresa y sus servicios.
 - [Nosotros](https://renovah2o.com/nosotros): historia, equipo y valores de RenovaH2O.
 - [Portafolio](https://renovah2o.com/portafolio): ejemplos de trabajos y resultados.
+- [Mantenimiento Programado de Hidrolavado](https://renovah2o.com/mantenimiento-programado): planes de visitas recurrentes para conservar superficies exteriores de residencias, PH y negocios.
 - [Servicios residenciales](https://renovah2o.com/limpieza-de-pisos-panama): limpieza de pisos, patios, terrazas, aceras y entradas.
 - [Servicios comerciales](https://renovah2o.com/limpieza-de-estacionamientos-panama): limpieza comercial, estacionamientos y fachadas.
 - [Hidrolavado en Arraiján](https://renovah2o.com/hidrolavado-arraijan): servicios disponibles en Arraiján.
