@@ -370,18 +370,22 @@
                 <span class="season-tag">✦ Promoción especial de Navidad</span>
                 <h3>Tu espacio.<br><span class="blue">Impecable.</span></h3>
                 <div class="price"><strong>$74.25</strong><span>precio promocional</span></div>
-                <p class="promo-intro">Hidrolavado residencial para superficies exteriores de <strong>10 a 50 m²</strong>.</p>
+                <p class="promo-intro">Hidrolavado residencial para superficies exteriores. <strong>$74.25 hasta los primeros 50 m²</strong>.</p>
                 <ul class="promo-points">
-                    <li><span>Superficie válida</span><b>10 a 50 m²</b></li>
-                    <li><span>Precio fijo</span><b>$74.25</b></li>
+                    <li><span>Precio base</span><b>$74.25 · hasta 50 m²</b></li>
+                    <li><span>Metraje adicional</span><b>$1.50 por m²</b></li>
                     <li><span>Vigencia</span><b>31 dic. 2026</b></li>
                 </ul>
                 <div class="saving">
                     <strong>Ahorras $25.75</strong><br>En una superficie de 50 m², frente al valor regular de referencia de $100 ($2/m²).
                 </div>
-                <button class="btn btn-blue add-to-cart" type="button" data-sku="residential-holiday-promo">Agregar promoción al carrito</button>
+                <label for="promo-area" style="display:block;margin:14px 0 6px;font-size:13px;font-weight:700">Metros cuadrados estimados (10 a 64 m²)</label>
+                <input id="promo-area" type="number" min="10" max="64" step="1" value="50" data-price-quantity style="width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit">
+                <strong class="package-price" data-price-for="promo-area" style="display:block;margin:10px 0;font-size:25px;font-weight:800">$74.25</strong>
+                <button class="btn btn-blue add-to-cart" type="button" data-sku="residential-holiday-promo" data-quantity-input="#promo-area">Agregar promoción al carrito</button>
+                <a href="/tienda/promocion-hidrolavado-residencial" style="display:inline-flex;margin-top:12px;color:#0071e3;font-size:13px;font-weight:650">Ver detalles de la promoción →</a>
 
-                <p class="fine">Válida hasta el 31 de diciembre de 2026. El precio fijo de $74.25 aplica para áreas de 10 a 50 m². Si la medición en sitio queda fuera de ese rango, te notificaremos el ajuste correspondiente antes de coordinar el servicio.</p>
+                <p class="fine">Válida hasta el 31 de diciembre de 2026. El precio base de $74.25 cubre hasta 50 m²; cada metro cuadrado adicional se calcula a $1.50. El rango de reserva en línea es de 10 a 64 m². La medición se confirma en el sitio.</p>
             </div>
         </article>
         <div class="checkout-packages" aria-label="Paquetes residenciales disponibles para comprar">
