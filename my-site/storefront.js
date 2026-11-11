@@ -1,5 +1,5 @@
 (() => {
-const root=document.getElementById("store-products"),status=document.getElementById("store-status"),count=document.getElementById("store-count"),search=document.getElementById("store-search"),sort=document.getElementById("store-sort"),buttons=[...document.querySelectorAll("[data-category-filter]")],meta=window.RENOVA_PRODUCT_DETAILS||{};
+const root=document.getElementById("store-products"),status=document.getElementById("store-status"),count=document.getElementById("store-count"),search=document.getElementById("store-search"),sort=document.getElementById("store-sort"),buttons=[...document.querySelectorAll("[data-category-filter]")],rawMeta=window.RENOVA_PRODUCT_DETAILS||{},meta=Array.isArray(rawMeta)?Object.fromEntries(rawMeta.filter(item=>item&&item.sku).map(item=>[item.sku,item])):rawMeta;
 let items=[],category="todos";
 const labels={residencial:"Residencial",comercial:"Comercial",alquileres:"Alquileres"};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
