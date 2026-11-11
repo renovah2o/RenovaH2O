@@ -224,6 +224,13 @@
     }
 
     const items = readItems();
+    const existingMachineCount = items.reduce((total, item) => {
+      return total + (products[item.sku].kind === "machine" ? item.quantity : 0);
+    }, 0);
+    if (product.category === "alquileres" && product.kind === "accessory" && existingMachineCount === 0) {
+      throw new Error("Agrega primero una hidrolavadora. Los accesorios se alquilan junto con el equipo.");
+    }
+
     const existingCategory = items.length ? products[items[0].sku].category : null;
     if (existingCategory && existingCategory !== product.category) {
       throw new Error("Cada orden debe incluir una sola categoría: residencial, comercial o alquileres. Completa o vacía el carrito antes de cambiar de categoría.");
