@@ -64,8 +64,8 @@
       baseAmount: 7425,
       includedMeters: 50,
       additionalMeterAmount: 0,
-      minimum: 1,
-      maximum: 1,
+      minimum: 10,
+      maximum: 50,
       saleEndsOn: "2026-12-31"
     },
     "residential-65-100": {
