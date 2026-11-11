@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://renovah2o.com/sitemap.xml
+
+# Resumen del negocio y paginas principales para asistentes de IA:
+# https://renovah2o.com/llms.txt
