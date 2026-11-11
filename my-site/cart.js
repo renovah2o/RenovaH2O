@@ -268,6 +268,35 @@
     }, 1800);
   }
 
+
+  async function hydrateProducts() {
+    try {
+      const config = window.RENOVA_SUPABASE_CONFIG;
+      if (!config?.url || !config.publishableKey) return;
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const client = createClient(config.url, config.publishableKey);
+      const [checkoutResult, catalogResult] = await Promise.all([
+        client.from("checkout_products").select("*").eq("active", true),
+        client.from("catalog_products").select("sku,images").eq("active", true)
+      ]);
+      if (checkoutResult.error) throw checkoutResult.error;
+      if (catalogResult.error) throw catalogResult.error;
+      const images = Object.fromEntries((catalogResult.data || []).map(item => [item.sku, item.images?.[0] || ""]));
+      for (const row of checkoutResult.data || []) {
+        products[row.sku] = {
+          name: row.name, image: images[row.sku] || products[row.sku]?.image || "",
+          category: row.category, kind: row.product_kind, unitAmount: row.unit_amount,
+          minimum: row.min_quantity, maximum: row.max_quantity,
+          pricing: row.pricing_mode === "residential_promo" ? "promo" : undefined,
+          baseAmount: row.unit_amount, includedMeters: row.included_quantity,
+          additionalMeterAmount: row.additional_unit_amount, saleEndsOn: row.sale_ends_on
+        };
+      }
+    } catch (error) {
+      console.warn("No se pudo actualizar la información del carrito desde el catálogo:", error);
+    }
+  }
+
   function initializeProductButtons() {
     document.querySelectorAll(".add-to-cart[data-sku]").forEach(button => {
       button.dataset.originalText = button.textContent.trim();
@@ -294,9 +323,14 @@
     addProduct
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeProductButtons, { once: true });
-  } else {
+  async function startCart() {
+    await hydrateProducts();
     initializeProductButtons();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startCart, { once: true });
+  } else {
+    startCart();
   }
 })();
