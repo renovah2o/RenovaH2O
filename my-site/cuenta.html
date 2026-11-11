@@ -375,6 +375,7 @@
     const avatarImage = document.querySelector("#profile-avatar-image");
     const avatarInitials = document.querySelector("#profile-avatar-initials");
     const avatarStatus = document.querySelector("#avatar-status");
+    const removeAvatarButton = document.querySelector("#remove-avatar");
     const profileStatus = document.querySelector("#profile-status");
     const ordersList = document.querySelector("#orders-list");
     const notificationsList = document.querySelector("#notifications-list");
@@ -465,6 +466,10 @@
     let selectedAvatarFile;
     let removeAvatarRequested = false;
     let avatarPreviewUrl;
+
+    function updateRemoveAvatarVisibility() {
+      removeAvatarButton.hidden = !(activeAvatarPath || selectedAvatarFile);
+    }
     let profileServiceAddress = null;
     let profileAddresses = [];
     let profilePhones = [];
@@ -2681,6 +2686,7 @@
       renderSavedPhones();
       resetPhoneForm();
       activeAvatarPath = null;
+      updateRemoveAvatarVisibility();
       avatarFile.value = "";
       selectedAvatarFile = undefined;
       if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
@@ -2777,6 +2783,7 @@
             input.checked = preferredServices.includes(input.value);
           });
           activeAvatarPath = profileResult.data.profile_avatar_path ?? null;
+          updateRemoveAvatarVisibility();
           profileStatus.textContent = "";
           try {
             const avatarUrl = activeAvatarPath
@@ -3246,6 +3253,7 @@
           }
           activeAvatarPath = nextAvatarPath;
           selectedAvatarFile = undefined;
+          updateRemoveAvatarVisibility();
           removeAvatarRequested = false;
           avatarFile.value = "";
           if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
@@ -3425,6 +3433,7 @@
         return;
       }
       selectedAvatarFile = file;
+      updateRemoveAvatarVisibility();
       if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
       avatarPreviewUrl = URL.createObjectURL(file);
       setAvatar(avatarPreviewUrl, profileName.value);
@@ -3437,7 +3446,7 @@
       removeAvatarRequested = Boolean(activeAvatarPath);
       if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
       avatarPreviewUrl = undefined;
-      setAvatar(null, profileName.value);
+      setAvatar(googleAvatarUrl, profileName.value);
       avatarStatus.textContent = removeAvatarRequested
         ? "La foto se quitará cuando guardes los cambios."
         : "No hay una foto guardada.";
@@ -3846,10 +3855,10 @@
             </div>
             <div class="avatar-controls">
               <label for="profile-avatar">Foto de perfil</label>
-              <p>Si iniciaste sesión con Google, usaremos tu foto automáticamente. También puedes subir una imagen JPG, PNG o WebP (máximo 2 MB).</p>
+              <p>Cuando inicias sesión con Google o Facebook, se muestra tu foto automáticamente. También puedes subir una imagen personalizada JPG, PNG o WebP (máximo 2 MB).</p>
               <div class="avatar-actions">
                 <input class="file-input" id="profile-avatar" type="file" accept="image/jpeg,image/png,image/webp">
-                <button class="remove-avatar" id="remove-avatar" type="button">Quitar foto</button>
+                <button class="remove-avatar" id="remove-avatar" type="button" hidden>Quitar foto subida</button>
               </div>
               <p class="profile-status" id="avatar-status" role="status" aria-live="polite"></p>
             </div>
