@@ -1081,7 +1081,7 @@
       setStatus(`No se pudo iniciar el checkout: ${error.message}`, "error");
     });
   </script>
-</head>
+<style id="rh2o-active-nav-style">#site-header .account-icon-button,.nav .account-icon-button{width:38px;height:38px;min-width:38px;padding:0!important;display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.25);border-radius:50%;color:#fff;background:transparent!important;text-decoration:none}#site-header .account-icon-button svg,.nav .account-icon-button svg{width:19px;height:19px}#site-header .nav-links a.is-current,#site-mobile a.is-current,.nav-links a.is-current{color:#2997ff!important;font-weight:600}#site-header .account-icon-button.is-current,#site-header .cart-button.is-current,#site-header .shop-button.is-current,.nav .account-icon-button.is-current,.nav .shop-button.is-current,.nav .shop-pill.is-current,.nav .cart-button.is-current{color:#2997ff!important;border-color:#0071e3!important;background:rgba(0,113,227,.12)!important}#site-mobile a.is-current{color:#2997ff!important}@media(max-width:620px){#site-header .account-icon-button,.nav .account-icon-button{width:34px;height:34px;min-width:34px}}</style></head>
 <body data-no-social>
 <style>
   #site-header.nav{position:fixed;z-index:1000;top:0;left:0;right:0;height:58px;background:rgba(7,9,12,.92);backdrop-filter:saturate(150%) blur(20px);border-bottom:1px solid rgba(255,255,255,.12)}
@@ -1150,7 +1150,7 @@
       </ul>
     </nav>
     <div class="nav-actions">
-      <a class="nav-cta" href="/cuenta">Mi cuenta</a>
+      <a class="nav-cta account-icon-button" href="/cuenta" aria-label="Mi cuenta" title="Mi cuenta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></a>
       <a class="cart-button shop-button" href="/tienda" aria-label="Visitar tienda" title="Tienda">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"></path><path d="M4 9v11h16V9"></path><path d="M9 20v-6h6v6"></path><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path></svg>
 </a>
@@ -1363,5 +1363,5 @@
       }
     })();
   </script>
-</body>
+<script id="rh2o-active-nav-script">(()=>{const clean=p=>{let v=(p||"/").replace(/\.html$/i,"").replace(/\/$/,"");return v||"/"};const path=clean(location.pathname);const servicePaths=["/limpieza-de-pisos-panama","/limpieza-de-estacionamientos-panama","/alquiler-de-hidrolavadoras-panama","/lavado-de-pisos","/lavado-de-estacionamientos","/lavado-de-terrazas","/hidrolavado-arraijan","/hidrolavado-chorrera","/hidrolavadora-panama","/lavado-a-presion-panama-oeste","/mantenimiento-programado"];const isService=servicePaths.some(p=>path===p)||path.startsWith("/servicio-");const isBlog=path==="/blog"||path.startsWith("/blog/")||["/cuando-hacer-hidrolavado","/hidrolavado-vs-limpieza-tradicional","/limpieza-profunda-pisos-limo-moho"].includes(path);const isAccount=path==="/cuenta";const isShop=path==="/tienda";const isCart=path==="/carrito";const mark=el=>{const raw=el.getAttribute("href");if(!raw)return;let u;try{u=new URL(raw,location.origin)}catch{return}const target=clean(u.pathname);let active=target===path;if(isService&&u.hash==="#servicios")active=true;if(isBlog&&target==="/blog")active=true;if(active){el.classList.add("is-current");el.setAttribute("aria-current","page")}};document.querySelectorAll("#site-header .nav-links a,.nav-links a,#site-mobile a").forEach(mark);const account=document.querySelector("#site-header .account-icon-button,.nav .account-icon-button");if(account&&isAccount){account.classList.add("is-current");account.setAttribute("aria-current","page")}const shop=document.querySelector("#site-header .shop-button,.nav .shop-button,.nav .shop-pill");if(shop&&isShop){shop.classList.add("is-current");shop.setAttribute("aria-current","page")}const cart=document.querySelector("#site-header a[href='/carrito'],.nav a[href='/carrito']");if(cart&&isCart){cart.classList.add("is-current");cart.setAttribute("aria-current","page")}})();</script></body>
 </html>
