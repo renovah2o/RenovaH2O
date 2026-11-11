@@ -56,16 +56,16 @@
       maximum: 2
     },
     "residential-holiday-promo": {
-      name: "Promoción navideña de hidrolavado residencial · hasta 50 m²",
+      name: "Promoción navideña de hidrolavado residencial · 10 a 50 m²",
       image: "/Images/promo-navidad-renovah2o.png",
       category: "residencial",
       kind: "area",
       pricing: "promo",
       baseAmount: 7425,
       includedMeters: 50,
-      additionalMeterAmount: 150,
-      minimum: 10,
-      maximum: 64,
+      additionalMeterAmount: 0,
+      minimum: 1,
+      maximum: 1,
       saleEndsOn: "2026-12-31"
     },
     "residential-65-100": {
@@ -128,7 +128,7 @@
 
   function priceFor(product, quantity) {
     if (product.pricing === "promo") {
-      return product.baseAmount + Math.max(quantity - product.includedMeters, 0) * product.additionalMeterAmount;
+      return product.baseAmount;
     }
     return product.unitAmount * quantity;
   }
@@ -160,9 +160,8 @@
     }
 
     const normalized = parsed.map(item =>
-      item?.sku === "residential-holiday-promo" &&
-      (!Number.isInteger(item.quantity) || item.quantity < 10 || item.quantity > 64)
-        ? { ...item, quantity: 50 }
+      item?.sku === "residential-holiday-promo" && item.quantity !== 1
+        ? { ...item, quantity: 1 }
         : item
     );
     if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
