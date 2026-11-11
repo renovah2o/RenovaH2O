@@ -151,7 +151,7 @@
     .admin-customer-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
     .admin-customer-list{display:grid;gap:9px}
     .admin-customer-entry{overflow:hidden;border:1px solid #e7e9ee;border-radius:13px;background:#fff}
-    .admin-customer-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;padding:14px 15px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+    .admin-customer-summary{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;padding:14px 15px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.admin-customer-avatar{display:grid;place-items:center;width:44px;height:44px;overflow:hidden;border:1px solid #dfe7f1;border-radius:50%;background:#edf5ff;color:var(--blue);font-size:14px;font-weight:700}.admin-customer-avatar img{display:block;width:100%;height:100%;object-fit:cover}
     .admin-customer-summary:hover{background:#f8f9fb}
     .admin-customer-summary:focus-visible{outline:2px solid #1677d2;outline-offset:-3px}
     .admin-customer-identity{display:grid;gap:4px;min-width:0}
@@ -2135,10 +2135,29 @@
         summary.className = "admin-customer-summary";
         summary.setAttribute("aria-expanded", "false");
 
+        const displayName = customer.full_name || customer.email || "Cliente";
+        const avatar = document.createElement("span");
+        avatar.className = "admin-customer-avatar";
+        avatar.setAttribute("aria-hidden", "true");
+        const initials = displayName.trim().split(/\\s+/).slice(0, 2).map(part => part[0] || "").join("").toLocaleUpperCase("es-PA") || "C";
+        avatar.textContent = initials;
+        if (customer.avatar_url) {
+          const avatarImage = document.createElement("img");
+          avatarImage.src = customer.avatar_url;
+          avatarImage.alt = "";
+          avatarImage.loading = "lazy";
+          avatarImage.referrerPolicy = "no-referrer";
+          avatarImage.addEventListener("error", () => {
+            avatarImage.remove();
+            avatar.textContent = initials;
+          }, { once: true });
+          avatar.replaceChildren(avatarImage);
+        }
+
         const identity = document.createElement("span");
         identity.className = "admin-customer-identity";
         const heading = document.createElement("strong");
-        heading.textContent = customer.full_name || customer.email || "Cliente";
+        heading.textContent = displayName;
         const phone = document.createElement("span");
         phone.textContent = customer.phone || "Teléfono no registrado";
         identity.append(heading, phone);
@@ -2159,7 +2178,7 @@
         chevronPath.setAttribute("stroke-linejoin", "round");
         chevron.append(chevronPath);
         toggle.append(toggleLabel, chevron);
-        summary.append(identity, toggle);
+        summary.append(avatar, identity, toggle);
 
         const details = document.createElement("div");
         details.className = "admin-customer-details";
