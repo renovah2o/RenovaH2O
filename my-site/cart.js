@@ -160,8 +160,8 @@
     }
 
     const normalized = parsed.map(item =>
-      item?.sku === "residential-holiday-promo" && item.quantity !== 1
-        ? { ...item, quantity: 1 }
+      item?.sku === "residential-holiday-promo" && item.quantity !== 50
+        ? { ...item, quantity: 50 }
         : item
     );
     if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
