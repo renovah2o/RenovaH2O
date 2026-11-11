@@ -335,8 +335,20 @@
     }
 
 
+    .catalog-panel-heading{align-items:center}
+    .catalog-add-button{width:auto;white-space:nowrap;padding-inline:18px}
+    .catalog-admin-toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,.35fr);gap:12px;margin:20px 0 8px}
+    .catalog-admin-toolbar label{display:grid;gap:6px;font-size:12px;font-weight:700;color:#55565b}
+    .catalog-admin-toolbar input,.catalog-admin-toolbar select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}
+    .catalog-admin-summary{margin:10px 0;color:#6e6e73;font-size:13px}
+    .catalog-admin-feedback{margin:8px 0;color:#176b36;font-size:13px}
+    .catalog-admin-feedback:empty{display:none}
+    .catalog-admin-editor[hidden]{display:none}
+    .catalog-editor-heading-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .catalog-editor-heading-row .eyebrow{margin:0 0 5px}
+    .catalog-editor-heading-row h3{margin:0}
     .catalog-admin-list{display:grid;gap:10px;margin:20px 0 30px}.catalog-admin-item{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid #e4e4e8;border-radius:14px;background:#fff}.catalog-admin-item img{width:76px;height:68px;object-fit:cover;border-radius:10px;background:#f2f2f4}.catalog-admin-item .meta{flex:1;min-width:0}.catalog-admin-item strong{display:block;font-size:14px}.catalog-admin-item small{color:#6e6e73}.catalog-admin-item .actions{display:flex;gap:7px;flex-wrap:wrap}.catalog-admin-item button{min-height:34px;padding:5px 11px;border:1px solid #d2d2d7;border-radius:999px;background:white;font-size:12px}.catalog-admin-editor{padding:22px;border:1px solid #e4e4e8;border-radius:18px;background:#fafafa}.catalog-admin-editor h3{margin:0 0 18px}.catalog-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.catalog-form-grid label{display:grid;gap:6px;font-size:13px}.catalog-form-grid input:not([type=checkbox]),.catalog-form-grid select,.catalog-form-grid textarea{width:100%;min-height:42px;padding:10px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f}.catalog-form-grid .full{grid-column:1/-1}.catalog-form-grid .catalog-check{display:flex;align-items:center;gap:8px}.catalog-editor-actions{display:flex;gap:10px;margin-top:18px}.catalog-editor-actions button{width:auto}.catalog-photo-thumb{display:inline-flex;position:relative;margin:5px}.catalog-photo-thumb img{width:90px;height:76px;object-fit:cover;border-radius:9px}.catalog-photo-thumb button{position:absolute;top:3px;right:3px;border:0;border-radius:50%;background:#111;color:#fff;width:23px;height:23px}.catalog-status-pill{font-size:11px;padding:3px 8px;border-radius:999px;background:#edf5ff;color:#075aa9}
-    @media(max-width:650px){.catalog-form-grid{grid-template-columns:1fr}.catalog-form-grid .full{grid-column:auto}.catalog-admin-item{align-items:flex-start;flex-wrap:wrap}.catalog-admin-item .actions{width:100%}.catalog-editor-actions{flex-direction:column}.catalog-editor-actions button{width:100%}}
+    @media(max-width:650px){.catalog-admin-toolbar{grid-template-columns:1fr}.catalog-add-button{width:100%}.catalog-form-grid{grid-template-columns:1fr}.catalog-form-grid .full{grid-column:auto}.catalog-admin-item{align-items:flex-start;flex-wrap:wrap}.catalog-admin-item .actions{width:100%}.catalog-editor-actions{flex-direction:column}.catalog-editor-actions button{width:100%}}
   </style>
   <script src="/share.js" defer></script>
   <script src="/supabase-config.js"></script>
@@ -4011,15 +4023,47 @@
         </div>
       </section>
 
-      <section class="account-panel card" id="panel-admin-catalog" data-title="Editar catálogo" hidden>
-        <div class="panel-heading"><div><h2>Editar catálogo</h2><p>Agrega productos, modifica su ficha, administra fotos y publica páginas nuevas en la tienda.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
+      <section class="account-panel card" id="panel-admin-catalog" data-title="Inventario del catálogo" hidden>
+        <div class="panel-heading catalog-panel-heading">
+          <div>
+            <h2>Inventario del catálogo</h2>
+            <p>Consulta los productos y servicios guardados. Selecciona uno para editarlo o agrega uno nuevo.</p>
+          </div>
+          <button class="primary catalog-add-button" id="catalog-add-new" type="button">＋ Agregar producto o servicio</button>
+        </div>
+
+        <div class="catalog-admin-toolbar">
+          <label class="catalog-search-field" for="catalog-search">
+            <span>Buscar en el inventario</span>
+            <input id="catalog-search" type="search" placeholder="Nombre, categoría o URL..." autocomplete="off">
+          </label>
+          <label class="catalog-filter-field" for="catalog-filter">
+            <span>Mostrar</span>
+            <select id="catalog-filter">
+              <option value="all">Todos los registros</option>
+              <option value="active">Publicados</option>
+              <option value="inactive">Ocultos</option>
+              <option value="residencial">Residencial</option>
+              <option value="comercial">Comercial</option>
+              <option value="alquileres">Alquileres</option>
+            </select>
+          </label>
+        </div>
+        <p class="catalog-admin-summary" id="catalog-admin-summary" aria-live="polite">Cargando inventario…</p>
+        <p class="catalog-admin-feedback" id="catalog-admin-feedback" role="status" aria-live="polite"></p>
         <div id="catalog-admin-list" class="catalog-admin-list" aria-live="polite"></div>
-        <div class="catalog-admin-editor">
-          <h3 id="catalog-editor-heading">Nuevo producto</h3>
+
+        <div class="catalog-admin-editor" id="catalog-admin-editor" hidden>
+          <div class="catalog-editor-heading-row">
+            <div>
+              <p class="eyebrow">Gestión del catálogo</p>
+              <h3 id="catalog-editor-heading">Nuevo producto o servicio</h3>
+            </div>
+          </div>
           <form id="catalog-product-form">
             <input id="catalog-original-sku" type="hidden">
             <div class="catalog-form-grid">
-              <label>Nombre del producto<input id="catalog-title" required maxlength="160"></label>
+              <label>Nombre del producto o servicio<input id="catalog-title" required maxlength="160"></label>
               <label>URL de la página (slug)<input id="catalog-slug" required pattern="[a-z0-9-]+" maxlength="80" placeholder="ej. limpieza-de-patios"></label>
               <label>Categoría<select id="catalog-category"><option value="residencial">Residencial</option><option value="comercial">Comercial</option><option value="alquileres">Alquileres</option></select></label>
               <label>Etiqueta / ribbon<select id="catalog-badge"><option value="">Sin etiqueta</option><option>Más vendido</option><option>Recomendado</option><option>Nuevo</option><option>Oferta especial</option><option>Edición limitada</option></select></label>
@@ -4039,13 +4083,16 @@
               <label>Cantidad mínima<input id="catalog-min" type="number" min="1" value="1"></label>
               <label>Cantidad máxima<input id="catalog-max" type="number" min="1" value="1"></label>
             </div>
-            <div class="catalog-editor-actions"><button class="primary" id="catalog-save" type="submit">Guardar producto</button><button class="secondary" id="catalog-cancel" type="button">Limpiar formulario</button></div>
+            <div class="catalog-editor-actions">
+              <button class="primary" id="catalog-save" type="submit">Guardar producto o servicio</button>
+              <button class="secondary" id="catalog-cancel" type="button">Volver al inventario</button>
+            </div>
             <p id="catalog-editor-status" class="agenda-status" role="status" aria-live="polite"></p>
           </form>
         </div>
       </section>
 
-      <section class="account-panel card" id="panel-admin-customers" data-title="Gestionar clientes" hidden>
+      <section class="account-panel card" id="panel-admin-customers"      <section class="account-panel card" id="panel-admin-customers" data-title="Gestionar clientes" hidden>
         <div class="panel-heading"><div><h2>Gestionar clientes</h2><p>Busca por nombre, correo o teléfono. Revisa preferencias y actividad para dar seguimiento.</p></div><a class="secondary" href="#cuenta">Volver</a></div>
         <form class="admin-customer-search" id="admin-customer-search">
           <input id="admin-customer-query" type="search" maxlength="120" placeholder="Nombre, correo o teléfono" aria-label="Buscar clientes por nombre, correo o teléfono">
