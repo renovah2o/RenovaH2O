@@ -927,11 +927,13 @@
       return new Intl.NumberFormat("es-PA", { style: "currency", currency }).format(amount / 100);
     }
 
-    function getGoogleAvatarUrl(user) {
-      const googleIdentity = user?.identities?.find(identity => identity.provider === "google");
-      if (!googleIdentity) return null;
-      const identityData = googleIdentity.identity_data ?? {};
+    function getSocialAvatarUrl(user, identities = user?.identities ?? []) {
+      const preferredIdentity = ["google", "facebook"]
+        .map(provider => identities?.find(identity => identity?.provider === provider))
+        .find(Boolean);
+      const identityData = preferredIdentity?.identity_data ?? {};
       return identityData.picture || identityData.avatar_url ||
+        identityData.picture?.data?.url ||
         user?.user_metadata?.picture || user?.user_metadata?.avatar_url || null;
     }
 
@@ -2663,7 +2665,7 @@
       showRoute();
       accountEmail.textContent = user.email ?? "";
       profileEmail.value = user.email ?? "";
-      googleAvatarUrl = getGoogleAvatarUrl(user);
+      googleAvatarUrl = getSocialAvatarUrl(user);
       profileName.value = "";
       profilePhone.value = "";
       profilePhoneCountry.value = "+507";
@@ -2712,7 +2714,10 @@
           identitiesError = error;
         }
         if (activeUserId !== user.id) return;
-        renderAccountAccess(user, identitiesData?.identities ?? user.identities ?? [], identitiesError);
+        const linkedIdentities = identitiesData?.identities ?? user.identities ?? [];
+        // La consulta de identidades puede contener la foto aunque getUser() no la incluya.
+        googleAvatarUrl = getSocialAvatarUrl(user, linkedIdentities);
+        renderAccountAccess(user, linkedIdentities, identitiesError);
 
         const [profileResult, addressesResult, phonesResult, ordersResult, reservationsResult, adminResult] = await Promise.all([
           supabase.from("profiles")
